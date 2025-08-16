@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+html, body, :root { height: 100%; }
+
+/* Print styles for clean PDF output */
+@media print {
+  @page {
+    size: A4;
+    margin: 0.5in;
+  }
+  body { color: #000; }
+  .no-print { display: none !important; }
+}
