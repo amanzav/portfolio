@@ -5,6 +5,17 @@ export type BaseItem = {
   subtitle?: string; // optional secondary line
 };
 
+export type PersonalInfo = {
+  fullName: string;
+  email: string;
+  phone: string;
+  location: string;
+  linkedin?: string;
+  github?: string;
+  website?: string;
+  summary?: string;
+};
+
 export type Experience = BaseItem & {
   title: string;
   company: string;
@@ -31,6 +42,7 @@ export type Education = BaseItem & {
 };
 
 export type DataBundle = {
+  personalInfo: PersonalInfo;
   experiences: Experience[];
   projects: Project[];
   skills: Skill[];
@@ -40,9 +52,15 @@ export type DataBundle = {
 export type Profile = {
   id: string;
   name: string;
-  summary?: string;
+  personalInfo?: PersonalInfo;
   experienceIds: string[];
   projectIds: string[];
   skillIds: string[];
   educationIds: string[];
+  // Profile-specific overrides that don't affect master data
+  experienceOverrides?: Record<string, Partial<Experience>>;
+  projectOverrides?: Record<string, Partial<Project>>;
+  skillOverrides?: Record<string, Partial<Skill>>;
+  educationOverrides?: Record<string, Partial<Education>>;
+  template?: 'classic' | 'compact';
 };

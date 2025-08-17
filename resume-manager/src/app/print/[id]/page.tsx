@@ -2,13 +2,12 @@
 
 import { useParams } from 'next/navigation';
 import { useProfilesStore } from '@/lib/store';
-import { data } from '@/lib/data';
 import { useEffect, useMemo } from 'react';
 import { Resume } from '@/components/Resume';
 
 export default function PrintPage() {
   const params = useParams<{ id: string }>();
-  const { profiles } = useProfilesStore();
+  const { profiles, data } = useProfilesStore();
   const profile = useMemo(() => profiles.find((p) => p.id === params.id), [profiles, params.id]);
 
   useEffect(() => {

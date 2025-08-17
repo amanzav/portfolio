@@ -1,6 +1,16 @@
 import type { DataBundle } from './types';
 
 export const data: DataBundle = {
+  personalInfo: {
+    fullName: 'Aman Zaveri',
+    email: 'a2zaveri@uwaterloo.ca',
+    phone: '647-676-8981',
+    location: 'Toronto, ON',
+    linkedin: 'linkedin.com/in/aman-zaveri',
+    github: 'github.com/azaveri7',
+    website: '',
+    summary: ''
+  },
   experiences: [
     {
       id: 'ford-se-2025',
