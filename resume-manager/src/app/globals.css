@@ -201,6 +201,7 @@
   html {
     background-color: oklch(0.05 0.008 270);
     scroll-behavior: smooth;
+    overflow-x: hidden; /* Prevent horizontal scroll */
   }
 
   body {
@@ -211,6 +212,7 @@
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden; /* Prevent horizontal scroll */
   }
 
   /* Minimalist Glass Effect */
