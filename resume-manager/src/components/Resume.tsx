@@ -16,7 +16,7 @@ export function Resume({ profile, data, compact }: { profile: Profile; data: Dat
   if (template === 'compact') {
     return (
       <div className={clsx('text-[12px] leading-snug space-y-3')}>        
-        <header className="border-b border-neutral-200 pb-2">
+        <header className="border-b border-border pb-2">
           <h1 className="text-xl font-semibold">{profile.personalInfo?.fullName || 'Your Name'}</h1>
           {profile.personalInfo?.summary && <div className="mt-1 text-[11px] text-neutral-700">{profile.personalInfo.summary}</div>}
         </header>
@@ -75,7 +75,7 @@ export function Resume({ profile, data, compact }: { profile: Profile; data: Dat
   return (
     <div className={clsx('text-[14px] leading-relaxed', compact ? 'space-y-4' : 'space-y-6')}>
       {/* Header */}
-      <header className="border-b border-neutral-200 pb-3">
+      <header className="border-b border-border pb-3">
         <h1 className={clsx('font-semibold', compact ? 'text-xl' : 'text-2xl')}>
           {profile.personalInfo?.fullName || 'Your Name'}
         </h1>
