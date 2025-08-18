@@ -2,6 +2,7 @@
 
 import type { DataBundle, Profile } from '@/lib/types';
 import { getEffectiveProfileData } from '@/lib/utils';
+import { RichTextDisplay } from '@/components/ui/rich-text-editor';
 import clsx from 'classnames';
 
 export function Resume({ profile, data, compact }: { profile: Profile; data: DataBundle; compact?: boolean }) {
@@ -18,7 +19,7 @@ export function Resume({ profile, data, compact }: { profile: Profile; data: Dat
       <div className={clsx('text-[12px] leading-snug space-y-3')}>        
         <header className="border-b border-border pb-2">
           <h1 className="text-xl font-semibold">{profile.personalInfo?.fullName || 'Your Name'}</h1>
-          {profile.personalInfo?.summary && <div className="mt-1 text-[11px] text-neutral-700">{profile.personalInfo.summary}</div>}
+          {profile.personalInfo?.summary && <RichTextDisplay content={profile.personalInfo.summary} className="mt-1 text-[11px] text-neutral-700" />}
         </header>
         <div className="grid grid-cols-3 gap-4">
           <div className="col-span-2 space-y-3">
@@ -29,7 +30,7 @@ export function Resume({ profile, data, compact }: { profile: Profile; data: Dat
                   <div key={e.id} className="mt-1">
                     <div className="flex justify-between text-[11px] font-medium"><span>{e.title} @ {e.company}</span><span className="text-neutral-500">{e.date}</span></div>
                     <ul className="ml-4 list-disc">
-                      {e.bullets.slice(0,3).map((b,i)=>(<li key={i}>{b}</li>))}
+                      {e.bullets.slice(0,3).map((b,i)=>(<li key={i}><RichTextDisplay content={b} /></li>))}
                     </ul>
                   </div>
                 ))}
@@ -42,7 +43,7 @@ export function Resume({ profile, data, compact }: { profile: Profile; data: Dat
                   <div key={p.id} className="mt-1">
                     <div className="flex justify-between text-[11px] font-medium"><span>{p.title}</span><span className="text-neutral-500">{p.link||''}</span></div>
                     <ul className="ml-4 list-disc">
-                      {p.bullets.slice(0,2).map((b,i)=>(<li key={i}>{b}</li>))}
+                      {p.bullets.slice(0,2).map((b,i)=>(<li key={i}><RichTextDisplay content={b} /></li>))}
                     </ul>
                   </div>
                 ))}
@@ -54,7 +55,7 @@ export function Resume({ profile, data, compact }: { profile: Profile; data: Dat
               <section>
                 <h2 className="text-xs font-bold uppercase tracking-wide">Skills</h2>
                 <ul className="mt-1 space-y-1">
-                  {skl.map(s => <li key={s.id}><span className="font-medium">{s.name}:</span> {s.details}</li>)}
+                  {skl.map(s => <li key={s.id}><span className="font-medium">{s.name}:</span> <RichTextDisplay content={s.details} className="inline" /></li>)}
                 </ul>
               </section>
             )}
@@ -62,7 +63,7 @@ export function Resume({ profile, data, compact }: { profile: Profile; data: Dat
               <section>
                 <h2 className="text-xs font-bold uppercase tracking-wide">Education</h2>
                 <ul className="ml-4 list-disc">
-                  {edu.map(e => <li key={e.id}>{e.title} — {e.details}</li>)}
+                  {edu.map(e => <li key={e.id}>{e.title} — <RichTextDisplay content={e.details} className="inline" /></li>)}
                 </ul>
               </section>
             )}
@@ -89,9 +90,10 @@ export function Resume({ profile, data, compact }: { profile: Profile; data: Dat
           ].filter(Boolean).join(' | ')}
         </div>
         {profile.personalInfo?.summary && (
-          <div className={clsx('mt-1 text-neutral-700 break-words', compact ? 'text-[12px]' : 'text-[12px]')}>
-            {profile.personalInfo.summary}
-          </div>
+          <RichTextDisplay 
+            content={profile.personalInfo.summary} 
+            className={clsx('mt-1 text-neutral-700 break-words', compact ? 'text-[12px]' : 'text-[12px]')}
+          />
         )}
       </header>
 
@@ -104,7 +106,7 @@ export function Resume({ profile, data, compact }: { profile: Profile; data: Dat
           <div className={clsx('mt-1 gap-2', compact ? 'grid grid-cols-1' : 'grid grid-cols-1 md:grid-cols-2')}>
             {skl.map((s) => (
               <div key={s.id} className={clsx('break-words', compact ? 'text-[12px]' : 'text-[13px]')}>
-                <span className="font-medium">{s.name}:</span> {s.details}
+                <span className="font-medium">{s.name}:</span> <RichTextDisplay content={s.details} className="inline" />
               </div>
             ))}
           </div>
@@ -130,7 +132,7 @@ export function Resume({ profile, data, compact }: { profile: Profile; data: Dat
                 </div>
                 <ul className={clsx('ml-5 list-disc', compact ? 'text-[12px]' : 'text-[13px]')}>
                   {e.bullets.slice(0, compact ? 3 : undefined).map((b, i) => (
-                    <li key={i} className="break-words">{b}</li>
+                    <li key={i} className="break-words"><RichTextDisplay content={b} /></li>
                   ))}
                 </ul>
               </div>
@@ -158,7 +160,7 @@ export function Resume({ profile, data, compact }: { profile: Profile; data: Dat
                 </div>
                 <ul className={clsx('ml-5 list-disc', compact ? 'text-[12px]' : 'text-[13px]')}>
                   {p.bullets.slice(0, compact ? 2 : undefined).map((b, i) => (
-                    <li key={i} className="break-words">{b}</li>
+                    <li key={i} className="break-words"><RichTextDisplay content={b} /></li>
                   ))}
                 </ul>
               </div>
@@ -176,7 +178,7 @@ export function Resume({ profile, data, compact }: { profile: Profile; data: Dat
           <div className={clsx('ml-5 space-y-1', compact ? 'text-[12px]' : 'text-[13px]')}>
             {edu.map((e) => (
               <div key={e.id} className="overflow-hidden">
-                <span className="font-medium">{e.title}</span> — <span className="truncate inline-block max-w-xs">{e.details}</span>
+                <span className="font-medium">{e.title}</span> — <RichTextDisplay content={e.details} className="truncate inline-block max-w-xs" />
               </div>
             ))}
           </div>
