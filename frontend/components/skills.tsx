@@ -27,23 +27,35 @@ export function Skills() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section id="skills" className="py-24 px-6 md:px-12 lg:px-24">
+    <section id="skills" className="py-16 px-6 md:px-12 lg:px-24">
       <div className="max-w-6xl mx-auto">
         <motion.div
           ref={ref}
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="mb-16"
+          className="mb-12"
         >
-          <div className="flex items-center gap-3 mb-4">
-            <Code2 className="h-6 w-6 text-accent" />
-            <h2 className="text-4xl md:text-5xl font-bold">Skills & Technologies</h2>
-          </div>
-          <p className="text-gray-400 text-lg">Technologies I work with on a daily basis</p>
+          <motion.div 
+            className="flex items-center gap-3 mb-3"
+            initial={{ opacity: 0, x: -30 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <Code2 className="h-5 w-5 text-accent" />
+            <h2 className="text-3xl md:text-4xl font-bold">Skills & Technologies</h2>
+          </motion.div>
+          <motion.p 
+            className="text-gray-400 text-base"
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            transition={{ delay: 0.3 }}
+          >
+            Technologies I work with on a daily basis
+          </motion.p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-24">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
           {skillCategories.map((category, idx) => (
             <motion.div
               key={idx}
@@ -51,7 +63,7 @@ export function Skills() {
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: idx * 0.1, duration: 0.6 }}
             >
-              <h3 className="text-accent font-semibold mb-4 text-lg font-mono">
+              <h3 className="text-accent font-semibold mb-3 text-base font-mono">
                 {category.category}
               </h3>
               <motion.div
@@ -61,10 +73,15 @@ export function Skills() {
                 className="flex flex-wrap gap-2"
               >
                 {category.skills.map((skill, i) => (
-                  <motion.div key={i} variants={item}>
+                  <motion.div 
+                    key={i} 
+                    variants={item}
+                    whileHover={{ scale: 1.08 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
                     <Badge
                       variant="outline"
-                      className="border-white/20 hover:border-accent hover:bg-accent/10 transition-all duration-200 text-sm py-1.5 px-4"
+                      className="border-white/20 hover:border-accent hover:bg-accent/10 transition-all duration-200 text-xs py-1 px-3"
                     >
                       {skill}
                     </Badge>
@@ -81,11 +98,11 @@ export function Skills() {
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.5, duration: 0.6 }}
         >
-          <Separator className="mb-12 bg-white/10" />
+          <Separator className="mb-8 bg-white/10" />
 
-          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="text-center md:text-left">
-              <p className="text-gray-400 mb-2">
+              <p className="text-gray-400 mb-2 text-sm">
                 Interested in working together?
               </p>
               <a
@@ -101,11 +118,11 @@ export function Skills() {
                 href="https://github.com/amanzav"
                 target="_blank"
                 rel="noopener noreferrer"
-                whileHover={{ scale: 1.1, y: -2 }}
+                whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 className="text-gray-400 hover:text-accent transition-colors"
               >
-                <Github className="h-6 w-6" />
+                <Github className="h-5 w-5" />
                 <span className="sr-only">GitHub</span>
               </motion.a>
 
@@ -113,28 +130,28 @@ export function Skills() {
                 href="https://linkedin.com/in/amanzaveri"
                 target="_blank"
                 rel="noopener noreferrer"
-                whileHover={{ scale: 1.1, y: -2 }}
+                whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 className="text-gray-400 hover:text-accent transition-colors"
               >
-                <Linkedin className="h-6 w-6" />
+                <Linkedin className="h-5 w-5" />
                 <span className="sr-only">LinkedIn</span>
               </motion.a>
 
               <motion.a
                 href="mailto:amanzaveri@example.com"
-                whileHover={{ scale: 1.1, y: -2 }}
+                whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 className="text-gray-400 hover:text-accent transition-colors"
               >
-                <Mail className="h-6 w-6" />
+                <Mail className="h-5 w-5" />
                 <span className="sr-only">Email</span>
               </motion.a>
             </div>
           </div>
 
-          <div className="mt-12 text-center">
-            <p className="text-gray-500 text-sm">
+          <div className="mt-8 text-center">
+            <p className="text-gray-500 text-xs">
               Designed & Built by Aman Zaveri © {new Date().getFullYear()}
             </p>
           </div>

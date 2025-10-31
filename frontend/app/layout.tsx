@@ -8,15 +8,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Aman Zaveri - Full-Stack & Embedded Engineer",
-  description: "Full-Stack & Embedded Engineer building systems that ship. Portfolio showcasing experience at Ford Motor Company, Transpire Technologies, and projects like CourseClutch and Reva.",
-  keywords: ["Aman Zaveri", "Software Engineer", "Full-Stack Developer", "Embedded Systems", "Ford", "Portfolio"],
-  authors: [{ name: "Aman Zaveri" }],
-  openGraph: {
-    title: "Aman Zaveri - Full-Stack & Embedded Engineer",
-    description: "Building Systems that Ship",
-    type: "website",
-  },
+  title: "Aman Zaveri - Software Engineer",
+  description: "Full-Stack & Embedded Engineer specializing in scalable systems, real-time analytics, and intelligent automation.",
 };
 
 export default function RootLayout({
