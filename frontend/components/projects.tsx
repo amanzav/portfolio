@@ -13,25 +13,25 @@ export function Projects() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section id="projects" className="py-16 px-6 md:px-12 lg:px-24 bg-secondary/20">
-      <div className="max-w-6xl mx-auto">
+    <section id="projects" className="py-24 px-6 md:px-12 lg:px-24 bg-secondary/10">
+      <div className="max-w-5xl mx-auto">
         <motion.div
           ref={ref}
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5 }}
-          className="mb-12"
+          className="mb-16"
         >
           <div className="flex items-center gap-3 mb-3">
             <Folder className="h-5 w-5 text-accent" />
-            <h2 className="text-3xl md:text-4xl font-bold">Featured Projects</h2>
+            <h2 className="text-2xl md:text-3xl font-bold">Featured Projects</h2>
           </div>
-          <p className="text-gray-400 text-base">
+          <p className="text-gray-400 text-sm">
             Things I've built that I'm proud of
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {projects.map((project, idx) => (
             <motion.div
               key={idx}

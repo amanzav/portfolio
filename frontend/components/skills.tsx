@@ -12,25 +12,25 @@ export function Skills() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section id="skills" className="py-16 px-6 md:px-12 lg:px-24">
-      <div className="max-w-6xl mx-auto">
+    <section id="skills" className="py-24 px-6 md:px-12 lg:px-24">
+      <div className="max-w-5xl mx-auto">
         <motion.div
           ref={ref}
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5 }}
-          className="mb-12"
+          className="mb-16"
         >
           <div className="flex items-center gap-3 mb-3">
             <Code2 className="h-5 w-5 text-accent" />
-            <h2 className="text-3xl md:text-4xl font-bold">Skills & Technologies</h2>
+            <h2 className="text-2xl md:text-3xl font-bold">Skills & Technologies</h2>
           </div>
-          <p className="text-gray-400 text-base">
+          <p className="text-gray-400 text-sm">
             Technologies I work with on a daily basis
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20">
           {skillCategories.map((category, idx) => (
             <motion.div
               key={idx}
@@ -38,7 +38,7 @@ export function Skills() {
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: idx * 0.1, duration: 0.5 }}
             >
-              <h3 className="text-accent font-semibold mb-3 text-base font-mono">
+              <h3 className="text-accent font-semibold mb-3 text-sm font-mono">
                 {category.category}
               </h3>
               <div className="flex flex-wrap gap-2">
@@ -46,7 +46,7 @@ export function Skills() {
                   <Badge
                     key={i}
                     variant="outline"
-                    className="border-white/10 hover:border-accent hover:bg-accent/5 transition-all duration-200 text-xs py-1 px-3"
+                    className="border-white/10 hover:border-accent hover:bg-accent/5 transition-all duration-200 text-xs py-0.5 px-2.5"
                   >
                     {skill}
                   </Badge>

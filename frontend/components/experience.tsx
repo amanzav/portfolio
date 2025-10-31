@@ -12,25 +12,25 @@ export function Experience() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section id="experience" className="py-16 px-6 md:px-12 lg:px-24">
-      <div className="max-w-6xl mx-auto">
+    <section id="experience" className="py-24 px-6 md:px-12 lg:px-24">
+      <div className="max-w-5xl mx-auto">
         <motion.div
           ref={ref}
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5 }}
-          className="mb-12"
+          className="mb-16"
         >
           <div className="flex items-center gap-3 mb-3">
             <Briefcase className="h-5 w-5 text-accent" />
-            <h2 className="text-3xl md:text-4xl font-bold">Experience</h2>
+            <h2 className="text-2xl md:text-3xl font-bold">Experience</h2>
           </div>
-          <p className="text-gray-400 text-base">
+          <p className="text-gray-400 text-sm">
             Where I've worked and what I've built
           </p>
         </motion.div>
 
-        <div className="space-y-6">
+        <div className="space-y-8">
           {experiences.map((exp, idx) => (
             <motion.div
               key={idx}

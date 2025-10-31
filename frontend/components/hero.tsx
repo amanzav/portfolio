@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowDown, Github, Linkedin, Mail, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { HandwritingSignature } from "@/components/handwriting-signature";
+import { Globe } from "@/components/globe";
 
 export function Hero() {
   const scrollToExperience = () => {
@@ -11,50 +12,52 @@ export function Hero() {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center px-6 md:px-12 lg:px-24">
-      <div className="max-w-5xl w-full text-center">
+    <section className="relative min-h-screen flex items-center justify-center px-6 md:px-12 lg:px-24 overflow-hidden">
+      {/* Globe in background - smaller and more subtle */}
+      <div className="absolute inset-0 flex items-center justify-center opacity-15 pointer-events-none">
+        <div className="w-[400px] h-[400px] md:w-[500px] md:h-[500px]">
+          <Globe />
+        </div>
+      </div>
+
+      <div className="max-w-4xl w-full text-center relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="space-y-8"
+          className="space-y-6"
         >
-          {/* Name */}
+          {/* Name - smaller */}
           <HandwritingSignature />
 
-          {/* Tagline - no word-by-word animation */}
-          <h2 className="text-xl md:text-2xl lg:text-3xl font-medium text-gray-400">
-            Building Systems that Ship.
-          </h2>
-
-          {/* CTA Buttons */}
-          <div className="flex flex-wrap gap-4 pt-2 justify-center">
+          {/* CTA Buttons - compact with text */}
+          <div className="flex gap-3 pt-4 justify-center">
             <Button
               asChild
-              size="lg"
-              className="bg-accent text-black hover:bg-accent/90 transition-colors"
+              size="sm"
+              className="bg-accent text-black hover:bg-accent/90 transition-colors text-xs"
             >
               <a href="/resume.pdf" download>
-                <Download className="mr-2 h-5 w-5" />
-                Download Resume
+                <Download className="mr-1.5 h-3.5 w-3.5" />
+                Resume
               </a>
             </Button>
 
             <Button
               asChild
-              size="lg"
+              size="sm"
               variant="outline"
-              className="border-white/10 hover:border-accent hover:text-accent transition-colors"
+              className="border-white/10 hover:border-accent hover:text-accent transition-colors text-xs"
             >
               <a href="mailto:amanzaveri@example.com">
-                <Mail className="mr-2 h-5 w-5" />
-                Get in Touch
+                <Mail className="mr-1.5 h-3.5 w-3.5" />
+                Contact
               </a>
             </Button>
           </div>
 
-          {/* Social Links */}
-          <div className="flex gap-6 pt-4 justify-center">
+          {/* Social Links - smaller */}
+          <div className="flex gap-5 pt-6 justify-center">
             {[
               { href: "https://github.com/amanzav", Icon: Github, label: "GitHub" },
               { href: "https://linkedin.com/in/amanzaveri", Icon: Linkedin, label: "LinkedIn" },
@@ -67,7 +70,7 @@ export function Hero() {
                 rel={href.startsWith('http') ? "noopener noreferrer" : undefined}
                 className="text-gray-400 hover:text-accent transition-colors"
               >
-                <Icon className="h-6 w-6" />
+                <Icon className="h-5 w-5" />
                 <span className="sr-only">{label}</span>
               </a>
             ))}
@@ -75,14 +78,14 @@ export function Hero() {
         </motion.div>
       </div>
 
-      {/* Scroll indicator */}
+      {/* Scroll indicator - smaller */}
       <motion.button
         onClick={scrollToExperience}
-        animate={{ y: [0, 8, 0] }}
+        animate={{ y: [0, 6, 0] }}
         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         className="absolute bottom-12 left-1/2 -translate-x-1/2 text-gray-500 hover:text-accent transition-colors cursor-pointer"
       >
-        <ArrowDown className="h-6 w-6" />
+        <ArrowDown className="h-5 w-5" />
         <span className="sr-only">Scroll down</span>
       </motion.button>
     </section>

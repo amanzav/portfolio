@@ -8,7 +8,7 @@ export function HandwritingSignature() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
-      className="text-7xl md:text-8xl lg:text-9xl font-bold tracking-tight text-accent"
+      className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-accent"
     >
       Aman
     </motion.h1>
