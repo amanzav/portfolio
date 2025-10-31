@@ -1,0 +1,50 @@
+# Aman Zaveri - Resume
+
+This is a placeholder for the resume PDF.
+
+Please replace this file with your actual resume PDF at:
+`/public/resume.pdf`
+
+## Contact Information
+- Email: amanzaveri@example.com
+- GitHub: github.com/amanzav
+- LinkedIn: linkedin.com/in/amanzaveri
+
+## Experience
+
+### Ford Motor Company - Software Engineering Intern (May–Aug 2025)
+- Route-aware fuel optimization Android widget (Kotlin + Java)
+- Tire-pressure alert system (C++ HAL + AIDL)
+- CI/CD pipeline with AST-based LLM analysis
+- Async queue refactor for 5K+ CAN signals/s
+
+### Ford Motor Company - Python Software Engineering Intern (Sep–Dec 2024)
+- ML anomaly detection on 50K+ samples
+- Jenkins + MQTT automation
+- Linux-based regression suite (250+ cases)
+- IPv6 log analysis (32% improvement)
+
+### Transpire Technologies - Software Engineering Intern (Jan–Apr 2024)
+- AppSync & Supabase optimization
+- Real-time React analytics dashboard
+- Automated event anomaly detection (Selenium + Vector)
+
+## Projects
+
+### CourseClutch (courseclutch.com)
+Serverless course notifier with FastAPI, AWS Lambda, DynamoDB, Redis
+- 12K+ courses tracked
+- 99.8% uptime
+- Redis caching layer
+
+### Reva - Job Application Assistant (github.com/amanzav/reva)
+Full-stack platform with Next.js, Prisma, LangChain
+- Zod-validated feedback loop
+- Embeddings-based matching
+- 94% accuracy on job matches
+
+## Skills
+**Languages:** Python, Rust, TypeScript, C/C++, Kotlin, Java
+**Frameworks:** React, Next.js, Prisma, LangChain, FastAPI
+**Cloud & DevOps:** AWS, Docker, Kubernetes, Jenkins, Vercel
+**Databases:** PostgreSQL, Supabase, Redis, MongoDB, DynamoDB
