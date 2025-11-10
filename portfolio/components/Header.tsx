@@ -60,7 +60,7 @@ export function Header() {
       <p className="text-xl font-medium text-neutral-300 mb-1">Software Engineer</p>
       <p className="text-sm text-neutral-400 mb-3">Toronto, ON</p>
       <p className="text-sm text-neutral-400 max-w-2xl">
-        Building small, fast things that don&apos;t get in your way.
+        Bullshitting my way through uni
       </p>
     </motion.header>
   );
