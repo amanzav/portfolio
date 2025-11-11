@@ -22,10 +22,13 @@
   * {
     @apply border-border;
   }
-  
+
   body {
     @apply bg-background text-foreground leading-relaxed;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  .theme {
+    --animate-blink-cursor: blink-cursor 1.2s step-end infinite;
   }
 }
 
@@ -33,7 +36,7 @@
   .text-balance {
     text-wrap: balance;
   }
-  
+
   @keyframes fade-in {
     from {
       opacity: 0;
@@ -42,7 +45,7 @@
       opacity: 1;
     }
   }
-  
+
   @keyframes zoom-in {
     from {
       opacity: 0;
@@ -53,7 +56,7 @@
       transform: scale(1);
     }
   }
-  
+
   @keyframes fade-out {
     from {
       opacity: 1;
@@ -62,7 +65,7 @@
       opacity: 0;
     }
   }
-  
+
   @keyframes zoom-out {
     from {
       opacity: 1;
@@ -73,32 +76,43 @@
       transform: scale(0.95);
     }
   }
-  
+
   .animate-in {
     animation-fill-mode: both;
   }
-  
+
   .animate-out {
     animation-fill-mode: both;
   }
-  
+
   .fade-in-0 {
     animation-name: fade-in;
   }
-  
+
   .fade-out-0 {
     animation-name: fade-out;
   }
-  
+
   .zoom-in-95 {
     animation-name: zoom-in;
   }
-  
+
   .zoom-out-95 {
     animation-name: zoom-out;
   }
-  
+
   .duration-150 {
     animation-duration: 150ms;
+  }
+}
+
+@theme inline {
+  @keyframes blink-cursor {
+  0%, 49% {
+    opacity: 1;
+    }
+  50%, 100% {
+    opacity: 0;
+    }
   }
 }

@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Github, Linkedin, Mail } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import { TypingAnimation } from "@/components/ui/typing-animation";
 
 const links = [
   {
@@ -55,7 +56,7 @@ export function Header() {
         >
           Aman Zaveri
         </h1>
-        
+
         {/* Social Links - Top Right */}
         <div className="flex gap-6 items-center">
           {links.map((link) => {
@@ -77,11 +78,30 @@ export function Header() {
       </div>
 
       {/* Title and Location */}
-      <p className="text-xl font-medium text-foreground/80 mb-1">Mechatronics Engineering at University of Waterloo</p>
-      <p className="text-sm text-muted mb-3">Toronto, ON</p>
-      <p className="text-sm text-muted max-w-2xl">
-        Bullshitting my way through uni
+      <p className="text-xl font-medium text-foreground/80 mb-1">
+        Mechatronics Engineering at University of Waterloo
       </p>
+      <p className="text-sm text-muted mb-3">Toronto, ON</p>
+      <TypingAnimation
+        words={[
+          "Bullshitting my way through uni",
+          "Click my name to toggle theme 🎨",
+          "Probably debugging something right now",
+          "Converting coffee to code since 2020",
+          "Stack Overflow's #1 customer",
+          "rm -rf my sleep schedule",
+          "Ctrl+Z is my best friend",
+          "Making LEDs blink at 3 AM",
+          "git commit -m 'fixed stuff'",
+          "404: Sleep not found",
+        ]}
+        typeSpeed={60}
+        deleteSpeed={30}
+        pauseDelay={3000}
+        loop
+        startOnView={false}
+        className="text-sm text-muted"
+      />
     </motion.header>
   );
 }
