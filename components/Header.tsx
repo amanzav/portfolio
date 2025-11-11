@@ -1,30 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Github, Linkedin, Mail } from "lucide-react";
 import { TypingAnimation } from "@/components/ui/typing-animation";
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
-
-const links = [
-  {
-    name: "GitHub",
-    icon: Github,
-    href: "https://github.com/Aman-Zaveri",
-    ariaLabel: "GitHub Profile",
-  },
-  {
-    name: "LinkedIn",
-    icon: Linkedin,
-    href: "https://linkedin.com/in/aman-zaveri",
-    ariaLabel: "LinkedIn Profile",
-  },
-  {
-    name: "Email",
-    icon: Mail,
-    href: "mailto:a3zaveri@uwaterloo.ca",
-    ariaLabel: "Email",
-  },
-];
+import { SocialLinks } from "@/components/SocialLinks";
 
 export function Header() {
   return (
@@ -51,23 +30,7 @@ export function Header() {
         </h1>
 
         {/* Social Links - Top Right */}
-        <div className="flex gap-6 items-center">
-          {links.map((link) => {
-            const Icon = link.icon;
-            return (
-              <a
-                key={link.name}
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={link.ariaLabel}
-                className="text-muted hover:text-foreground hover:scale-105 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm"
-              >
-                <Icon size={20} />
-              </a>
-            );
-          })}
-        </div>
+        <SocialLinks />
       </div>
 
       {/* Title and Location */}
