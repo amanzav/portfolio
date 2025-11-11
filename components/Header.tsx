@@ -2,9 +2,8 @@
 
 import { motion } from "framer-motion";
 import { Github, Linkedin, Mail } from "lucide-react";
-import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
 import { TypingAnimation } from "@/components/ui/typing-animation";
+import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 
 const links = [
   {
@@ -28,19 +27,6 @@ const links = [
 ];
 
 export function Header() {
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  // Prevent hydration mismatch
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const toggleTheme = () => {
-    if (!mounted) return;
-    setTheme(theme === "dark" ? "light" : "dark");
-  };
-
   return (
     <motion.header
       initial={{ opacity: 0, y: 8 }}
@@ -48,12 +34,19 @@ export function Header() {
       transition={{ duration: 0.18, ease: "easeOut" }}
       className="mb-8"
     >
+      {/* Invisible Quarter Circle Theme Toggle - Top Right Corner */}
+      <AnimatedThemeToggler 
+        className="fixed top-0 right-0 w-24 h-24 cursor-pointer z-50"
+        style={{
+          clipPath: 'polygon(100% 0, 100% 100%, 0 0)',
+          opacity: 0
+        }}
+        aria-label="Toggle theme"
+      />
+
       {/* Name and Social Links Row */}
       <div className="flex items-start justify-between mb-2">
-        <h1
-          onClick={toggleTheme}
-          className="text-5xl font-bold tracking-[-0.02em] cursor-pointer select-none"
-        >
+        <h1 className="text-5xl font-bold tracking-[-0.02em]">
           Aman Zaveri
         </h1>
 
@@ -85,7 +78,7 @@ export function Header() {
       <TypingAnimation
         words={[
           "Bullshitting my way through uni",
-          "Click my name to toggle theme 🎨",
+          "Click the top-right corner to toggle theme 🎨",
           "Probably debugging something right now",
           "Converting coffee to code since 2020",
           "Stack Overflow's #1 customer",
