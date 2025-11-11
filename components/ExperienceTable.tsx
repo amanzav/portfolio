@@ -46,19 +46,19 @@ export function ExperienceTable() {
       transition={{ duration: 0.18, ease: "easeOut", delay: 0.1 }}
       className="mb-10"
     >
-      <h2 className="text-2xl font-semibold text-neutral-200 mb-3 tracking-tight">
+      <h2 className="text-2xl font-semibold text-foreground mb-3 tracking-tight">
         Experience
       </h2>
       <Table>
         <TableBody>
           {experiences.map((exp, index) => (
-            <TableRow key={index} className="border-neutral-800 hover:bg-neutral-900/50">
-              <TableCell className="text-neutral-300">
+            <TableRow key={index} className="border-border hover:bg-foreground/5">
+              <TableCell className="text-foreground/90">
                 {exp.description ? (
                   <TooltipProvider delayDuration={100}>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <span className="cursor-default hover:text-neutral-100 transition-colors">
+                        <span className="cursor-default hover:text-foreground transition-colors">
                           {exp.company}
                         </span>
                       </TooltipTrigger>
@@ -71,8 +71,8 @@ export function ExperienceTable() {
                   exp.company
                 )}
               </TableCell>
-              <TableCell className="text-neutral-300">{exp.role}</TableCell>
-              <TableCell className="text-right text-neutral-400">{exp.date}</TableCell>
+              <TableCell className="text-foreground/90">{exp.role}</TableCell>
+              <TableCell className="text-right text-muted">{exp.date}</TableCell>
             </TableRow>
           ))}
         </TableBody>

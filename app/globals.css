@@ -3,12 +3,28 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --background: 250 250 250;
+    --foreground: 23 23 23;
+    --accent: 107 124 255;
+    --muted: 115 115 115;
+    --border: 229 229 229;
+  }
+
+  .dark {
+    --background: 5 5 5;
+    --foreground: 229 229 229;
+    --accent: 107 124 255;
+    --muted: 163 163 163;
+    --border: 39 39 42;
+  }
+
   * {
     @apply border-border;
   }
   
   body {
-    @apply bg-[#050505] text-neutral-200 leading-relaxed;
+    @apply bg-background text-foreground leading-relaxed;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
