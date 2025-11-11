@@ -1,6 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useState } from "react";
+import { ArrowRight } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -15,12 +17,22 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 interface ExperienceItem {
   company: string;
   role: string;
   date: string;
   description?: string;
+  details?: string;
 }
 
 const experiences: ExperienceItem[] = [
@@ -29,12 +41,14 @@ const experiences: ExperienceItem[] = [
     role: "Software Engineering Intern",
     date: "2024–2025",
     description: "Developed route-aware fuel optimization widget (Kotlin).",
+    details: "More detailed information about the Ford internship experience will go here.",
   },
   {
     company: "Transpire Technologies",
     role: "Software Engineering Intern",
     date: "2024",
     description: "Built real-time analytics platform (Flask + Kubernetes).",
+    details: "More detailed information about the Transpire Technologies internship experience will go here.",
   },
 ];
 
@@ -73,6 +87,28 @@ export function ExperienceTable() {
               </TableCell>
               <TableCell className="text-foreground/90">{exp.role}</TableCell>
               <TableCell className="text-right text-muted">{exp.date}</TableCell>
+              <TableCell className="w-12 text-right">
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-muted hover:text-foreground transition-colors"
+                    >
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-2xl">
+                    <DialogHeader>
+                      <DialogTitle>{exp.company} — {exp.role}</DialogTitle>
+                      <DialogDescription>{exp.date}</DialogDescription>
+                    </DialogHeader>
+                    <div className="mt-4">
+                      <p className="text-foreground/80">{exp.details}</p>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
