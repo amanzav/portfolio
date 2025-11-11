@@ -2,6 +2,14 @@
 
 import { motion } from "framer-motion";
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -28,11 +36,6 @@ const experiences: ExperienceItem[] = [
     date: "2024",
     description: "Built real-time analytics platform (Flask + Kubernetes).",
   },
-  {
-    company: "University of Waterloo",
-    role: "BASc Mechatronics Engineering (AI)",
-    date: "2023–2028",
-  },
 ];
 
 export function ExperienceTable() {
@@ -46,37 +49,34 @@ export function ExperienceTable() {
       <h2 className="text-2xl font-semibold text-neutral-200 mb-3 tracking-tight">
         Experience
       </h2>
-      <div className="space-y-3">
-        {experiences.map((exp, index) => (
-          <div
-            key={index}
-            className={`grid grid-cols-[2fr_2fr_1fr] gap-4 text-sm pb-3 ${
-              index < experiences.length - 1
-                ? "border-b border-neutral-950"
-                : ""
-            }`}
-          >
-            {exp.description ? (
-              <TooltipProvider delayDuration={100}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="cursor-default text-neutral-300 hover:text-neutral-100 transition-colors">
-                      {exp.company}
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent side="top" align="start" sideOffset={8} alignOffset={-10}>
-                    <p className="whitespace-nowrap">{exp.description}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            ) : (
-              <div className="text-neutral-300">{exp.company}</div>
-            )}
-            <div className="text-neutral-300">{exp.role}</div>
-            <div className="text-neutral-400 text-right">{exp.date}</div>
-          </div>
-        ))}
-      </div>
+      <Table>
+        <TableBody>
+          {experiences.map((exp, index) => (
+            <TableRow key={index} className="border-neutral-800 hover:bg-neutral-900/50">
+              <TableCell className="text-neutral-300">
+                {exp.description ? (
+                  <TooltipProvider delayDuration={100}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="cursor-default hover:text-neutral-100 transition-colors">
+                          {exp.company}
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" align="start" sideOffset={8} alignOffset={-10}>
+                        <p className="whitespace-nowrap">{exp.description}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                ) : (
+                  exp.company
+                )}
+              </TableCell>
+              <TableCell className="text-neutral-300">{exp.role}</TableCell>
+              <TableCell className="text-right text-neutral-400">{exp.date}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </motion.section>
   );
 }

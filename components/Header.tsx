@@ -57,7 +57,7 @@ export function Header() {
       </div>
 
       {/* Title and Location */}
-      <p className="text-xl font-medium text-neutral-300 mb-1">Software Engineer</p>
+      <p className="text-xl font-medium text-neutral-300 mb-1">Mechatronics Engineering at University of Waterloo</p>
       <p className="text-sm text-neutral-400 mb-3">Toronto, ON</p>
       <p className="text-sm text-neutral-400 max-w-2xl">
         Bullshitting my way through uni
