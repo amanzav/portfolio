@@ -27,6 +27,14 @@
     @apply bg-background text-foreground leading-relaxed;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
+
+  /* Prevent scrolling on desktop/tablet, allow on mobile */
+  @media (min-width: 640px) {
+    html, body {
+      overflow: hidden;
+      height: 100vh;
+    }
+  }
   .theme {
     --animate-blink-cursor: blink-cursor 1.2s step-end infinite;
   }

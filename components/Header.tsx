@@ -11,7 +11,7 @@ export function Header() {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.18, ease: "easeOut" }}
-      className="mb-8"
+      className="flex-shrink-0"
     >
       {/* Invisible Quarter Circle Theme Toggle - Top Right Corner */}
       <AnimatedThemeToggler 
@@ -24,8 +24,8 @@ export function Header() {
       />
 
       {/* Name and Social Links Row */}
-      <div className="flex items-start justify-between mb-2">
-        <h1 className="text-5xl font-bold tracking-[-0.02em]">
+      <div className="flex items-start justify-between mb-1.5">
+        <h1 className="text-4xl font-bold tracking-[-0.02em]">
           Aman Zaveri
         </h1>
 
@@ -34,10 +34,10 @@ export function Header() {
       </div>
 
       {/* Title and Location */}
-      <p className="text-xl font-medium text-foreground/80 mb-1">
+      <p className="text-lg font-medium text-foreground/80 mb-0.5">
         Mechatronics Engineering at University of Waterloo
       </p>
-      <p className="text-sm text-muted mb-3">Toronto, ON</p>
+      <p className="text-sm text-muted mb-2">Toronto, ON</p>
       <TypingAnimation
         words={[
           "Bullshitting my way through uni",

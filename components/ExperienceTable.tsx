@@ -58,9 +58,9 @@ export function ExperienceTable() {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.18, ease: "easeOut", delay: 0.1 }}
-      className="mb-10"
+      className="flex-shrink-0"
     >
-      <h2 className="text-2xl font-semibold text-foreground mb-3 tracking-tight">
+      <h2 className="text-2xl font-semibold text-foreground mb-2 tracking-tight">
         Experience
       </h2>
       <Table>
