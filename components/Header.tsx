@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { TypingAnimation } from "@/components/ui/typing-animation";
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 import { SocialLinks } from "@/components/SocialLinks";
