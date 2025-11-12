@@ -1,8 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
-import Link from "next/link";
 import {
   Table,
   TableBody,
@@ -15,7 +13,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Button } from "@/components/ui/button";
 import { experiences } from "@/lib/experiences";
 
 export function ExperienceTable() {
@@ -64,18 +61,7 @@ export function ExperienceTable() {
                   ))}
                 </div>
               </TableCell>
-              <TableCell className="text-right text-muted text-xs py-1.5">{exp.date}</TableCell>
-              <TableCell className="w-12 text-right">
-                <Link href={`/experience/${exp.id}`}>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 text-muted hover:text-foreground transition-colors"
-                  >
-                    <ArrowRight className="h-3.5 w-3.5" />
-                  </Button>
-                </Link>
-              </TableCell>
+              <TableCell className="text-right text-muted text-xs py-6">{exp.date}</TableCell>
             </TableRow>
           ))}
         </TableBody>

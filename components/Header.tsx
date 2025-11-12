@@ -40,16 +40,9 @@ export function Header() {
       <p className="text-sm text-muted mb-1">Toronto, ON</p>
       <TypingAnimation
         words={[
-          "Bullshitting my way through uni",
-          "Click the top-right corner to toggle theme 🎨",
-          "Probably debugging something right now",
-          "Converting coffee to code since 2020",
-          "Stack Overflow's #1 customer",
-          "rm -rf my sleep schedule",
-          "Ctrl+Z is my best friend",
-          "Making LEDs blink at 3 AM",
-          "git commit -m 'fixed stuff'",
-          "404: Sleep not found",
+          "bullshitting my way through uni",
+          "click the top-right corner to toggle theme 🎨",
+          "probably playing cricket right now 🏏",
         ]}
         typeSpeed={60}
         deleteSpeed={30}

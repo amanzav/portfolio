@@ -25,7 +25,7 @@ const links = [
   {
     name: "Email",
     icon: Mail,
-    href: "mailto:a3zaveri@uwaterloo.ca",
+    href: "mailto:a2zaveri@uwaterloo.ca",
     ariaLabel: "Email",
   },
 ];
