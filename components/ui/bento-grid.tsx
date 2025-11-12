@@ -53,9 +53,11 @@ const BentoCard = ({
     )}
     {...props}
   >
-    <div>{background}</div>
-    <div className="p-4">
-      <div className="pointer-events-none z-10 flex transform-gpu flex-col gap-1 transition-all duration-300 lg:group-hover:-translate-y-10">
+    <div className="absolute inset-0 transition-transform duration-500 ease-out group-hover:scale-110">
+      {background}
+    </div>
+    <div className="relative z-10 p-4 mt-auto">
+      <div className="pointer-events-none flex transform-gpu flex-col gap-1 transition-all duration-300 lg:group-hover:-translate-y-10">
         <Icon className="h-8 w-8 origin-left transform-gpu text-foreground/70 transition-all duration-300 ease-in-out group-hover:scale-75" />
         <h3 className="text-sm font-medium text-foreground/90 tracking-tight">
           {name}
@@ -84,7 +86,7 @@ const BentoCard = ({
 
     <div
       className={cn(
-        "pointer-events-none absolute bottom-0 hidden w-full translate-y-10 transform-gpu flex-row items-center p-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 lg:flex"
+        "pointer-events-none absolute bottom-0 hidden w-full translate-y-10 transform-gpu flex-row items-center p-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 lg:flex z-20"
       )}
     >
       <Button
@@ -100,7 +102,7 @@ const BentoCard = ({
       </Button>
     </div>
 
-    <div className="pointer-events-none absolute inset-0 transform-gpu transition-all duration-300 group-hover:bg-black/[.03] group-hover:dark:bg-neutral-800/10" />
+    <div className="pointer-events-none absolute inset-0 transform-gpu transition-all duration-300 group-hover:bg-black/[.03] group-hover:dark:bg-neutral-800/10 z-[5]" />
   </div>
 )
 

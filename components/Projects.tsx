@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import { Car, GraduationCap, Pencil } from "lucide-react";
 import { BentoCard, BentoGrid } from "./ui/bento-grid";
+import { RevaTerminal } from "./backgrounds/RevaTerminal";
 
 const projects = [
   {
@@ -20,7 +21,7 @@ const projects = [
     description: "LLM-based job-matching assistant (Next.js + LangChain).",
     href: "https://github.com/amanzav/reva",
     cta: "View on GitHub",
-    background: <img className="absolute -top-20 -right-20 opacity-60" />,
+    background: <RevaTerminal />,
     className: "lg:col-start-2 lg:col-end-3",
   },
   {
