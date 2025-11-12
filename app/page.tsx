@@ -4,8 +4,8 @@ import { Projects } from "@/components/Projects";
 
 export default function Home() {
   return (
-    <main className="h-screen overflow-hidden md:overflow-hidden sm:overflow-auto flex items-center justify-center px-6 py-6">
-      <div className="w-full max-w-5xl mx-auto flex flex-col gap-4 max-h-full overflow-y-auto md:overflow-y-hidden">
+    <main className="h-screen flex items-center justify-center px-6 py-6">
+      <div className="w-full max-w-5xl mx-auto flex flex-col gap-4">
         <Header />
         <ExperienceTable />
         <Projects />
