@@ -40,7 +40,7 @@ export function Projects() {
       transition={{ duration: 0.18, ease: "easeOut", delay: 0.15 }}
       className="flex-shrink-0"
     >
-      <h2 className="text-xl font-semibold text-foreground mb-2 tracking-tight">Projects</h2>
+      <h2 className="text-xl font-medium text-foreground mb-2 tracking-tight">Projects</h2>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {projects.map((project, index) => (
@@ -53,7 +53,7 @@ export function Projects() {
             className="rounded-xl border border-border bg-foreground/5 p-3 transition-transform duration-150 hover:scale-[1.02] hover:-translate-y-[2px]"
           >
             <div className="flex flex-col h-full">
-              <h3 className="font-semibold text-foreground mb-1 text-sm">
+              <h3 className="font-medium text-foreground mb-1 text-sm">
                 {project.name}
               </h3>
               <p className="text-xs text-muted mb-1">{project.description}</p>

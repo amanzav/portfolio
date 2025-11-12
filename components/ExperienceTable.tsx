@@ -26,7 +26,7 @@ export function ExperienceTable() {
       transition={{ duration: 0.18, ease: "easeOut", delay: 0.1 }}
       className="flex-shrink-0"
     >
-      <h2 className="text-xl font-semibold text-foreground mb-1.5 tracking-tight">
+      <h2 className="text-xl font-medium text-foreground mb-1.5 tracking-tight">
         Experience
       </h2>
       <Table>
