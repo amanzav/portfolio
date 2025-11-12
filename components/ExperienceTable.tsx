@@ -26,14 +26,14 @@ export function ExperienceTable() {
       transition={{ duration: 0.18, ease: "easeOut", delay: 0.1 }}
       className="flex-shrink-0"
     >
-      <h2 className="text-2xl font-semibold text-foreground mb-2 tracking-tight">
+      <h2 className="text-xl font-semibold text-foreground mb-1.5 tracking-tight">
         Experience
       </h2>
       <Table>
         <TableBody>
           {experiences.map((exp, index) => (
             <TableRow key={index} className="border-border hover:bg-foreground/5">
-              <TableCell className="text-foreground/90">
+              <TableCell className="text-foreground/90 text-sm py-2">
                 {exp.description ? (
                   <TooltipProvider delayDuration={100}>
                     <Tooltip>
@@ -51,20 +51,20 @@ export function ExperienceTable() {
                   exp.company
                 )}
               </TableCell>
-              <TableCell className="text-foreground/90">{exp.role}</TableCell>
-              <TableCell className="text-foreground/70 text-sm">
-                <div className="flex gap-2 flex-wrap">
+              <TableCell className="text-foreground/90 text-sm py-2">{exp.role}</TableCell>
+              <TableCell className="text-foreground/70 text-xs py-2">
+                <div className="flex gap-1.5 flex-wrap">
                   {exp.skills.map((skill, idx) => (
                     <span
                       key={idx}
-                      className="px-2 py-0.5 rounded-md bg-foreground/10 text-foreground/80 text-xs"
+                      className="px-1.5 py-0.5 rounded-md bg-foreground/10 text-foreground/80 text-xs"
                     >
                       {skill}
                     </span>
                   ))}
                 </div>
               </TableCell>
-              <TableCell className="text-right text-muted">{exp.date}</TableCell>
+              <TableCell className="text-right text-muted text-xs py-2">{exp.date}</TableCell>
               <TableCell className="w-12 text-right">
                 <Link href={`/experience/${exp.id}`}>
                   <Button

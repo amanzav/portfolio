@@ -40,9 +40,9 @@ export function Projects() {
       transition={{ duration: 0.18, ease: "easeOut", delay: 0.15 }}
       className="flex-shrink-0"
     >
-      <h2 className="text-2xl font-semibold text-foreground mb-3 tracking-tight">Projects</h2>
+      <h2 className="text-xl font-semibold text-foreground mb-2 tracking-tight">Projects</h2>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {projects.map((project, index) => (
           <motion.div
             key={index}
@@ -50,13 +50,13 @@ export function Projects() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.2, ease: "easeOut", delay: index * 0.05 }}
-            className="rounded-xl border border-border bg-foreground/5 p-4 transition-transform duration-150 hover:scale-[1.02] hover:-translate-y-[2px]"
+            className="rounded-xl border border-border bg-foreground/5 p-3 transition-transform duration-150 hover:scale-[1.02] hover:-translate-y-[2px]"
           >
             <div className="flex flex-col h-full">
-              <h3 className="font-semibold text-foreground mb-1.5">
+              <h3 className="font-semibold text-foreground mb-1 text-sm">
                 {project.name}
               </h3>
-              <p className="text-sm text-muted mb-1.5">{project.description}</p>
+              <p className="text-xs text-muted mb-1">{project.description}</p>
               
               {/* Subtext with subtle animation */}
               <motion.p
@@ -64,7 +64,7 @@ export function Projects() {
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.3, delay: 0.1 }}
-                className="text-sm text-muted/70 italic mb-3 flex-1"
+                className="text-xs text-muted/70 italic mb-2 flex-1"
               >
                 {project.subtext}
               </motion.p>
