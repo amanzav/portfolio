@@ -14,20 +14,18 @@ export function Header() {
       className="flex-shrink-0"
     >
       {/* Invisible Quarter Circle Theme Toggle - Top Right Corner */}
-      <AnimatedThemeToggler 
+      <AnimatedThemeToggler
         className="fixed top-0 right-0 w-24 h-24 cursor-pointer z-50"
         style={{
-          clipPath: 'polygon(100% 0, 100% 100%, 0 0)',
-          opacity: 0
+          clipPath: "polygon(100% 0, 100% 100%, 0 0)",
+          opacity: 0,
         }}
         aria-label="Toggle theme"
       />
 
       {/* Name and Social Links Row */}
       <div className="flex items-start justify-between mb-0.5">
-        <h1 className="text-3xl font-medium tracking-[-0.02em]">
-          Aman Zaveri
-        </h1>
+        <h1 className="text-3xl font-medium tracking-[-0.02em]">Aman Zaveri</h1>
 
         {/* Social Links - Top Right */}
         <SocialLinks />
@@ -40,9 +38,10 @@ export function Header() {
       <p className="text-sm text-muted mb-1">Toronto, ON</p>
       <TypingAnimation
         words={[
-          "bullshitting my way through uni",
+          "software engineer 👨‍💻",
           "click the top-right corner to toggle theme 🎨",
           "probably playing cricket right now 🏏",
+          "looking for winter 26 internships 🚀",
         ]}
         typeSpeed={60}
         deleteSpeed={30}

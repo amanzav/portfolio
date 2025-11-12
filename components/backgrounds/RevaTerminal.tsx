@@ -52,15 +52,15 @@ export function RevaTerminal() {
         → Initializing LangChain pipeline...
       </AnimatedSpan>
 
-      <AnimatedSpan className="text-white">
+      <AnimatedSpan className="text-foreground">
         ✓ Loaded embedding model
       </AnimatedSpan>
 
-      <AnimatedSpan className="text-white">
+      <AnimatedSpan className="text-foreground">
         ✓ Connected to vector store
       </AnimatedSpan>
 
-      <AnimatedSpan className="text-white">
+      <AnimatedSpan className="text-foreground">
         ✓ Processing resume data
       </AnimatedSpan>
 
@@ -68,7 +68,7 @@ export function RevaTerminal() {
         ⚡ Analyzing 247 job postings...
       </AnimatedSpan>
 
-      <AnimatedSpan className="text-white">
+      <AnimatedSpan className="text-foreground">
         ✓ Generated similarity scores
       </AnimatedSpan>
 
@@ -76,7 +76,7 @@ export function RevaTerminal() {
         📊 Top match: 94% similarity
       </AnimatedSpan>
 
-      <TypingAnimation className="text-white" duration={50}>
+      <TypingAnimation className="text-foreground" duration={50}>
         Analysis complete. 12 high-confidence matches found.
       </TypingAnimation>
     </Terminal>
