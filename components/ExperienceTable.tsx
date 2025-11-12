@@ -26,14 +26,14 @@ export function ExperienceTable() {
       transition={{ duration: 0.18, ease: "easeOut", delay: 0.1 }}
       className="flex-shrink-0"
     >
-      <h2 className="text-xl font-medium text-foreground mb-1.5 tracking-tight">
+      <h2 className="text-lg font-medium text-foreground mb-1 tracking-tight">
         Experience
       </h2>
       <Table>
         <TableBody>
           {experiences.map((exp, index) => (
             <TableRow key={index} className="border-border hover:bg-foreground/5">
-              <TableCell className="text-foreground/90 text-sm py-2">
+              <TableCell className="text-foreground/90 text-sm py-1.5">
                 {exp.description ? (
                   <TooltipProvider delayDuration={100}>
                     <Tooltip>
@@ -51,9 +51,9 @@ export function ExperienceTable() {
                   exp.company
                 )}
               </TableCell>
-              <TableCell className="text-foreground/90 text-sm py-2">{exp.role}</TableCell>
-              <TableCell className="text-foreground/70 text-xs py-2">
-                <div className="flex gap-1.5 flex-wrap">
+              <TableCell className="text-foreground/90 text-sm py-1.5">{exp.role}</TableCell>
+              <TableCell className="text-foreground/70 text-xs py-1.5">
+                <div className="flex gap-1 flex-wrap">
                   {exp.skills.map((skill, idx) => (
                     <span
                       key={idx}
@@ -64,15 +64,15 @@ export function ExperienceTable() {
                   ))}
                 </div>
               </TableCell>
-              <TableCell className="text-right text-muted text-xs py-2">{exp.date}</TableCell>
+              <TableCell className="text-right text-muted text-xs py-1.5">{exp.date}</TableCell>
               <TableCell className="w-12 text-right">
                 <Link href={`/experience/${exp.id}`}>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 text-muted hover:text-foreground transition-colors"
+                    className="h-7 w-7 text-muted hover:text-foreground transition-colors"
                   >
-                    <ArrowRight className="h-4 w-4" />
+                    <ArrowRight className="h-3.5 w-3.5" />
                   </Button>
                 </Link>
               </TableCell>

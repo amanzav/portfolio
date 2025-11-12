@@ -24,8 +24,8 @@ export function Header() {
       />
 
       {/* Name and Social Links Row */}
-      <div className="flex items-start justify-between mb-1">
-        <h1 className="text-3xl font-semibold tracking-[-0.02em]">
+      <div className="flex items-start justify-between mb-0.5">
+        <h1 className="text-3xl font-medium tracking-[-0.02em]">
           Aman Zaveri
         </h1>
 
@@ -37,7 +37,7 @@ export function Header() {
       <p className="text-base font-normal text-foreground/80 mb-0.5">
         Mechatronics Engineering at University of Waterloo
       </p>
-      <p className="text-xs text-muted mb-1.5">Toronto, ON</p>
+      <p className="text-sm text-muted mb-1">Toronto, ON</p>
       <TypingAnimation
         words={[
           "Bullshitting my way through uni",
