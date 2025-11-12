@@ -1,7 +1,13 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { Github, Linkedin, Mail } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const links = [
   {
@@ -19,7 +25,7 @@ const links = [
   {
     name: "Email",
     icon: Mail,
-    href: "mailto:a3zaveri@uwaterloo.ca",
+    href: "mailto:a2zaveri@uwaterloo.ca",
     ariaLabel: "Email",
   },
 ];
@@ -32,21 +38,29 @@ export function SocialLinks() {
       transition={{ duration: 0.18, ease: "easeOut", delay: 0.2 }}
       className="flex gap-6 items-center"
     >
-      {links.map((link) => {
-        const Icon = link.icon;
-        return (
-          <a
-            key={link.name}
-            href={link.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={link.ariaLabel}
-            className="text-neutral-400 hover:text-neutral-100 hover:scale-105 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0a0a] rounded-sm"
-          >
-            <Icon size={20} />
-          </a>
-        );
-      })}
+      <TooltipProvider delayDuration={100}>
+        {links.map((link) => {
+          const Icon = link.icon;
+          return (
+            <Tooltip key={link.name}>
+              <TooltipTrigger asChild>
+                <a
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={link.ariaLabel}
+                  className="text-muted hover:text-foreground hover:scale-105 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-border focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-sm"
+                >
+                  <Icon size={20} />
+                </a>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{link.name}</p>
+              </TooltipContent>
+            </Tooltip>
+          );
+        })}
+      </TooltipProvider>
     </motion.footer>
   );
 }

@@ -1,39 +1,19 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+} from "@/components/ui/table";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-
-interface ExperienceItem {
-  company: string;
-  role: string;
-  date: string;
-  description?: string;
-}
-
-const experiences: ExperienceItem[] = [
-  {
-    company: "Ford Motor Company",
-    role: "Software Engineering Intern",
-    date: "2024–2025",
-    description: "Developed route-aware fuel optimization widget (Kotlin).",
-  },
-  {
-    company: "Transpire Technologies",
-    role: "Software Engineering Intern",
-    date: "2024",
-    description: "Built real-time analytics platform (Flask + Kubernetes).",
-  },
-  {
-    company: "University of Waterloo",
-    role: "BASc Mechatronics Engineering (AI)",
-    date: "2023–2028",
-  },
-];
+import { experiences } from "@/lib/experiences";
 
 export function ExperienceTable() {
   return (
@@ -41,42 +21,51 @@ export function ExperienceTable() {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.18, ease: "easeOut", delay: 0.1 }}
-      className="mb-10"
+      className="flex-shrink-0"
     >
-      <h2 className="text-2xl font-semibold text-neutral-200 mb-3 tracking-tight">
+      <h2 className="text-lg font-medium text-foreground mb-1 tracking-tight">
         Experience
       </h2>
-      <div className="space-y-3">
-        {experiences.map((exp, index) => (
-          <div
-            key={index}
-            className={`grid grid-cols-[2fr_2fr_1fr] gap-4 text-sm pb-3 ${
-              index < experiences.length - 1
-                ? "border-b border-neutral-950"
-                : ""
-            }`}
-          >
-            {exp.description ? (
-              <TooltipProvider delayDuration={100}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="cursor-default text-neutral-300 hover:text-neutral-100 transition-colors">
-                      {exp.company}
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent side="top" align="start" sideOffset={8} alignOffset={-10}>
-                    <p className="whitespace-nowrap">{exp.description}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            ) : (
-              <div className="text-neutral-300">{exp.company}</div>
-            )}
-            <div className="text-neutral-300">{exp.role}</div>
-            <div className="text-neutral-400 text-right">{exp.date}</div>
-          </div>
-        ))}
-      </div>
+      <Table>
+        <TableBody>
+          {experiences.map((exp, index) => (
+            <TableRow key={index} className="border-border hover:bg-foreground/5">
+              <TableCell className="text-foreground/90 text-sm py-1.5">
+                {exp.description ? (
+                  <TooltipProvider delayDuration={100}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="cursor-default hover:text-foreground transition-colors">
+                          {exp.company}
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" align="start" sideOffset={8} alignOffset={-10}>
+                        <p className="whitespace-nowrap">{exp.description}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                ) : (
+                  exp.company
+                )}
+              </TableCell>
+              <TableCell className="text-foreground/90 text-sm py-1.5">{exp.role}</TableCell>
+              <TableCell className="text-foreground/70 text-xs py-1.5">
+                <div className="flex gap-1 flex-wrap">
+                  {exp.skills.map((skill, idx) => (
+                    <span
+                      key={idx}
+                      className="px-1.5 py-0.5 rounded-md bg-foreground/10 text-foreground/80 text-xs"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </TableCell>
+              <TableCell className="text-right text-muted text-xs py-6">{exp.date}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </motion.section>
   );
 }

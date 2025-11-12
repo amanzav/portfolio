@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
 export function About() {
   return (
@@ -10,7 +10,7 @@ export function About() {
       transition={{ duration: 0.18, ease: "easeOut", delay: 0.05 }}
       className="mb-10"
     >
-      <p className="text-base text-neutral-300">
+      <p className="text-base text-foreground/90">
         I write dependable software for the web and embedded systems. Less drama, more delivery.
       </p>
     </motion.section>

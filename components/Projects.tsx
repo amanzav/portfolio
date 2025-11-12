@@ -1,12 +1,11 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { Github } from "lucide-react";
 
 interface Project {
   name: string;
   description: string;
-  subtext: string;
   github?: string;
   demo?: string;
 }
@@ -15,20 +14,17 @@ const projects: Project[] = [
   {
     name: "CourseClutch",
     description: "Serverless course notifier (FastAPI + AWS Lambda).",
-    subtext: "Because refreshing Quest every 10 seconds was getting old.",
-    github: "https://github.com/Aman-Zaveri",
+    github: "https://github.com/amanzav/course-clutch",
   },
   {
     name: "Reva",
     description: "LLM-based job-matching assistant (Next.js + LangChain).",
-    subtext: "Basically a chatbot with commitment issues.",
-    github: "https://github.com/Aman-Zaveri",
+    github: "https://github.com/amanzav/reva",
   },
   {
     name: "EV Education Game",
     description: "Unity + UGS EV learning game for EcoCAR.",
-    subtext: "Turns kids into engineers before they realize it.",
-    github: "https://github.com/Aman-Zaveri",
+    github: "https://github.com/amanzav/uwaft-cav-game",
   },
 ];
 
@@ -38,11 +34,11 @@ export function Projects() {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.18, ease: "easeOut", delay: 0.15 }}
-      className="pb-12"
+      className="pb-4"
     >
-      <h2 className="text-2xl font-semibold text-neutral-200 mb-6 tracking-tight">Projects</h2>
+      <h2 className="text-lg font-medium text-foreground mb-2 tracking-tight">Projects</h2>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {projects.map((project, index) => (
           <motion.div
             key={index}
@@ -50,35 +46,24 @@ export function Projects() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.2, ease: "easeOut", delay: index * 0.05 }}
-            className="rounded-xl border border-white/5 bg-black/20 p-5 transition-transform duration-150 hover:scale-[1.02] hover:-translate-y-[2px]"
+            className="rounded-xl border border-border bg-foreground/5 p-5 transition-transform duration-150 hover:scale-[1.02] hover:-translate-y-[2px]"
           >
             <div className="flex flex-col h-full">
-              <h3 className="font-semibold text-neutral-200 mb-2">
+              <h3 className="font-medium text-foreground mb-2">
                 {project.name}
               </h3>
-              <p className="text-sm text-neutral-400 mb-2">{project.description}</p>
+              <p className="text-xs text-foreground/70 mb-auto">{project.description}</p>
               
-              {/* Subtext with subtle animation */}
-              <motion.p
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3, delay: 0.1 }}
-                className="text-sm text-neutral-500 italic mb-4 flex-1"
-              >
-                {project.subtext}
-              </motion.p>
-              
-              <div className="flex gap-3">
+              <div className="flex justify-end mt-2">
                 {project.github && (
                   <a
                     href={project.github}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-neutral-400 hover:text-neutral-100 transition-colors"
+                    className="text-muted hover:text-foreground transition-colors"
                     aria-label={`GitHub repository for ${project.name}`}
                   >
-                    <Github size={18} />
+                    <Github size={16} />
                   </a>
                 )}
               </div>
