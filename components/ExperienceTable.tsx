@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
+import Image from "next/image";
 import {
   Table,
   TableBody,
@@ -30,6 +31,17 @@ export function ExperienceTable() {
         <TableBody>
           {experiences.map((exp, index) => (
             <TableRow key={index} className="border-border hover:bg-foreground/5">
+              <TableCell className="py-1.5 w-12">
+                <div className="w-8 h-8 relative flex items-center justify-center">
+                  <Image
+                    src={exp.logo}
+                    alt={`${exp.company} logo`}
+                    width={exp.company === "Transpire Technologies" ? 24 : 32}
+                    height={exp.company === "Transpire Technologies" ? 24 : 32}
+                    className="object-contain"
+                  />
+                </div>
+              </TableCell>
               <TableCell className="text-foreground/90 text-sm py-1.5">
                 {exp.description ? (
                   <TooltipProvider delayDuration={100}>

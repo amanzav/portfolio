@@ -1,6 +1,7 @@
 export interface ExperienceItem {
   id: string;
   company: string;
+  logo: string; // path to logo in /public
   role: string;
   date: string;
   skills: string[];
@@ -12,6 +13,7 @@ export const experiences: ExperienceItem[] = [
   {
     id: "ford-developer-2025",
     company: "Ford Motor Company",
+    logo: "/logos/ford.svg",
     role: "Software Developer Intern",
     date: "May 2025 – Aug 2025",
     skills: ["Kotlin", "Java", "C++"],
@@ -21,6 +23,7 @@ export const experiences: ExperienceItem[] = [
   {
     id: "ford-engineering-2024",
     company: "Ford Motor Company",
+    logo: "/logos/ford.svg",
     role: "Software Engineering Intern",
     date: "Sep 2024 – Dec 2024",
     skills: ["TensorFlow", "Python", "Docker"],
@@ -30,6 +33,7 @@ export const experiences: ExperienceItem[] = [
   {
     id: "transpire-2024",
     company: "Transpire Technologies",
+    logo: "/logos/transpire.svg",
     role: "Member of Technical Staff",
     date: "Jan 2024 – Apr 2024",
     skills: ["React", "Flask", "Kubernetes"],
