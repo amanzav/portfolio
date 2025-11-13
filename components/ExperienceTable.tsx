@@ -2,6 +2,8 @@
 
 import { motion } from "motion/react";
 import Image from "next/image";
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -43,22 +45,7 @@ export function ExperienceTable() {
                 </div>
               </TableCell>
               <TableCell className="text-foreground/90 text-sm py-1.5">
-                {exp.description ? (
-                  <TooltipProvider delayDuration={100}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="cursor-default hover:text-foreground transition-colors">
-                          {exp.company}
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" align="start" sideOffset={8} alignOffset={-10}>
-                        <p className="whitespace-nowrap">{exp.description}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                ) : (
-                  exp.company
-                )}
+                {exp.company}
               </TableCell>
               <TableCell className="text-foreground/90 text-sm py-1.5">{exp.role}</TableCell>
               <TableCell className="text-foreground/70 text-xs py-1.5">
@@ -74,6 +61,24 @@ export function ExperienceTable() {
                 </div>
               </TableCell>
               <TableCell className="text-right text-muted text-xs py-6">{exp.date}</TableCell>
+              <TableCell className="text-right py-1.5 w-12">
+                <TooltipProvider delayDuration={100}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link
+                        href={`/experience/${exp.id}`}
+                        className="inline-flex items-center justify-center w-8 h-8 rounded-md hover:bg-foreground/10 text-foreground/70 hover:text-foreground transition-colors group"
+                        aria-label="View details"
+                      >
+                        <ChevronRight className="w-5 h-5 transition-transform group-hover:-rotate-45" />
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" align="center" sideOffset={8}>
+                      <p className="whitespace-nowrap">View details</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
