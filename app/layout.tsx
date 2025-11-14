@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     siteName: "Aman Zaveri Portfolio",
     title: "Aman Zaveri — Software Engineer",
     description:
-      "Building minimal, scalable systems across web and embedded. Experienced in React, Next.js, TypeScript, embedded systems, and AI/ML.",
+      "Hey! I'm Aman Zaveri, a 3rd year Mechatronics Engineer at the University of Waterloo. Currently interning at Ford!",
     images: [
       {
         url: "/og-image.png",

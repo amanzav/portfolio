@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ChevronLeft, Github, ExternalLink } from "lucide-react";
 import { ProjectItem } from "@/lib/projects";
 import { Button } from "@/components/ui/button";
+import { AnimatedShinyText } from "@/components/ui/animated-shiny-text";
 import { useState, useEffect } from "react";
 
 interface ProjectDetailClientProps {
@@ -88,7 +89,9 @@ export default function ProjectDetailClient({ project }: ProjectDetailClientProp
               >
                 <a href={project.href} target="_blank" rel="noopener noreferrer">
                   <Github className="w-4 h-4" />
-                  View on GitHub
+                  <AnimatedShinyText shimmerWidth={75}>
+                    View on GitHub
+                  </AnimatedShinyText>
                 </a>
               </Button>
               {project.siteUrl && (
@@ -100,7 +103,9 @@ export default function ProjectDetailClient({ project }: ProjectDetailClientProp
                 >
                   <a href={project.siteUrl} target="_blank" rel="noopener noreferrer">
                     <ExternalLink className="w-4 h-4" />
-                    Visit Site
+                    <AnimatedShinyText shimmerWidth={75}>
+                      Visit Site
+                    </AnimatedShinyText>
                   </a>
                 </Button>
               )}

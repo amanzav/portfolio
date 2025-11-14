@@ -23,6 +23,7 @@ const config: Config = {
         "fade-in": "fadeIn 180ms ease-out",
         "slide-up": "slideUp 180ms ease-out",
         "in": "fadeIn 150ms ease-out",
+        "shiny-text": "shiny-text 8s infinite",
       },
       keyframes: {
         fadeIn: {
@@ -32,6 +33,14 @@ const config: Config = {
         slideUp: {
           "0%": { opacity: "0", transform: "translateY(8px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "shiny-text": {
+          "0%, 90%, 100%": {
+            "background-position": "calc(-100% - var(--shiny-width)) 0",
+          },
+          "30%, 60%": {
+            "background-position": "calc(100% + var(--shiny-width)) 0",
+          },
         },
       },
     },

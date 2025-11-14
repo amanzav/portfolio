@@ -27,9 +27,10 @@
     @apply bg-background text-foreground leading-relaxed;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
-  
+
   .theme {
     --animate-blink-cursor: blink-cursor 1.2s step-end infinite;
+    --animate-shiny-text: shiny-text 8s infinite;
   }
 }
 
@@ -46,6 +47,14 @@
     }
   50%, 100% {
     opacity: 0;
+    }
+  }
+  @keyframes shiny-text {
+  0%, 90%, 100% {
+    background-position: calc(-100% - var(--shiny-width)) 0;
+    }
+  30%, 60% {
+    background-position: calc(100% + var(--shiny-width)) 0;
     }
   }
 }
