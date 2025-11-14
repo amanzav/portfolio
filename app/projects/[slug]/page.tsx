@@ -12,8 +12,8 @@ export default function ProjectDetailPage({
     notFound();
   }
   return (
-    <main className="min-h-screen bg-background text-foreground p-8">
-      <div className="max-w-3xl mx-auto">
+    <main className="min-h-screen bg-background text-foreground px-4 md:px-8 py-8 md:py-12">
+      <div className="max-w-3xl mx-auto pb-16">
         <ProjectDetailClient project={project} />
       </div>
     </main>
