@@ -40,7 +40,7 @@ export function ExperienceTable() {
                     alt={`${exp.company} logo`}
                     width={exp.company === "Transpire Technologies" ? 24 : 32}
                     height={exp.company === "Transpire Technologies" ? 24 : 32}
-                    className="object-contain"
+                    className="object-contain invert dark:invert-0"
                   />
                 </div>
               </TableCell>

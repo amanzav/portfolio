@@ -43,7 +43,7 @@ export default function ExperienceDetailClient({ experience }: { experience: any
             alt={`${experience.company} logo`}
             width={experience.company === "Transpire Technologies" ? 48 : 64}
             height={experience.company === "Transpire Technologies" ? 48 : 64}
-            className="object-contain"
+            className="object-contain invert dark:invert-0"
           />
         </div>
         <div>
