@@ -50,8 +50,9 @@ const BentoCard = ({
   ...props
 }: BentoCardProps) => {
   const baseClasses = cn(
-    "group relative col-span-1 flex flex-col justify-between overflow-hidden rounded-xl",
+    "group relative col-span-1 flex flex-col justify-between overflow-hidden rounded-lg",
     "bg-transparent border border-border",
+    "h-auto",
     className
   );
 
@@ -130,10 +131,10 @@ const BentoCard = ({
       <div className="relative z-10 p-4 mt-auto">
         <div className="pointer-events-none flex transform-gpu flex-col gap-1 transition-all duration-300 sm:group-hover:-translate-y-6">
           <Icon className="h-6 w-6 sm:h-8 sm:w-8 origin-left transform-gpu text-foreground/70 transition-all duration-300 ease-in-out group-hover:scale-85" />
-          <h3 className="text-xs sm:text-sm font-medium text-foreground/90 tracking-tight">
+          <h3 className="text-sm font-medium text-foreground/90 tracking-tight">
             {name}
           </h3>
-          <p className="max-w-lg text-[11px] sm:text-xs text-foreground/70 truncate">{description}</p>
+          <p className="max-w-lg text-xs sm:text-sm text-foreground/70">{description}</p>
         </div>
       </div>
 

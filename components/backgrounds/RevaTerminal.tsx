@@ -55,12 +55,12 @@ export function RevaTerminal() {
     <div>
       <Terminal
         key={commandIndex}
-        className="absolute sm:-top-3 -top-4 lg:-right-1 md:-right-10 sm:-right-16 -right-32 w-[300px] max-h-[200px] opacity-80 scale-[0.75] origin-top-right !bg-transparent !border-foreground/30 !overflow-hidden [&>div:first-child]:!bg-transparent [&>div:first-child]:!border-transparent [&>pre]:max-h-[120px] [&>pre]:overflow-hidden pointer-events-none"
+        className="absolute -top-[3%] right-[-10%] w-[85%] max-h-[73%] opacity-80 origin-top-right !bg-transparent !border-foreground/30 !overflow-hidden [&>div:first-child]:!bg-transparent [&>div:first-child]:!border-transparent [&>pre]:max-h-[60%] [&>pre]:overflow-hidden pointer-events-none text-[0.55rem] sm:text-[0.65rem]"
       >
-        <TypingAnimation duration={30}>{currentCommand.command}</TypingAnimation>
+        <TypingAnimation duration={30} className="text-[0.55rem] sm:text-[0.65rem]">{currentCommand.command}</TypingAnimation>
 
         {currentCommand.output.map((line, idx) => (
-          <AnimatedSpan key={idx} className={line.className}>
+          <AnimatedSpan key={idx} className={`${line.className} text-[0.55rem] sm:text-[0.65rem]`}>
             {line.text}
           </AnimatedSpan>
         ))}
