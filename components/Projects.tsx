@@ -9,8 +9,9 @@ const projects = [
   {
     Icon: GraduationCap,
     name: "CourseClutch",
-    description: "Serverless course notifier (FastAPI + AWS Lambda).",
+    description: "Serverless course notifier",
     href: "https://github.com/amanzav/course-clutch",
+    siteUrl: "https://courseclutch.com",
     cta: "View on GitHub",
     background: <img className="absolute -top-20 -right-20 opacity-60" />,
     className: "lg:col-start-1 lg:col-end-2",
@@ -18,7 +19,7 @@ const projects = [
   {
     Icon: Pencil,
     name: "Reva",
-    description: "LLM-based job-matching assistant (Next.js + LangChain).",
+    description: "LLM-based job-matching assistant",
     href: "https://github.com/amanzav/reva",
     cta: "View on GitHub",
     background: <RevaTerminal />,
@@ -47,7 +48,7 @@ export function Projects() {
         Projects
       </h2>
 
-      <BentoGrid className="lg:grid-cols-3 auto-rows-[12vw] max-w-5xl mx-auto">
+      <BentoGrid className="sm:grid-cols-3 auto-rows-[max(12vw,180px)] max-w-5xl mx-auto">
         {projects.map((project) => (
           <BentoCard key={project.name} {...project} />
         ))}
