@@ -33,8 +33,8 @@ export function ExperienceTable() {
         <TableBody>
           {experiences.map((exp, index) => (
             <TableRow key={index} className="border-border hover:bg-foreground/5">
-              <TableCell className="py-1.5 w-12">
-                <div className="w-8 h-8 relative flex items-center justify-center">
+              <TableCell className="py-1.5 w-10 md:w-12">
+                <div className="w-6 h-6 md:w-8 md:h-8 relative flex items-center justify-center">
                   <Image
                     src={exp.logo}
                     alt={`${exp.company} logo`}
@@ -45,10 +45,14 @@ export function ExperienceTable() {
                 </div>
               </TableCell>
               <TableCell className="text-foreground/90 text-sm py-1.5">
-                {exp.company}
+                <span className="sm:hidden">{exp.shortCompany || exp.company}</span>
+                <span className="hidden sm:inline">{exp.company}</span>
               </TableCell>
-              <TableCell className="text-foreground/90 text-sm py-1.5">{exp.role}</TableCell>
-              <TableCell className="text-foreground/70 text-xs py-1.5">
+              <TableCell className="text-foreground/90 text-sm py-1.5">
+                <span className="sm:hidden">{exp.shortRole || exp.role}</span>
+                <span className="hidden sm:inline">{exp.role}</span>
+              </TableCell>
+              <TableCell className="text-foreground/70 text-xs py-1.5 hidden lg:table-cell">
                 <div className="flex gap-1 flex-wrap">
                   {exp.skills.map((skill, idx) => (
                     <span
@@ -60,8 +64,8 @@ export function ExperienceTable() {
                   ))}
                 </div>
               </TableCell>
-              <TableCell className="text-right text-muted text-xs py-6">{exp.date}</TableCell>
-              <TableCell className="text-right py-1.5 w-12">
+              <TableCell className="text-right text-muted text-xs py-6 hidden lg:table-cell whitespace-nowrap">{exp.date}</TableCell>
+              <TableCell className="text-right py-1.5 w-10 md:w-12">
                 <TooltipProvider delayDuration={100}>
                   <Tooltip>
                     <TooltipTrigger asChild>
