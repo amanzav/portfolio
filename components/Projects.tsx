@@ -4,37 +4,14 @@ import { motion } from "motion/react";
 import { Car, GraduationCap, Pencil } from "lucide-react";
 import { BentoCard, BentoGrid } from "./ui/bento-grid";
 import { RevaTerminal } from "./backgrounds/RevaTerminal";
+import { projects } from "@/lib/projects";
 
-const projects = [
-  {
-    Icon: GraduationCap,
-    name: "CourseClutch",
-    description: "Serverless course notifier",
-    href: "https://github.com/amanzav/course-clutch",
-    siteUrl: "https://courseclutch.com",
-    cta: "View on GitHub",
-    background: <img className="absolute -top-20 -right-20 opacity-60" />,
-    className: "lg:col-start-1 lg:col-end-2",
-  },
-  {
-    Icon: Pencil,
-    name: "Reva",
-    description: "LLM-based job-matching assistant",
-    href: "https://github.com/amanzav/reva",
-    cta: "View on GitHub",
-    background: <RevaTerminal />,
-    className: "lg:col-start-2 lg:col-end-3",
-  },
-  {
-    Icon: Car,
-    name: "EV Education Game",
-    description: "Unity + UGS EV learning game for EcoCAR.",
-    href: "https://github.com/amanzav/uwaft-cav-game",
-    cta: "View on GitHub",
-    background: <img className="absolute -top-20 -right-20 opacity-60" />,
-    className: "lg:col-start-3 lg:col-end-4",
-  },
-];
+// Map icon names to actual icon components
+const iconMap = {
+  GraduationCap,
+  Pencil,
+  Car,
+};
 
 export function Projects() {
   return (
@@ -49,9 +26,38 @@ export function Projects() {
       </h2>
 
       <BentoGrid className="sm:grid-cols-3 auto-rows-[max(12vw,180px)] max-w-5xl mx-auto">
-        {projects.map((project) => (
-          <BentoCard key={project.name} {...project} />
-        ))}
+        {projects.map((project, index) => {
+          const IconComponent = iconMap[project.Icon as keyof typeof iconMap];
+          
+          // Set backgrounds based on project
+          let background;
+          if (project.id === "reva") {
+            background = <RevaTerminal />;
+          } else {
+            background = <img className="absolute -top-20 -right-20 opacity-60" />;
+          }
+
+          // Set grid position
+          let className = "";
+          if (index === 0) className = "lg:col-start-1 lg:col-end-2";
+          else if (index === 1) className = "lg:col-start-2 lg:col-end-3";
+          else if (index === 2) className = "lg:col-start-3 lg:col-end-4";
+
+          return (
+            <BentoCard
+              key={project.name}
+              name={project.name}
+              description={project.description}
+              Icon={IconComponent}
+              href={project.href}
+              siteUrl={project.siteUrl}
+              cta="View on GitHub"
+              background={background}
+              className={className}
+              detailSlug={project.id}
+            />
+          );
+        })}
       </BentoGrid>
     </motion.section>
   );

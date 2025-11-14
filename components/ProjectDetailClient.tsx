@@ -1,0 +1,86 @@
+"use client";
+
+import { motion } from "motion/react";
+import Link from "next/link";
+import { ArrowLeft, Github, ExternalLink } from "lucide-react";
+import { ProjectItem } from "@/lib/projects";
+import { Button } from "@/components/ui/button";
+
+interface ProjectDetailClientProps {
+  project: ProjectItem;
+}
+
+export default function ProjectDetailClient({ project }: ProjectDetailClientProps) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
+    >
+      <Link
+        href="/"
+        className="inline-flex items-center gap-2 text-sm text-foreground/70 hover:text-foreground mb-8 transition-colors group"
+      >
+        <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+        Back to portfolio
+      </Link>
+
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-semibold text-foreground mb-2 tracking-tight">
+            {project.name}
+          </h1>
+          <p className="text-foreground/70 text-base mb-4">
+            {project.description}
+          </p>
+          
+          <div className="flex gap-3 mb-4">
+            <Button
+              variant="outline"
+              asChild
+              size="sm"
+              className="gap-2"
+            >
+              <a href={project.href} target="_blank" rel="noopener noreferrer">
+                <Github className="w-4 h-4" />
+                View on GitHub
+              </a>
+            </Button>
+            {project.siteUrl && (
+              <Button
+                variant="outline"
+                asChild
+                size="sm"
+                className="gap-2"
+              >
+                <a href={project.siteUrl} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="w-4 h-4" />
+                  Visit Site
+                </a>
+              </Button>
+            )}
+          </div>
+
+          <div className="flex gap-2 flex-wrap">
+            {project.skills.map((skill, idx) => (
+              <span
+                key={idx}
+                className="px-2 py-1 rounded-md bg-foreground/10 text-foreground/80 text-xs"
+              >
+                {skill}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {project.details && (
+          <div className="prose prose-neutral dark:prose-invert max-w-none">
+            <div className="text-sm text-foreground/80 leading-relaxed whitespace-pre-line">
+              {project.details}
+            </div>
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+}
