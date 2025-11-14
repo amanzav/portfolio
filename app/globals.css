@@ -26,8 +26,6 @@
   body {
     @apply bg-background text-foreground leading-relaxed;
     font-feature-settings: "rlig" 1, "calt" 1;
-    overflow: hidden;
-    height: 100vh;
   }
   
   .theme {

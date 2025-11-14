@@ -1,8 +1,10 @@
 export interface ExperienceItem {
   id: string;
   company: string;
+  shortCompany?: string; // abbreviated for mobile
   logo: string; // path to logo in /public
   role: string;
+  shortRole?: string; // abbreviated for mobile
   date: string;
   skills: string[];
   description?: string;
@@ -13,8 +15,10 @@ export const experiences: ExperienceItem[] = [
   {
     id: "ford-developer-2025",
     company: "Ford Motor Company",
+    shortCompany: "Ford",
     logo: "/logos/ford.svg",
     role: "Software Developer Intern",
+    shortRole: "SWD Intern",
     date: "May 2025 – Aug 2025",
     skills: ["Kotlin", "Java", "C++"],
     description: "Route-aware fuel optimization & tire-pressure alert systems.",
@@ -23,8 +27,10 @@ export const experiences: ExperienceItem[] = [
   {
     id: "ford-engineering-2024",
     company: "Ford Motor Company",
+    shortCompany: "Ford",
     logo: "/logos/ford.svg",
     role: "Software Engineering Intern",
+    shortRole: "SWE Intern",
     date: "Sep 2024 – Dec 2024",
     skills: ["TensorFlow", "Python", "Docker"],
     description: "ML anomaly detection & automated infotainment testing.",
@@ -33,8 +39,10 @@ export const experiences: ExperienceItem[] = [
   {
     id: "transpire-2024",
     company: "Transpire Technologies",
+    shortCompany: "Transpire",
     logo: "/logos/transpire.svg",
     role: "Member of Technical Staff",
+    shortRole: "MoTS Intern",
     date: "Jan 2024 – Apr 2024",
     skills: ["React", "Flask", "Kubernetes"],
     description: "Real-time analytics platform serving 1,000+ enterprise users.",

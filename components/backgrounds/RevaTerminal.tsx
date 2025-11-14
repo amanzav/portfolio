@@ -1,85 +1,70 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   AnimatedSpan,
   Terminal,
   TypingAnimation,
 } from "@/components/ui/terminal";
 
+const commands = [
+  {
+    command: "> reva analyze job-match",
+    output: [
+      { text: "→ Initializing LangChain pipeline...", className: "text-blue-400" },
+      { text: "✓ Loaded embedding model", className: "text-foreground" },
+      { text: "✓ Connected to vector store", className: "text-foreground" },
+      { text: "📊 Top match: 94% similarity", className: "text-blue-400" },
+    ],
+  },
+  {
+    command: "> reva generate resume",
+    output: [
+      { text: "→ Loading AI template engine...", className: "text-blue-400" },
+      { text: "✓ Parsed work history", className: "text-foreground" },
+      { text: "✓ Generated tailored content", className: "text-foreground" },
+      { text: "✅ Resume exported to PDF", className: "text-green-400" },
+    ],
+  },
+  {
+    command: "> reva optimize profile",
+    output: [
+      { text: "→ Analyzing LinkedIn profile...", className: "text-blue-400" },
+      { text: "✓ Identified 12 keywords", className: "text-foreground" },
+      { text: "✓ Suggested skill endorsements", className: "text-foreground" },
+      { text: "⚡ Profile score: 87/100", className: "text-blue-400" },
+    ],
+  },
+];
+
 export function RevaTerminal() {
-  const [key, setKey] = useState(0);
-  const preRef = useRef<HTMLDivElement>(null);
+  const [commandIndex, setCommandIndex] = useState(0);
 
   useEffect(() => {
-    // Reset the terminal every 8 seconds to loop the animation
+    // Cycle through commands every 4 seconds
     const interval = setInterval(() => {
-      setKey((prev) => prev + 1);
-    }, 8000);
+      setCommandIndex((prev) => (prev + 1) % commands.length);
+    }, 4000);
 
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    // Auto-scroll to bottom when content changes
-    const observer = new MutationObserver(() => {
-      const preElement = preRef.current?.querySelector("pre");
-      if (preElement) {
-        preElement.scrollTop = preElement.scrollHeight;
-      }
-    });
-
-    if (preRef.current) {
-      observer.observe(preRef.current, {
-        childList: true,
-        subtree: true,
-        characterData: true,
-      });
-    }
-
-    return () => observer.disconnect();
-  }, [key]);
+  const currentCommand = commands[commandIndex];
 
   return (
-    <div ref={preRef}>
+    <div>
       <Terminal
-        key={key}
-        className="absolute -top-3 left-3 w-[300px] max-h-[150px] opacity-80 scale-[0.75] origin-top-right !bg-transparent !border-foreground/30 !overflow-hidden [&>div:first-child]:!bg-transparent [&>div:first-child]:!border-transparent [&>pre]:max-h-[120px] [&>pre]:overflow-y-hidden [&>pre]:overflow-x-hidden [&>pre]:scroll-smooth pointer-events-none"
+        key={commandIndex}
+        className="absolute -top-[3%] right-[-10%] w-[85%] max-h-[73%] opacity-80 origin-top-right !bg-transparent !border-foreground/30 !overflow-hidden [&>div:first-child]:!bg-transparent [&>div:first-child]:!border-transparent [&>pre]:max-h-[60%] [&>pre]:overflow-hidden pointer-events-none text-[0.55rem] sm:text-[0.65rem]"
       >
-      <TypingAnimation duration={40}>&gt; reva analyze job-match</TypingAnimation>
+        <TypingAnimation duration={30} className="text-[0.55rem] sm:text-[0.65rem]">{currentCommand.command}</TypingAnimation>
 
-      <AnimatedSpan className="text-blue-400">
-        → Initializing LangChain pipeline...
-      </AnimatedSpan>
-
-      <AnimatedSpan className="text-foreground">
-        ✓ Loaded embedding model
-      </AnimatedSpan>
-
-      <AnimatedSpan className="text-foreground">
-        ✓ Connected to vector store
-      </AnimatedSpan>
-
-      <AnimatedSpan className="text-foreground">
-        ✓ Processing resume data
-      </AnimatedSpan>
-
-      <AnimatedSpan className="text-blue-400">
-        ⚡ Analyzing 247 job postings...
-      </AnimatedSpan>
-
-      <AnimatedSpan className="text-foreground">
-        ✓ Generated similarity scores
-      </AnimatedSpan>
-
-      <AnimatedSpan className="text-blue-400">
-        📊 Top match: 94% similarity
-      </AnimatedSpan>
-
-      <TypingAnimation className="text-foreground" duration={50}>
-        Analysis complete. 12 high-confidence matches found.
-      </TypingAnimation>
-    </Terminal>
+        {currentCommand.output.map((line, idx) => (
+          <AnimatedSpan key={idx} className={`${line.className} text-[0.55rem] sm:text-[0.65rem]`}>
+            {line.text}
+          </AnimatedSpan>
+        ))}
+      </Terminal>
     </div>
   );
 }

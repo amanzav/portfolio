@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { Github, Linkedin, Mail } from "lucide-react";
+import { Github, Linkedin, Mail, FileText } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -27,6 +27,12 @@ const links = [
     icon: Mail,
     href: "mailto:a2zaveri@uwaterloo.ca",
     ariaLabel: "Email",
+  },
+  {
+    name: "Resume",
+    icon: FileText,
+    href: "https://drive.google.com/file/d/1DOLowv0a3LmPOgfNjQUud1WuSEisGB6l/view?usp=drive_link",
+    ariaLabel: "Resume",
   },
 ];
 
