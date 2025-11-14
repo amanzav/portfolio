@@ -131,11 +131,11 @@ const BentoCard = ({
             <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="pointer-events-auto inline-flex items-center justify-center w-8 h-8 rounded-md hover:bg-foreground/10 text-foreground/70 hover:text-foreground transition-colors group/chevron">
+                  <div className="pointer-events-auto inline-flex items-center justify-center w-8 h-8 text-foreground/70 hover:text-foreground transition-colors group/chevron">
                     <ChevronRight className="w-5 h-5 transition-transform group-hover/chevron:-rotate-45" />
                   </div>
                 </TooltipTrigger>
-                <TooltipContent side="top" align="center" sideOffset={8}>
+                <TooltipContent side="top" align="end" sideOffset={0}>
                   <p className="whitespace-nowrap">View details</p>
                 </TooltipContent>
               </Tooltip>

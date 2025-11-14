@@ -2,9 +2,15 @@
 
 import { motion } from "motion/react";
 import Link from "next/link";
-import { ArrowLeft, Github, ExternalLink } from "lucide-react";
+import { ChevronLeft, Github, ExternalLink } from "lucide-react";
 import { ProjectItem } from "@/lib/projects";
 import { Button } from "@/components/ui/button";
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
 
 interface ProjectDetailClientProps {
   project: ProjectItem;
@@ -13,17 +19,28 @@ interface ProjectDetailClientProps {
 export default function ProjectDetailClient({ project }: ProjectDetailClientProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2, ease: "easeOut" }}
+      transition={{ duration: 0.18, ease: "easeOut" }}
     >
-      <Link
-        href="/"
-        className="inline-flex items-center gap-2 text-sm text-foreground/70 hover:text-foreground mb-8 transition-colors group"
-      >
-        <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-        Back to portfolio
-      </Link>
+      <div className="mb-8">
+        <TooltipProvider delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link
+                href="/"
+                className="inline-flex items-center justify-center w-8 h-8 text-foreground/70 hover:text-foreground transition-colors"
+                aria-label="Back to portfolio"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent side="top" align="center" sideOffset={0}>
+              <p className="whitespace-nowrap">Back to portfolio</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
 
       <div className="space-y-6">
         <div>

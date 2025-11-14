@@ -71,13 +71,13 @@ export function ExperienceTable() {
                     <TooltipTrigger asChild>
                       <Link
                         href={`/experience/${exp.id}`}
-                        className="inline-flex items-center justify-center w-8 h-8 rounded-md hover:bg-foreground/10 text-foreground/70 hover:text-foreground transition-colors group"
+                        className="inline-flex items-center justify-center w-8 h-8 text-foreground/70 hover:text-foreground transition-colors group"
                         aria-label="View details"
                       >
                         <ChevronRight className="w-5 h-5 transition-transform group-hover:-rotate-45" />
                       </Link>
                     </TooltipTrigger>
-                    <TooltipContent side="top" align="center" sideOffset={8}>
+                    <TooltipContent side="top" align="center" sideOffset={0}>
                       <p className="whitespace-nowrap">View details</p>
                     </TooltipContent>
                   </Tooltip>

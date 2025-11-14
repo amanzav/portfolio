@@ -23,13 +23,13 @@ export default function ExperienceDetailClient({ experience }: { experience: any
             <TooltipTrigger asChild>
               <Link
                 href="/"
-                className="inline-flex items-center justify-center w-8 h-8 rounded-md hover:bg-foreground/10 text-foreground/70 hover:text-foreground transition-colors"
+                className="inline-flex items-center justify-center w-8 h-8 text-foreground/70 hover:text-foreground transition-colors"
                 aria-label="Back to portfolio"
               >
                 <ChevronLeft className="w-5 h-5" />
               </Link>
             </TooltipTrigger>
-            <TooltipContent side="top" align="center" sideOffset={8}>
+            <TooltipContent side="top" align="center" sideOffset={0}>
               <p className="whitespace-nowrap">Back to portfolio</p>
             </TooltipContent>
           </Tooltip>
