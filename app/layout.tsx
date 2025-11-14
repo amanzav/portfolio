@@ -88,7 +88,7 @@ export default function RootLayout({
 
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
-      <head>
+      <body className="antialiased lg:overflow-hidden lg:h-screen">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -101,8 +101,6 @@ export default function RootLayout({
             __html: JSON.stringify(websiteJsonLd).replace(/</g, '\\u003c'),
           }}
         />
-      </head>
-      <body className="antialiased lg:overflow-hidden lg:h-screen">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

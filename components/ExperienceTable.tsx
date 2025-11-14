@@ -10,12 +10,6 @@ import {
   TableCell,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { experiences } from "@/lib/experiences";
 
 export function ExperienceTable() {
@@ -66,22 +60,13 @@ export function ExperienceTable() {
               </TableCell>
               <TableCell className="text-right text-muted text-xs py-6 hidden lg:table-cell whitespace-nowrap">{exp.date}</TableCell>
               <TableCell className="text-right py-1.5 w-10 md:w-12">
-                <TooltipProvider delayDuration={100}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Link
-                        href={`/experience/${exp.id}`}
-                        className="inline-flex items-center justify-center w-8 h-8 text-foreground/70 hover:text-foreground transition-colors group"
-                        aria-label="View details"
-                      >
-                        <ChevronRight className="w-5 h-5 transition-transform group-hover:-rotate-45" />
-                      </Link>
-                    </TooltipTrigger>
-                    <TooltipContent side="top" align="center" sideOffset={0}>
-                      <p className="whitespace-nowrap">View details</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <Link
+                  href={`/experience/${exp.id}`}
+                  className="inline-flex items-center justify-center w-8 h-8 text-foreground/70 hover:text-foreground transition-colors group"
+                  aria-label="View details"
+                >
+                  <ChevronRight className="w-5 h-5 transition-transform group-hover:-rotate-45" />
+                </Link>
               </TableCell>
             </TableRow>
           ))}

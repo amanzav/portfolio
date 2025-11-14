@@ -1,12 +1,6 @@
 "use client";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
-import {
-  TooltipProvider,
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/components/ui/tooltip";
 import Image from "next/image";
 import { motion } from "motion/react";
 
@@ -18,22 +12,13 @@ export default function ExperienceDetailClient({ experience }: { experience: any
       transition={{ duration: 0.18, ease: "easeOut" }}
     >
       <div className="mb-8">
-        <TooltipProvider delayDuration={100}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Link
-                href="/"
-                className="inline-flex items-center justify-center w-8 h-8 text-foreground/70 hover:text-foreground transition-colors"
-                aria-label="Back to portfolio"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </Link>
-            </TooltipTrigger>
-            <TooltipContent side="top" align="center" sideOffset={0}>
-              <p className="whitespace-nowrap">Back to portfolio</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <Link
+          href="/"
+          className="inline-flex items-center justify-center w-8 h-8 text-foreground/70 hover:text-foreground transition-colors"
+          aria-label="Back to portfolio"
+        >
+          <ChevronLeft className="w-5 h-5" />
+        </Link>
       </div>
 
       <div className="flex items-start gap-4 mb-6">

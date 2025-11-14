@@ -27,8 +27,10 @@ export function Header() {
       <div className="flex items-start justify-between mb-0.5">
         <h1 className="text-3xl font-medium tracking-[-0.02em]">Aman Zaveri</h1>
 
-        {/* Social Links - Top Right */}
-        <SocialLinks />
+        {/* Social Links - Top Right on Desktop, Hidden on Mobile */}
+        <div className="hidden md:block">
+          <SocialLinks />
+        </div>
       </div>
 
       {/* Title and Location */}
@@ -50,6 +52,11 @@ export function Header() {
         startOnView={false}
         className="text-sm text-muted"
       />
+
+      {/* Social Links - Below Typewriter on Mobile */}
+      <div className="md:hidden mt-3">
+        <SocialLinks />
+      </div>
     </motion.header>
   );
 }

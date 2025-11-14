@@ -5,7 +5,6 @@ import Link from "next/link"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface BentoGridProps extends ComponentPropsWithoutRef<"div"> {
   children: ReactNode
@@ -127,19 +126,8 @@ const BentoCard = ({
         </Button>
         
         {detailSlug && (
-          <div className="ml-auto">
-            <TooltipProvider delayDuration={100}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="pointer-events-auto inline-flex items-center justify-center w-8 h-8 text-foreground/70 hover:text-foreground transition-colors group/chevron">
-                    <ChevronRight className="w-5 h-5 transition-transform group-hover/chevron:-rotate-45" />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent side="top" align="end" sideOffset={0}>
-                  <p className="whitespace-nowrap">View details</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+          <div className="ml-auto pointer-events-auto inline-flex items-center justify-center w-8 h-8 text-foreground/70 hover:text-foreground transition-colors group/chevron">
+            <ChevronRight className="w-5 h-5 transition-transform group-hover/chevron:-rotate-45" />
           </div>
         )}
       </div>
