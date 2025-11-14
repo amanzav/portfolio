@@ -70,29 +70,25 @@ const BentoCard = ({
         )}
       >
         {siteUrl && (
-          <Button
-            variant="link"
-            asChild
-            size="sm"
-            className="pointer-events-auto p-0"
+          <a 
+            href={siteUrl} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="pointer-events-auto p-0 group/icon"
             onClick={(e) => e.stopPropagation()}
           >
-            <a href={siteUrl} target="_blank" rel="noopener noreferrer" className="group/icon">
-              <ExternalLink className="h-4 w-4 text-foreground/60 group-hover/icon:text-foreground group-hover/icon:scale-[1.01] transition-all duration-150" />
-            </a>
-          </Button>
+            <ExternalLink className="h-4 w-4 text-foreground/60 group-hover/icon:text-foreground group-hover/icon:scale-[1.01] transition-all duration-150" />
+          </a>
         )}
-        <Button
-          variant="link"
-          asChild
-          size="sm"
-          className="pointer-events-auto p-0"
+        <a 
+          href={href} 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="pointer-events-auto p-0 group/icon"
           onClick={(e) => e.stopPropagation()}
         >
-          <a href={href} target="_blank" rel="noopener noreferrer" className="group/icon">
-            <Github className="h-4 w-4 text-foreground/60 group-hover/icon:text-foreground group-hover/icon:scale-[1.01] transition-all duration-150" />
-          </a>
-        </Button>
+          <Github className="h-4 w-4 text-foreground/60 group-hover/icon:text-foreground group-hover/icon:scale-[1.01] transition-all duration-150" />
+        </a>
         
         {detailSlug && (
           <div className="ml-auto pointer-events-auto inline-flex items-center justify-center w-8 h-8 text-foreground/70 hover:text-foreground transition-colors group/chevron">

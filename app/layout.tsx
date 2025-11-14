@@ -11,12 +11,20 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://amanzav.github.io'),
+  metadataBase: new URL("https://amanzav.github.io"),
   title: {
     default: "Aman Zaveri",
-    template: "%s | Aman Zaveri"
+    template: "%s | Aman Zaveri",
   },
-  description: "Hey! I'm Aman Zaveri, a 3rd year Mechatronics Engineer at the University of Waterloo. Currently interning at Ford!",
+  description:
+    "Hey! I'm Aman Zaveri, a 3rd year Mechatronics Engineer at the University of Waterloo. Currently interning at Ford!",
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "48x48" },
+    ],
+    apple: { url: "/icon.svg", type: "image/svg+xml" },
+  },
   authors: [{ name: "Aman Zaveri", url: "https://github.com/amanzav" }],
   creator: "Aman Zaveri",
   publisher: "Aman Zaveri",
@@ -30,10 +38,11 @@ export const metadata: Metadata = {
     url: "https://amanzav.github.io",
     siteName: "Aman Zaveri Portfolio",
     title: "Aman Zaveri — Software Engineer",
-    description: "Building minimal, scalable systems across web and embedded. Experienced in React, Next.js, TypeScript, embedded systems, and AI/ML.",
+    description:
+      "Building minimal, scalable systems across web and embedded. Experienced in React, Next.js, TypeScript, embedded systems, and AI/ML.",
     images: [
       {
-        url: "/og-image.svg",
+        url: "/og-image.png",
         width: 1200,
         height: 630,
         alt: "Aman Zaveri - Software Engineer Portfolio",
@@ -51,38 +60,39 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Person',
-    name: 'Aman Zaveri',
-    url: 'https://amanzav.github.io',
-    jobTitle: 'Software Engineer',
-    description: 'Building minimal, scalable systems across web and embedded.',
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: "Aman Zaveri",
+    url: "https://amanzav.github.io",
+    jobTitle: "Software Engineer",
+    description: "Building minimal, scalable systems across web and embedded.",
     sameAs: [
-      'https://github.com/amanzav',
-      'https://linkedin.com/in/amanzav',
-      'https://twitter.com/amanzav',
+      "https://github.com/amanzav",
+      "https://linkedin.com/in/amanzav",
+      "https://twitter.com/amanzav",
     ],
     knowsAbout: [
-      'Software Engineering',
-      'Web Development',
-      'Embedded Systems',
-      'Artificial Intelligence',
-      'Machine Learning',
-      'React',
-      'Next.js',
-      'TypeScript',
+      "Software Engineering",
+      "Web Development",
+      "Embedded Systems",
+      "Artificial Intelligence",
+      "Machine Learning",
+      "React",
+      "Next.js",
+      "TypeScript",
     ],
   };
 
   const websiteJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'WebSite',
-    name: 'Aman Zaveri Portfolio',
-    url: 'https://amanzav.github.io',
-    description: 'Software engineer portfolio showcasing projects and experience',
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Aman Zaveri Portfolio",
+    url: "https://amanzav.github.io",
+    description:
+      "Software engineer portfolio showcasing projects and experience",
     author: {
-      '@type': 'Person',
-      name: 'Aman Zaveri',
+      "@type": "Person",
+      name: "Aman Zaveri",
     },
   };
 
@@ -92,13 +102,13 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
+            __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
           }}
         />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(websiteJsonLd).replace(/</g, '\\u003c'),
+            __html: JSON.stringify(websiteJsonLd).replace(/</g, "\\u003c"),
           }}
         />
         <ThemeProvider
