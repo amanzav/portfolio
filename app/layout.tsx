@@ -13,24 +13,10 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL('https://amanzav.github.io'),
   title: {
-    default: "Aman Zaveri — Software Engineer",
+    default: "Aman Zaveri",
     template: "%s | Aman Zaveri"
   },
-  description: "Building minimal, scalable systems across web and embedded. Experienced in React, Next.js, TypeScript, embedded systems, and AI/ML.",
-  keywords: [
-    "Aman Zaveri",
-    "Software Engineer",
-    "Web Development",
-    "Embedded Systems",
-    "AI",
-    "Machine Learning",
-    "React",
-    "Next.js",
-    "TypeScript",
-    "Full Stack Developer",
-    "Frontend Developer",
-    "Portfolio"
-  ],
+  description: "Hey! I'm Aman Zaveri, a 3rd year Mechatronics Engineer at the University of Waterloo. Currently interning at Ford!",
   authors: [{ name: "Aman Zaveri", url: "https://github.com/amanzav" }],
   creator: "Aman Zaveri",
   publisher: "Aman Zaveri",
