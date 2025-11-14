@@ -25,7 +25,7 @@ export function Header() {
 
       {/* Name and Social Links Row */}
       <div className="flex items-start justify-between mb-0.5">
-        <h1 className="text-3xl font-medium tracking-[-0.02em]">Aman Zaveri</h1>
+        <h1 className="text-2xl md:text-3xl font-medium tracking-[-0.02em]">Aman Zaveri</h1>
 
         {/* Social Links - Top Right on Desktop, Hidden on Mobile */}
         <div className="hidden md:block">
@@ -34,10 +34,10 @@ export function Header() {
       </div>
 
       {/* Title and Location */}
-      <p className="text-base font-normal text-foreground/80 mb-0.5">
+      <p className="text-sm md:text-base font-normal text-foreground/80 mb-0.5">
         Mechatronics Engineering at University of Waterloo
       </p>
-      <p className="text-sm text-muted mb-1">Toronto, ON</p>
+      <p className="text-xs md:text-sm text-muted mb-1">Toronto, ON</p>
       <TypingAnimation
         words={[
           "software engineer 👨‍💻",
@@ -50,7 +50,7 @@ export function Header() {
         pauseDelay={3000}
         loop
         startOnView={false}
-        className="text-sm text-muted"
+        className="text-xs md:text-sm text-muted"
       />
 
       {/* Social Links - Below Typewriter on Mobile */}

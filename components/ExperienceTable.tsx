@@ -20,7 +20,7 @@ export function ExperienceTable() {
       transition={{ duration: 0.18, ease: "easeOut", delay: 0.1 }}
       className="flex-shrink-0"
     >
-      <h2 className="text-lg font-medium text-foreground mb-1 tracking-tight">
+      <h2 className="text-base md:text-lg font-medium text-foreground mb-1 tracking-tight">
         Experience
       </h2>
       <Table>
@@ -38,11 +38,11 @@ export function ExperienceTable() {
                   />
                 </div>
               </TableCell>
-              <TableCell className="text-foreground/90 text-sm py-1.5">
+              <TableCell className="text-foreground/90 text-xs md:text-sm py-1.5">
                 <span className="sm:hidden">{exp.shortCompany || exp.company}</span>
                 <span className="hidden sm:inline">{exp.company}</span>
               </TableCell>
-              <TableCell className="text-foreground/90 text-sm py-1.5">
+              <TableCell className="text-foreground/90 text-xs md:text-sm py-1.5">
                 <span className="sm:hidden">{exp.shortRole || exp.role}</span>
                 <span className="hidden sm:inline">{exp.role}</span>
               </TableCell>

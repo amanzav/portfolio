@@ -21,7 +21,7 @@ export function Projects() {
       transition={{ duration: 0.18, ease: "easeOut", delay: 0.15 }}
       className="pb-4"
     >
-      <h2 className="text-lg font-medium text-foreground mb-2 tracking-tight">
+      <h2 className="text-base md:text-lg font-medium text-foreground mb-2 tracking-tight">
         Projects
       </h2>
 

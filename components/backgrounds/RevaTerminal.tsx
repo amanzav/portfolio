@@ -55,7 +55,7 @@ export function RevaTerminal() {
     <div>
       <Terminal
         key={commandIndex}
-        className="absolute -top-3 lg:-right-1 md:-right-10 sm:-right-16 -right-3 w-[300px] max-h-[200px] opacity-80 scale-[0.75] origin-top-right !bg-transparent !border-foreground/30 !overflow-hidden [&>div:first-child]:!bg-transparent [&>div:first-child]:!border-transparent [&>pre]:max-h-[120px] [&>pre]:overflow-hidden pointer-events-none"
+        className="absolute sm:-top-3 -top-4 lg:-right-1 md:-right-10 sm:-right-16 -right-32 w-[300px] max-h-[200px] opacity-80 scale-[0.75] origin-top-right !bg-transparent !border-foreground/30 !overflow-hidden [&>div:first-child]:!bg-transparent [&>div:first-child]:!border-transparent [&>pre]:max-h-[120px] [&>pre]:overflow-hidden pointer-events-none"
       >
         <TypingAnimation duration={30}>{currentCommand.command}</TypingAnimation>
 

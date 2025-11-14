@@ -27,7 +27,7 @@ const BentoGrid = ({ children, className, ...props }: BentoGridProps) => {
   return (
     <div
       className={cn(
-        "grid w-full auto-rows-[22rem] grid-cols-1 gap-4",
+        "grid w-full auto-rows-[22rem] grid-cols-2 gap-4",
         className
       )}
       {...props}
@@ -56,42 +56,11 @@ const BentoCard = ({
       </div>
       <div className="relative z-10 p-4 mt-auto">
         <div className="pointer-events-none flex transform-gpu flex-col gap-1 transition-all duration-300 sm:group-hover:-translate-y-6">
-          <Icon className="h-8 w-8 origin-left transform-gpu text-foreground/70 transition-all duration-300 ease-in-out group-hover:scale-85" />
-          <h3 className="text-sm font-medium text-foreground/90 tracking-tight">
+          <Icon className="h-6 w-6 sm:h-8 sm:w-8 origin-left transform-gpu text-foreground/70 transition-all duration-300 ease-in-out group-hover:scale-85" />
+          <h3 className="text-xs sm:text-sm font-medium text-foreground/90 tracking-tight">
             {name}
           </h3>
-          <p className="max-w-lg text-xs text-foreground/70 truncate">{description}</p>
-        </div>
-
-        <div
-          className={cn(
-            "pointer-events-none flex w-full translate-y-0 transform-gpu flex-row items-center gap-3 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 sm:hidden"
-          )}
-        >
-          {siteUrl && (
-            <Button
-              variant="link"
-              asChild
-              size="sm"
-              className="pointer-events-auto p-0"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <a href={siteUrl} target="_blank" rel="noopener noreferrer" className="group/icon">
-                <ExternalLink className="h-4 w-4 text-foreground/60 group-hover/icon:text-foreground group-hover/icon:scale-[1.01] transition-all duration-150" />
-              </a>
-            </Button>
-          )}
-          <Button
-            variant="link"
-            asChild
-            size="sm"
-            className="pointer-events-auto p-0"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <a href={href} target="_blank" rel="noopener noreferrer" className="group/icon">
-              <Github className="h-4 w-4 text-foreground/60 group-hover/icon:text-foreground group-hover/icon:scale-[1.01] transition-all duration-150" />
-            </a>
-          </Button>
+          <p className="max-w-lg text-[11px] sm:text-xs text-foreground/70 truncate">{description}</p>
         </div>
       </div>
 
