@@ -105,9 +105,9 @@ export function Projects() {
               </div>
 
               <div className="pointer-events-none absolute bottom-0 w-full translate-y-4 transform-gpu flex-row items-center gap-3 px-4 pb-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 hidden md:flex z-20">
-                {project.siteUrl && (
+                {project.site && (
                   <a 
-                    href={project.siteUrl} 
+                    href={project.site} 
                     target="_blank" 
                     rel="noopener noreferrer" 
                     className="pointer-events-auto p-0 group/icon"
@@ -117,7 +117,7 @@ export function Projects() {
                   </a>
                 )}
                 <a 
-                  href={project.href} 
+                  href={project.github} 
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className="pointer-events-auto p-0 group/icon"

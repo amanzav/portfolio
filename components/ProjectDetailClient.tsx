@@ -87,21 +87,21 @@ export default function ProjectDetailClient({ project }: ProjectDetailClientProp
                 size="sm"
                 className="gap-2 hover:scale-105 transition-transform"
               >
-                <a href={project.href} target="_blank" rel="noopener noreferrer">
+                <a href={project.github} target="_blank" rel="noopener noreferrer">
                   <Github className="w-4 h-4" />
                   <AnimatedShinyText shimmerWidth={75}>
                     View on GitHub
                   </AnimatedShinyText>
                 </a>
               </Button>
-              {project.siteUrl && (
+              {project.site && (
                 <Button
                   variant="outline"
                   asChild
                   size="sm"
                   className="gap-2 hover:scale-105 transition-transform"
                 >
-                  <a href={project.siteUrl} target="_blank" rel="noopener noreferrer">
+                  <a href={project.site} target="_blank" rel="noopener noreferrer">
                     <ExternalLink className="w-4 h-4" />
                     <AnimatedShinyText shimmerWidth={75}>
                       Visit Site

@@ -19,7 +19,7 @@ interface BentoCardProps extends ComponentPropsWithoutRef<"div"> {
   description: string
   href: string
   cta: string
-  siteUrl?: string
+  site?: string
   detailSlug?: string // Optional slug for detail page navigation
 }
 
@@ -45,7 +45,7 @@ const BentoCard = ({
   description,
   href,
   cta,
-  siteUrl,
+  site,
   detailSlug,
   ...props
 }: BentoCardProps) => {
@@ -88,9 +88,9 @@ const BentoCard = ({
             "pointer-events-none absolute bottom-0 hidden w-full translate-y-4 transform-gpu flex-row items-center gap-3 px-4 pb-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 sm:flex z-20"
           )}
         >
-          {siteUrl && (
+          {site && (
             <a 
-              href={siteUrl} 
+              href={site} 
               target="_blank" 
               rel="noopener noreferrer" 
               className="pointer-events-auto p-0 group/icon"
@@ -143,9 +143,9 @@ const BentoCard = ({
           "pointer-events-none absolute bottom-0 hidden w-full translate-y-4 transform-gpu flex-row items-center gap-3 px-4 pb-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 sm:flex z-20"
         )}
       >
-        {siteUrl && (
+        {site && (
           <a 
-            href={siteUrl} 
+            href={site} 
             target="_blank" 
             rel="noopener noreferrer" 
             className="pointer-events-auto p-0 group/icon"
