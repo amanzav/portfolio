@@ -39,3 +39,4 @@ export const projects: ProjectItem[] = [
     details: "Created an educational game for the EcoCAR Mobility Challenge to teach electric vehicle concepts through interactive gameplay.\n\nDeveloped in Unity with C#, featuring physics-based vehicle simulations and real-world EV scenarios for engaging learning experiences.\n\nIntegrated Unity Gaming Services for multiplayer capabilities, leaderboards, and cloud saves, supporting 100+ concurrent players.\n\nDeployed as a WebGL build, making it accessible via browser with no installation required, reaching 1,000+ students across multiple universities.",
   },
 ];
+

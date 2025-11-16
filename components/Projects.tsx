@@ -106,25 +106,29 @@ export function Projects() {
 
               <div className="pointer-events-none absolute bottom-0 w-full translate-y-4 transform-gpu flex-row items-center gap-3 px-4 pb-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 hidden md:flex z-20">
                 {project.site && (
-                  <a 
-                    href={project.site} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="pointer-events-auto p-0 group/icon"
-                    onClick={(e) => e.stopPropagation()}
+                  <button 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      window.open(project.site, '_blank', 'noopener,noreferrer');
+                    }}
+                    className="pointer-events-auto p-0 group/icon bg-transparent border-0 cursor-pointer"
+                    aria-label="Visit site"
                   >
                     <ExternalLink className="h-4 w-4 text-foreground/60 group-hover/icon:text-foreground group-hover/icon:scale-[1.01] transition-all duration-150" />
-                  </a>
+                  </button>
                 )}
-                <a 
-                  href={project.github} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="pointer-events-auto p-0 group/icon"
-                  onClick={(e) => e.stopPropagation()}
+                <button 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    window.open(project.github, '_blank', 'noopener,noreferrer');
+                  }}
+                  className="pointer-events-auto p-0 group/icon bg-transparent border-0 cursor-pointer"
+                  aria-label="View GitHub repository"
                 >
                   <Github className="h-4 w-4 text-foreground/60 group-hover/icon:text-foreground group-hover/icon:scale-[1.01] transition-all duration-150" />
-                </a>
+                </button>
                 
                 <div className="ml-auto pointer-events-auto inline-flex items-center justify-center w-8 h-8 text-foreground/70 hover:text-foreground transition-colors group/chevron">
                   <ChevronRight className="w-5 h-5 transition-transform group-hover/chevron:-rotate-45" />
