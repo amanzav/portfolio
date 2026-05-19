@@ -2,162 +2,84 @@
 
 import { motion } from "motion/react";
 import Link from "next/link";
-import { ChevronLeft, Github, ExternalLink } from "lucide-react";
+import { Github, MoveUpRight } from "lucide-react";
 import { ProjectItem } from "@/lib/projects";
-import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
 
 interface ProjectDetailClientProps {
   project: ProjectItem;
 }
 
 export default function ProjectDetailClient({ project }: ProjectDetailClientProps) {
-  const [isBackHovered, setIsBackHovered] = useState(false);
-
-  // Enable scrolling on detail pages
-  useEffect(() => {
-    document.body.style.overflow = 'auto';
-    document.body.style.height = 'auto';
-    return () => {
-      document.body.style.overflow = '';
-      document.body.style.height = '';
-    };
-  }, []);
-
   return (
-    <>
-      {/* Subtle background gradient */}
-      <div className="fixed inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-foreground/[0.02] via-transparent to-transparent" />
-      
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.18, ease: "easeOut" }}
-      >
-        {/* Back button with hover text */}
-        <div className="mb-10">
-          <Link
-            href="/"
-            className="group inline-flex items-center gap-2 text-foreground/70 hover:text-foreground transition-all"
-            aria-label="Back to portfolio"
-            onMouseEnter={() => setIsBackHovered(true)}
-            onMouseLeave={() => setIsBackHovered(false)}
-          >
-            <div className="flex items-center justify-center w-8 h-8">
-              <ChevronLeft className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
-            </div>
-            <motion.span
-              initial={{ width: 0, opacity: 0 }}
-              animate={{
-                width: isBackHovered ? 'auto' : 0,
-                opacity: isBackHovered ? 1 : 0
-              }}
-              transition={{ duration: 0.15 }}
-              className="text-sm font-medium overflow-hidden whitespace-nowrap"
-            >
-              Back to Portfolio
-            </motion.span>
-          </Link>
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.18, ease: "easeOut" }}
+    >
+      <header>
+        <Link
+          href="/projects"
+          className="font-mono text-xs uppercase tracking-[0.18em] text-muted transition-colors hover:text-foreground"
+        >
+          / projects
+        </Link>
+
+        <p className="mt-14 font-mono text-xs uppercase tracking-[0.22em] text-muted">
+          project record
+        </p>
+        <h1 className="mt-3 text-4xl font-medium leading-none tracking-[-0.04em] md:text-5xl">
+          {project.name}
+        </h1>
+        <p className="mt-5 max-w-2xl text-base leading-7 text-foreground/70">
+          {project.description}
+        </p>
+      </header>
+
+      <section className="mt-9 grid gap-3 border-y border-border py-4 font-mono text-xs uppercase tracking-[0.16em] text-muted md:grid-cols-[120px_1fr]">
+        <span>stack</span>
+        <div className="flex flex-wrap gap-x-4 gap-y-2 text-foreground/70">
+          {project.skills.map((skill) => (
+            <span key={skill}>{skill}</span>
+          ))}
         </div>
 
-        {/* Enhanced header section */}
-        <motion.div
-          className="relative border border-border/50 rounded-lg p-6 mb-8 bg-foreground/[0.02] backdrop-blur-sm"
-          initial={{ opacity: 0, y: 4 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2, delay: 0.05 }}
-        >
-          <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-foreground/[0.03] to-transparent pointer-events-none" />
-          
-          <div className="relative space-y-4">
-            <div>
-              <h1 className="text-3xl font-semibold text-foreground mb-2 tracking-tight">
-                {project.name}
-              </h1>
-              <p className="text-foreground/70 text-base leading-relaxed">
-                {project.description}
-              </p>
-            </div>
-            
-            <div className="flex gap-3 flex-wrap">
-              <Button
-                variant="outline"
-                asChild
-                size="sm"
-                className="gap-2 hover:scale-105 transition-transform"
-              >
-                <a href={project.href} target="_blank" rel="noopener noreferrer">
-                  <Github className="w-4 h-4" />
-                  View on GitHub
-                </a>
-              </Button>
-              {project.siteUrl && (
-                <Button
-                  variant="outline"
-                  asChild
-                  size="sm"
-                  className="gap-2 hover:scale-105 transition-transform"
-                >
-                  <a href={project.siteUrl} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="w-4 h-4" />
-                    Visit Site
-                  </a>
-                </Button>
-              )}
-            </div>
-          </div>
-        </motion.div>
+        <span>links</span>
+        <div className="flex flex-wrap gap-4">
+          <a
+            href={project.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-foreground/70 transition-colors hover:text-foreground"
+          >
+            <Github className="h-4 w-4" />
+            github
+          </a>
+          {project.siteUrl && (
+            <a
+              href={project.siteUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-foreground/70 transition-colors hover:text-foreground"
+            >
+              <MoveUpRight className="h-4 w-4" />
+              site
+            </a>
+          )}
+        </div>
+      </section>
 
-        {/* Divider */}
-        <div className="h-px bg-gradient-to-r from-transparent via-border/50 to-transparent mb-8" />
-
-        {/* Tech stack with stagger animation and hover effects */}
-        <motion.div
-          initial={{ opacity: 0, y: 4 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2, delay: 0.1 }}
-          className="mb-10"
-        >
-          <h2 className="text-sm font-medium text-foreground/60 uppercase tracking-wider mb-4">
-            Tech Stack
+      {project.details && (
+        <section className="mt-10">
+          <h2 className="font-mono text-xs uppercase tracking-[0.22em] text-muted">
+            details
           </h2>
-          <div className="flex gap-2 flex-wrap">
-            {project.skills.map((skill, idx) => (
-              <motion.span
-                key={idx}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.15, delay: 0.15 + idx * 0.03 }}
-                className="px-3 py-1.5 rounded-md bg-foreground/10 text-foreground/80 text-sm border border-foreground/10 hover:bg-foreground/15 hover:border-foreground/20 hover:scale-105 transition-all cursor-default"
-              >
-                {skill}
-              </motion.span>
+          <div className="mt-5 space-y-5 text-sm leading-7 text-foreground/80">
+            {project.details.split("\n\n").map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
             ))}
           </div>
-        </motion.div>
-
-        {/* Divider */}
-        {project.details && (
-          <div className="h-px bg-gradient-to-r from-transparent via-border/50 to-transparent mb-8" />
-        )}
-
-        {/* Details section */}
-        {project.details && (
-          <motion.div
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2, delay: 0.2 }}
-            className="prose prose-neutral dark:prose-invert prose-sm max-w-none"
-          >
-            <h2 className="text-sm font-medium text-foreground/60 uppercase tracking-wider mb-4">
-              Project Details
-            </h2>
-            <div className="text-foreground/80 leading-relaxed whitespace-pre-line">
-              {project.details}
-            </div>
-          </motion.div>
-        )}
-      </motion.div>
-    </>
+        </section>
+      )}
+    </motion.div>
   );
 }

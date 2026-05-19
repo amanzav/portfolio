@@ -1,26 +1,32 @@
 import { notFound } from "next/navigation";
+import type { ReactNode } from "react";
 import { experiences } from "@/lib/experiences";
-import ExperienceDetailClient from "@/components/ExperienceDetailClient";
+import { ExperienceShell } from "@/components/experience/ExperienceShell";
+import { BoomerangPost } from "@/components/experience/posts/BoomerangPost";
+import { Ford2025Post } from "@/components/experience/posts/Ford2025Post";
+import { Ford2024Post } from "@/components/experience/posts/Ford2024Post";
+import { TranspirePost } from "@/components/experience/posts/TranspirePost";
+
+const postBySlug: Record<string, ReactNode> = {
+  boomerang: <BoomerangPost />,
+  "ford-2025": <Ford2025Post />,
+  "ford-2024": <Ford2024Post />,
+  transpire: <TranspirePost />,
+};
 
 export default function ExperienceDetailPage({
   params,
 }: {
   params: { slug: string };
 }) {
-  const experience = experiences.find((exp) => exp.id === params.slug);
-  if (!experience) {
+  const experience = experiences.find((e) => e.id === params.slug);
+  const post = postBySlug[params.slug];
+  if (!experience || !post) {
     notFound();
   }
-  return (
-    <main className="min-h-screen bg-background text-foreground px-4 md:px-8 py-8 md:py-12">
-      <div className="max-w-3xl mx-auto pb-16">
-        <ExperienceDetailClient experience={experience} />
-      </div>
-    </main>
-  );
+  return <ExperienceShell experience={experience!}>{post}</ExperienceShell>;
 }
 
-// Required for static export
 export function generateStaticParams() {
-  return experiences.map(exp => ({ slug: exp.id }));
+  return experiences.map((e) => ({ slug: e.id }));
 }

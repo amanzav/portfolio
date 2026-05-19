@@ -1,12 +1,21 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/ThemeProvider";
+import "katex/dist/katex.min.css";
 import { Analytics } from "@vercel/analytics/next";
+import { RouteGlitch } from "@/components/RouteGlitch";
+import { BootOverlay } from "@/components/BootOverlay";
+import { SignalOverlay } from "@/components/SignalOverlay";
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+  display: "swap",
+});
+
+const jetBrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
   display: "swap",
 });
 
@@ -17,7 +26,7 @@ export const metadata: Metadata = {
     template: "%s | Aman Zaveri",
   },
   description:
-    "Hey! I'm Aman Zaveri, a 3rd year Mechatronics Engineer at the University of Waterloo. Currently interning at Ford!",
+    "Aman Zaveri builds minimal software, mechatronics, and systems interfaces.",
   icons: {
     icon: [
       { url: "/icon.svg", type: "image/svg+xml" },
@@ -37,9 +46,9 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://amanzav.github.io",
     siteName: "Aman Zaveri Portfolio",
-    title: "Aman Zaveri — Software Engineer",
+    title: "Aman Zaveri — Software / Mechatronics / Systems",
     description:
-      "Building minimal, scalable systems across web and embedded. Experienced in React, Next.js, TypeScript, embedded systems, and AI/ML.",
+      "Minimal systems portfolio for software, mechatronics, and interface work.",
     images: [
       {
         url: "/og-image.png",
@@ -65,7 +74,7 @@ export default function RootLayout({
     name: "Aman Zaveri",
     url: "https://amanzav.github.io",
     jobTitle: "Software Engineer",
-    description: "Building minimal, scalable systems across web and embedded.",
+    description: "Building minimal software, mechatronics, and systems interfaces.",
     sameAs: [
       "https://github.com/amanzav",
       "https://linkedin.com/in/amanzav",
@@ -97,8 +106,8 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en" className={inter.variable} suppressHydrationWarning>
-      <body className="antialiased lg:overflow-hidden lg:h-screen">
+    <html lang="en" className={`${inter.variable} ${jetBrainsMono.variable}`}>
+      <body className="font-sans antialiased">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -111,14 +120,10 @@ export default function RootLayout({
             __html: JSON.stringify(websiteJsonLd).replace(/</g, "\\u003c"),
           }}
         />
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
+        <BootOverlay />
+        <SignalOverlay />
+        <RouteGlitch />
+        {children}
         <Analytics />
       </body>
     </html>
