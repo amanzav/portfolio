@@ -13,13 +13,13 @@ const links = [
   {
     name: "GitHub",
     icon: Github,
-    href: "https://github.com/Aman-Zaveri",
+    href: "https://github.com/amanzav",
     ariaLabel: "GitHub Profile",
   },
   {
     name: "LinkedIn",
     icon: Linkedin,
-    href: "https://linkedin.com/in/aman-zaveri",
+    href: "https://linkedin.com/in/amanzav",
     ariaLabel: "LinkedIn Profile",
   },
   {

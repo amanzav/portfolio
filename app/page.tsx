@@ -82,7 +82,7 @@ export default function Home() {
             className="glitch-in mt-10 flex flex-wrap gap-x-5 gap-y-2 text-sm text-foreground/60 [animation-delay:340ms]"
           >
             <a
-              href="https://github.com/Aman-Zaveri"
+              href="https://github.com/amanzav"
               target="_blank"
               rel="noopener noreferrer"
               className="text-link"
@@ -90,7 +90,7 @@ export default function Home() {
               GitHub
             </a>
             <a
-              href="https://linkedin.com/in/aman-zaveri"
+              href="https://linkedin.com/in/amanzav"
               target="_blank"
               rel="noopener noreferrer"
               className="text-link"
