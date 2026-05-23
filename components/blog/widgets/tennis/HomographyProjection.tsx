@@ -601,7 +601,7 @@ export function TennisHomographyProjection({
             fontFamily="var(--font-mono)"
             style={{ letterSpacing: "0.22em", textTransform: "uppercase" }}
           >
-            x' = H x · per-game re-fit
+            x&apos; = H x · per-game re-fit
           </text>
         </svg>
       </div>

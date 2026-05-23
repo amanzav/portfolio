@@ -82,7 +82,7 @@ export function TennisShotEvent({
           aria-label={caption}
         >
           <desc>
-            A shot event is detected at the frame where the ball's direction
+            A shot event is detected at the frame where the ball&apos;s direction
             reverses by more than 110 degrees and the ball is within 1.2 meters
             of a player. The incoming ball arcs into the contact point, then
             exits in nearly the opposite direction; the proximity circle
