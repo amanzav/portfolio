@@ -14,7 +14,7 @@ export function Section({ number, label, title, children }: SectionProps) {
         {number && <span className="text-foreground/70">{number}</span>}
         {label && <span>{label}</span>}
       </div>
-      <h2 className="text-2xl font-medium tracking-[-0.03em] text-foreground md:text-3xl">
+      <h2 className="text-xl font-medium tracking-[-0.03em] text-foreground md:text-2xl">
         {title}
       </h2>
       <div className="mt-5 space-y-5 text-[0.95rem] leading-7 text-foreground/80">

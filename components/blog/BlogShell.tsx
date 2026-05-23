@@ -23,10 +23,10 @@ export function BlogShell({ meta, children }: BlogShellProps) {
           <p className="font-mono text-xs uppercase tracking-[0.22em] text-muted">
             blog record — {meta.date}
           </p>
-          <h1 className="mt-3 text-3xl font-medium leading-tight tracking-[-0.04em] text-foreground md:text-5xl">
+          <h1 className="mt-3 text-2xl font-medium leading-tight tracking-[-0.04em] text-foreground md:text-3xl">
             {meta.title}
           </h1>
-          <p className="mt-5 max-w-xl text-base leading-7 text-foreground/70 md:text-lg md:leading-8">
+          <p className="mt-4 max-w-xl text-sm leading-6 text-foreground/70 md:text-base md:leading-7">
             {meta.subtitle}
           </p>
         </header>
@@ -38,8 +38,6 @@ export function BlogShell({ meta, children }: BlogShellProps) {
               <span key={s}>{s}</span>
             ))}
           </div>
-          <span>author</span>
-          <div className="text-foreground/70">aman zaveri</div>
         </section>
 
         <div className="prose-blog mt-10">{children}</div>

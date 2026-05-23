@@ -2,7 +2,6 @@ import {
   Section,
   TLDR,
   TLDRItem,
-  ASCIIDiagram,
   Callout,
   CodeBlock,
   Footnotes,
@@ -10,6 +9,8 @@ import {
   FootnoteRef,
   InlineCode,
   LineChart,
+  RigCrashIndexer,
+  TraceWindowDetector,
 } from "@/components/blog";
 
 export function Ford2025Post() {
@@ -17,111 +18,87 @@ export function Ford2025Post() {
     <>
       <TLDR>
         <TLDRItem>
-          Embedded with the firmware/connectivity team owning the modem stack
-          for in-vehicle infotainment. The rigs that run regression emit ~8M
-          Kafka events/day.
+          Worked on the firmware team that owns the modem stack for Ford&apos;s
+          in-vehicle infotainment. Their test rigs spit out{" "}
+          <strong>~8M</strong> Kafka events a day.
         </TLDRItem>
         <TLDRItem>
-          Shipped a Slack LLM copilot (Python + FastAPI) that answers
-          &quot;why did rig 14 crash Thursday?&quot; with a root-cause
-          hypothesis and the log lines that support it. Investigation time:{" "}
-          <strong>45 min → 4 min</strong>.
+          Built a Slack copilot (Python + FastAPI) that answers &quot;why did
+          rig 14 crash Thursday?&quot; with a hypothesis and the log lines that
+          back it up. Investigation time went from{" "}
+          <strong>45 min to 4 min</strong>.
         </TLDRItem>
         <TLDRItem>
-          Trained an LSTM (PyTorch) on 68K labelled connectivity traces to
-          catch modem dropouts before the on-call pager fired. Precision:{" "}
-          <strong>71% → 88%</strong>. False alerts down <strong>41%</strong>.
+          Trained an LSTM on 68K labelled connectivity traces to catch modem
+          dropouts before they paged anyone. Precision went from{" "}
+          <strong>71% to 88%</strong>, false alerts down{" "}
+          <strong>41%</strong>.
         </TLDRItem>
         <TLDRItem>
-          Net effect on the on-call rotation: ~22 hours/week of human time
-          back. Two of three on-call engineers stopped getting paged on
-          weekends.
+          On-call got back about <strong>22 hours/week</strong>. Two of three
+          rotation members stopped getting paged on weekends.
         </TLDRItem>
         <TLDRItem>
-          The interesting work wasn&apos;t the model — it was the labelling
-          scheme and the retrieval index over the Kafka archive.
+          The interesting part wasn&apos;t the model. It was the labelling and
+          the retrieval index over the Kafka archive.
         </TLDRItem>
       </TLDR>
 
       <Section number="01" label="context" title="What I owned">
         <p>
           The firmware team owns the connectivity layer of Ford&apos;s
-          in-vehicle infotainment platform: modem firmware, the cellular
-          stack, Wi-Fi/BT handoff, and the glue that exposes all of it to the
-          rest of the head unit. To validate every build, the team runs a
-          fleet of bench rigs — each one is a head unit wired to a modem, a
-          SIM, and an RF chamber — replaying real-world drive cycles
-          overnight.
+          infotainment platform. Modem firmware, the cellular stack, Wi-Fi/BT
+          handoff, and the glue that exposes it to the rest of the head unit.
+          To validate every build, the team runs a fleet of bench rigs (a head
+          unit wired to a modem, a SIM, and an RF chamber) replaying real drive
+          cycles overnight.
         </p>
         <p>
-          Every rig emits structured telemetry into Kafka<FootnoteRef n={1} />:
-          modem state transitions, AT command traces, packet loss windows,
-          signal quality, thermal counters, exception traces. On a busy week
-          the topic carries ~8M events/day. Two things hurt: when a rig
-          crashed overnight, the firmware engineer who owned the build spent
-          30–60 minutes scrolling Kibana before they could even start forming
-          a hypothesis. The existing alerting was a threshold-on-counters
-          system that paged for any modem drop &gt; 5 s, which meant it paged
-          constantly on known-flaky RF chambers. Pager fatigue was real and
-          people had stopped trusting it.
+          Every rig pushes structured telemetry into Kafka
+          <FootnoteRef n={1} />: modem state transitions, AT command traces,
+          packet loss windows, signal quality, thermal counters, exception
+          traces. Busy weeks hit ~8M events/day. Two things hurt. When a rig
+          crashed overnight, the firmware engineer who owned the build burned
+          30 to 60 minutes scrolling Kibana before they could even guess at a
+          cause. And the existing alerting paged on any modem drop over 5
+          seconds, which meant it paged constantly on known-flaky RF chambers.
+          People stopped trusting the pager.
         </p>
       </Section>
 
       <Section number="02" label="copilot" title="Slack bot for 'why did rig N crash?'">
         <p>
-          The brief was small: <em>make it so I can ask Slack what happened
-          and get a real answer</em>. The hard part was making the answer
-          trustworthy enough that an L4 firmware engineer would act on it
-          without re-deriving it themselves.
+          The brief was simple. <em>Let me ask Slack what happened and get a
+          real answer.</em> The hard part was making the answer trustworthy
+          enough that a senior firmware engineer would act on it without
+          re-deriving the whole thing themselves.
         </p>
         <p>
           The bot is a FastAPI service behind a Slack slash command. The
-          interesting half is the offline indexing pipeline that keeps a
-          per-rig, per-session view of the Kafka stream queryable.
+          interesting half is the offline pipeline that keeps a per-rig,
+          per-session view of the Kafka stream queryable.
         </p>
-        <ASCIIDiagram
+        <RigCrashIndexer
           number="01"
-          caption="Indexing + retrieval pipeline for the rig-crash copilot."
-        >
-{`     Kafka topic (rig.events, ~8M/day)
-              │
-              ▼
-     ┌──────────────────────┐
-     │  streaming consumer  │  group_id = copilot-indexer
-     └──────────┬───────────┘
-                │ windowed by session_id
-                ▼
-     ┌──────────────────────┐    ┌──────────────────────┐
-     │   raw event blobs    │──▶ │     S3 (parquet)     │
-     └──────────┬───────────┘    └──────────┬───────────┘
-                │ summarise + chunk         │
-                ▼                           ▼
-     ┌──────────────────────┐    ┌──────────────────────┐
-     │ per-session digest   │    │  log_excerpts index  │
-     └──────────────────────┘    └──────────────────────┘
-                          ╲              ╱
-                           ▼            ▼
-                      ┌──────────────────────────┐
-                      │  embedding store / rig   │
-                      └──────────────┬───────────┘
-                                     ▼
-                          Slack bot retrieval + LLM
-                                     │
-                                     ▼
-                          /whycrash rig=14 since=Thu`}
-        </ASCIIDiagram>
+          caption="Indexing + retrieval pipeline for the rig-crash copilot. The firehose stays left; only the digest plus top-k excerpts (a constrained packet) reach the LLM."
+          query="/whycrash rig=14 since=Thu"
+          hypotheses={[
+            { summary: "RF chamber attn step misread as drop", excerptId: "#3814" },
+            { summary: "thermal creep past modem PA limit", excerptId: "#3902" },
+          ]}
+        />
         <p>
-          When the bot is invoked it does the boring, important thing: resolve
-          the time window (defaulting to the last crash for that rig), pull
-          the digest, pull the top-k log excerpts under that window,{" "}
-          <em>then</em> call the LLM. The model never sees the raw 8M-event
-          stream; it sees a constrained packet.
+          When the bot fires it does the boring, important thing first. Resolve
+          the time window (default: last crash for that rig), pull the digest,
+          pull the top-k log excerpts in that window, <em>then</em> call the
+          LLM. The model never sees the raw 8M-event firehose. It sees a
+          constrained packet.
         </p>
         <p>
-          The prompt is structured. Every hypothesis must point at specific
+          The prompt is structured. Every hypothesis has to cite specific
           excerpt IDs from the retrieved set.<FootnoteRef n={2} /> If the
-          response fails to parse against the schema, the bot retries once
-          and then surfaces the raw excerpts instead of guessing.
+          response doesn&apos;t parse against the schema, the bot retries once,
+          then falls back to showing the raw excerpts instead of guessing.
         </p>
         <CodeBlock lang="python" caption="Root-cause JSON schema. Every claim must cite excerpt IDs.">
 {`ROOT_CAUSE_SCHEMA = {
@@ -157,56 +134,61 @@ export function Ford2025Post() {
 }`}
         </CodeBlock>
         <p>
-          The Slack UI renders cited excerpts as expandable quoted log lines,
-          so the engineer sees the model&apos;s evidence and not just its
-          conclusion. That single constraint is what moved the bot from
-          &quot;novelty&quot; to &quot;people actually use it&quot; — mean
-          investigation time on rig crashes went from ~45 min to ~4 min over
-          the last six weeks of the internship.
+          Slack renders the cited excerpts as expandable log lines, so the
+          engineer sees the evidence and not just the conclusion. That one
+          constraint is what moved the bot from &quot;novelty&quot; to
+          &quot;people actually use it.&quot; Mean investigation time on rig
+          crashes dropped from about 45 minutes to about 4 over the last six
+          weeks of the internship.
         </p>
         <Callout label="design note">
-          The win wasn&apos;t the LLM. It was forcing the model to cite
-          excerpt IDs from a pre-retrieved bundle. When we let it free-form,
-          engineers caught it inventing register names within a week and
-          stopped trusting it. The schema is the product.
+          The win wasn&apos;t the LLM. It was forcing it to cite excerpt IDs
+          from a pre-retrieved bundle. When we let it free-form, engineers
+          caught it inventing register names within a week and stopped trusting
+          it. The schema is the product.
         </Callout>
       </Section>
 
       <Section number="03" label="detector" title="LSTM modem-dropout detector">
         <p>
-          The pager-fatigue problem was different. The signal <em>was</em> in
-          the data — connectivity drops have characteristic precursors (RSRP
-          slope, retransmit clusters, thermal creep) — but a static threshold
-          can&apos;t tell a real dropout from a planned RF-chamber attenuation
-          step.
+          Pager fatigue was a different problem. The signal <em>was</em> in the
+          data. Connectivity drops have real precursors (RSRP slope, retransmit
+          clusters, thermal creep) but a static threshold can&apos;t tell a
+          real dropout from a planned RF-chamber attenuation step.
         </p>
         <p>
           I pulled <strong>68,032</strong> connectivity traces from the
-          previous quarter of regression runs. A &quot;trace&quot; is a
-          90-second window of per-100ms modem telemetry leading up to a
-          candidate event. Labels came from joining against the rig
-          owner&apos;s post-hoc triage notes: 11,204 positives (real
-          dropouts), 56,828 negatives (benign / planned attenuation /
-          known-flaky chamber). Split was 70/15/15, stratified by rig{" "}
-          <em>and</em> by build, so the model never trained on traces from the
-          same rig-build pair it was evaluated on. That detail mattered — an
-          earlier random split inflated val precision by ~6 pp through
-          rig-identity leakage.
+          previous quarter of regression runs. A trace is a 90-second window of
+          per-100ms modem telemetry leading up to a candidate event. Labels
+          came from the rig owner&apos;s post-hoc triage notes: 11,204
+          positives (real dropouts), 56,828 negatives (benign, planned
+          attenuation, known-flaky chamber). Split 70/15/15, stratified by rig{" "}
+          <em>and</em> by build so the model never trained on traces from the
+          same rig-build pair it was evaluated on. That mattered. An earlier
+          random split inflated val precision by ~6 pp through rig-identity
+          leakage.
         </p>
         <p>
-          I started with a 1D CNN because it&apos;s the obvious move on
-          fixed-length multivariate windows. It got to ~74% precision and
-          plateaued. The failure mode was telling: it kept missing dropouts
-          where the precursor was a slow, drifting pattern across the full
-          90 s window — exactly the regime where a CNN&apos;s local receptive
-          field hurts you. A two-layer LSTM<FootnoteRef n={3} /> with a small
-          attention head over the sequence handled those long-horizon
-          precursors and pushed precision past the CNN ceiling. Recall stayed
-          roughly flat across architectures (~0.82); the gain was almost
-          entirely in precision, which is the metric that maps to pager pain.
+          Started with a 1D CNN since that&apos;s the obvious move on
+          fixed-length multivariate windows. It hit ~74% precision and
+          plateaued. The failure mode was telling. It kept missing dropouts
+          where the precursor was a slow drift across the full 90s, exactly
+          where a CNN&apos;s local receptive field hurts you. A two-layer LSTM
+          <FootnoteRef n={3} /> with a small attention head over the sequence
+          handled those long-horizon precursors and pushed precision past the
+          CNN ceiling. Recall stayed roughly flat across architectures (~0.82).
+          The gain was almost entirely in precision, which is the metric that
+          maps to pager pain.
         </p>
-        <LineChart
+        <TraceWindowDetector
           number="02"
+          caption="One 90-second trace, two architectures. A CNN's local receptive field slides across the window and ceilings near 74% on the late retransmit cluster; an LSTM with attention consumes the full sequence and locks onto the slow RSRP drift, clearing the 85% deploy threshold."
+          cnnCeiling={0.74}
+          lstmFinal={0.88}
+          threshold={0.85}
+        />
+        <LineChart
+          number="03"
           caption="Validation precision over training epochs. CNN plateaus around 74%; LSTM clears the deployment threshold at epoch 14."
           meta="precision / val"
           series={[
@@ -237,34 +219,33 @@ export function Ford2025Post() {
           yFormat={(v) => `${Math.round(v * 100)}%`}
         />
         <p>
-          Precision moved from the old threshold system&apos;s 0.71 to the
-          LSTM&apos;s 0.88 on held-out test. False-alert volume on the
-          on-call channel fell 41% week-over-week after rollout. The on-call
-          rotation tracked weekly pager-hours; the team averaged ~22 fewer
-          hours/week of paged time. Two of the three rotation members stopped
-          getting paged on weekends entirely.
+          Precision moved from 0.71 on the old threshold system to 0.88 on
+          held-out test. False-alert volume on the on-call channel fell 41%
+          week-over-week after rollout. The team tracked weekly pager-hours and
+          averaged about 22 fewer hours/week of paged time. Two of the three
+          rotation members stopped getting paged on weekends entirely.
         </p>
       </Section>
 
       <Section number="04" label="reflection" title="What I learned">
         <p>
           Three honest notes. <strong>One:</strong> most of the value in both
-          projects came from data plumbing, not modelling — the indexing
+          projects came from data plumbing, not modelling. The indexing
           pipeline and the leakage-aware label split moved more numbers than
           any architecture choice. <strong>Two:</strong> forcing structured
-          output with cited evidence is the single biggest determinant of
-          whether engineers trust an LLM tool; I&apos;d build every future
-          copilot this way. <strong>Three:</strong> the LSTM is good but it
-          can&apos;t yet explain <em>which</em> feature drove a prediction,
-          and the on-call team has started asking. A small SHAP or
-          attention-rollout pass over the deployed model is the obvious next
-          step, and I left a written handoff for it.
+          output with cited evidence is the single biggest thing that makes
+          engineers trust an LLM tool. I&apos;d build every future copilot this
+          way. <strong>Three:</strong> the LSTM is good but it can&apos;t yet
+          tell you <em>which</em> feature drove a prediction, and on-call has
+          started asking. A small SHAP or attention-rollout pass over the
+          deployed model is the obvious next step. I left a written handoff
+          for it.
         </p>
       </Section>
 
       <Footnotes>
         <Fn n={1}>
-          Apache Kafka, consumer API —{" "}
+          Apache Kafka, consumer API.{" "}
           <a
             href="https://kafka.apache.org/documentation/#consumerapi"
             target="_blank"
@@ -275,7 +256,7 @@ export function Ford2025Post() {
           .
         </Fn>
         <Fn n={2}>
-          Anthropic, Messages API — structured output and tool-use patterns
+          Anthropic, Messages API. Structured output and tool-use patterns
           used for schema-constrained responses.{" "}
           <a
             href="https://docs.anthropic.com/en/api/messages"
@@ -287,7 +268,7 @@ export function Ford2025Post() {
           .
         </Fn>
         <Fn n={3}>
-          PyTorch <InlineCode>nn.LSTM</InlineCode> documentation —{" "}
+          PyTorch <InlineCode>nn.LSTM</InlineCode> documentation.{" "}
           <a
             href="https://pytorch.org/docs/stable/generated/torch.nn.LSTM.html"
             target="_blank"

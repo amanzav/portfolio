@@ -10,8 +10,10 @@ import {
   Fn,
   FootnoteRef,
   InlineCode,
-  BarChart,
   FlowDiagram,
+  MultibotPoliteHalt,
+  MultibotTemporalVote,
+  MultibotEtaIsLoadBearing,
 } from "@/components/blog";
 
 export function MultibotPost() {
@@ -19,106 +21,103 @@ export function MultibotPost() {
     <>
       <TLDR>
         <TLDRItem>
-          Three TurtleBot3 Burger units share a simulated mini-city with stop
-          signs, traffic lights, and unpredictable jaywalkers.
+          Three TurtleBot3 Burgers share a simulated mini-city with stop
+          signs, traffic lights, and jaywalkers who don&apos;t care about
+          either.
         </TLDRItem>
         <TLDRItem>
-          Each bot broadcasts a lightweight <em>intent</em> message (pose, next
-          waypoint, ETA at the upcoming intersection, priority) so neighbours
-          can resolve right-of-way <em>before</em> the conflict happens.
+          Each bot broadcasts an <em>intent</em> message (pose, next waypoint,
+          ETA at the upcoming intersection, priority) so neighbours resolve
+          right-of-way <em>before</em> the conflict happens.
         </TLDRItem>
         <TLDRItem>
-          Perception is a small YOLOv8n trained on signs and pedestrians;
-          decisions live in a behavior tree; motion is Hybrid A* (global) plus
-          DWA (local).
+          Perception is a small YOLOv8n; decisions live in a behavior tree;
+          motion is Hybrid A* + DWA.
         </TLDRItem>
         <TLDRItem>
-          Vs a baseline that uses only local LIDAR-based yielding, intersection
-          deadlocks drop <strong>~8x</strong> and safe-arrival rate hits{" "}
-          <strong>94% across 200 randomized runs</strong>.
+          Vs a LIDAR-only baseline, deadlocks drop <strong>~8x</strong> and
+          safe-arrival hits <strong>94% over 200 runs</strong>.
         </TLDRItem>
         <TLDRItem>
-          The single most useful field in the intent message was{" "}
-          <InlineCode>eta_intersection</InlineCode>. Without it, the bots
-          over-yielded and the city ground to a polite halt.
+          The load-bearing field was <InlineCode>eta_intersection</InlineCode>.
+          Without it the bots over-yielded and the city ground to a polite
+          halt.
         </TLDRItem>
       </TLDR>
 
-      <Section number="01" label="motivation" title="Why intersections deadlock">
+      <Section number="01" label="motivation" title="The polite-halt failure">
         <p>
-          The interesting failure mode in multi-agent navigation isn&apos;t
-          crashing. It&apos;s <em>waiting</em>. Two robots approach a four-way
-          stop, both detect the other, both back off, both re-plan, both
-          approach again, both back off. Nothing crashes. Nothing moves. The
-          simulator says everyone is alive and the throughput metric quietly
-          bleeds to zero.
+          The interesting failure in multi-agent nav isn&apos;t crashing,
+          it&apos;s <em>waiting</em>. Two bots hit a four-way stop, both
+          detect each other, both back off, both re-plan, both approach
+          again, both back off. Nothing crashes. Nothing moves. The
+          throughput metric quietly bleeds to zero.
         </p>
         <p>
-          This is the <strong>symmetric standoff</strong>, and it is the dual
-          of the obvious failure (neither robot yields and they collide). Any
-          reactive yielding policy that is purely local — &quot;if you see
-          another agent in your conflict zone, slow down&quot; — sits on a
-          knife edge between these two outcomes. The classical multi-agent path
-          finding (MAPF) literature has been chewing on this for two decades;
-          Stern et al.&apos;s 2019 survey<FootnoteRef n={1} /> gives a useful
-          taxonomy of complete planners (CBS, ICTS, M*) that resolve conflicts
-          at planning time by <em>jointly</em> searching the configuration
-          space.
+          This is the <strong>symmetric standoff</strong>, the dual of the
+          obvious failure where neither yields and they collide. Any purely
+          local yielding policy sits on a knife edge between the two. The
+          MAPF literature has been chewing on this for twenty years; Stern
+          et al.&apos;s 2019 survey<FootnoteRef n={1} /> catalogs the
+          complete planners (CBS, ICTS, M*) that resolve conflicts by
+          jointly searching the configuration space.
         </p>
         <p>
-          The catch is that joint planners are expensive, brittle to noisy
-          perception, and assume a central coordinator with a global map. I
-          have three small differential-drive robots, intermittent comms, and a
-          perception stack that periodically forgets a stop sign exists. I
-          needed something cheaper and more local that still escaped the
-          symmetry.
+          Those planners are expensive, brittle to noisy perception, and
+          assume a central coordinator with a global map. I had three small
+          diff-drive robots, intermittent comms, and a perception stack that
+          periodically forgot stop signs existed. I needed something
+          cheaper.
         </p>
         <p>
-          The fix turned out to be small: don&apos;t broadcast <em>position</em>,
-          broadcast <em>intent</em>. If every bot publishes &quot;I will be at
-          intersection X in 2.3 seconds with priority 1,&quot; the symmetry
-          breaks before the encounter, and yielding becomes a one-line rule
-          instead of an emergent property of two control loops fighting each
-          other.
+          The fix was small: don&apos;t broadcast <em>position</em>,
+          broadcast <em>intent</em>. If every bot publishes &quot;I will be
+          at intersection X in 2.3 seconds with priority 1,&quot; the
+          symmetry breaks before the encounter, and yielding becomes a
+          one-line rule instead of two control loops fighting each other.
         </p>
+        <MultibotPoliteHalt
+          number="01"
+          caption="Symmetric standoff without ETA, clean pass with it."
+          meta="with vs without eta_intersection"
+        />
       </Section>
 
-      <Section number="02" label="architecture" title="System overview">
+      <Section number="02" label="architecture" title="One topic between bots">
         <p>
-          Each bot runs an identical stack. The only thing that crosses the
-          wire between bots is a single 50 Hz ROS 2 topic,{" "}
-          <InlineCode>/fleet/intent</InlineCode>.
+          Each bot runs an identical stack. The only thing crossing the
+          wire is one 50 Hz ROS 2 topic, <InlineCode>/fleet/intent</InlineCode>.
         </p>
         <FlowDiagram
-          number="01"
+          number="02"
           caption="Per-bot stack plus the cross-bot /fleet/intent topic. Best-effort DDS, 50 Hz."
           meta="3 bots · 50 hz topic"
-          viewBox="0 0 720 720"
+          viewBox="0 0 720 540"
           nodes={[
             {
               id: "cam",
               x: 40,
-              y: 30,
+              y: 20,
               w: 180,
-              h: 55,
+              h: 50,
               badge: "sensor",
               title: "Camera",
             },
             {
               id: "lidar",
               x: 240,
-              y: 30,
+              y: 20,
               w: 180,
-              h: 55,
+              h: 50,
               badge: "sensor",
               title: "Lidar",
             },
             {
               id: "yolo",
               x: 40,
-              y: 115,
+              y: 90,
               w: 180,
-              h: 80,
+              h: 70,
               badge: "01",
               title: "YOLOv8n",
               items: ["signs · peds"],
@@ -126,18 +125,18 @@ export function MultibotPost() {
             {
               id: "costmap",
               x: 240,
-              y: 115,
+              y: 90,
               w: 180,
-              h: 80,
+              h: 70,
               badge: "02",
               title: "Local Costmap",
             },
             {
               id: "bt",
               x: 40,
-              y: 230,
+              y: 180,
               w: 380,
-              h: 100,
+              h: 90,
               badge: "03 / decisions",
               title: "Behavior Tree (BT.CPP)",
               items: ["right-of-way · yield vs go"],
@@ -146,36 +145,36 @@ export function MultibotPost() {
             {
               id: "global",
               x: 40,
-              y: 360,
+              y: 290,
               w: 380,
-              h: 70,
+              h: 60,
               badge: "04 / global plan",
               title: "Hybrid A*",
             },
             {
               id: "local",
               x: 40,
-              y: 460,
+              y: 370,
               w: 380,
-              h: 70,
+              h: 60,
               badge: "05 / local plan",
               title: "DWA Refinement",
             },
             {
               id: "vel",
               x: 40,
-              y: 560,
+              y: 450,
               w: 380,
-              h: 65,
+              h: 60,
               badge: "06 / actuate",
               title: "/cmd_vel",
             },
             {
               id: "intent",
               x: 470,
-              y: 230,
+              y: 180,
               w: 220,
-              h: 100,
+              h: 90,
               badge: "shared topic",
               title: "/fleet/intent",
               items: ["pose · waypoint · eta", "priority · state"],
@@ -188,12 +187,12 @@ export function MultibotPost() {
             {
               from: "yolo:bottom",
               to: "bt:top",
-              waypoints: [[130, 215]],
+              waypoints: [[130, 170]],
             },
             {
               from: "costmap:bottom",
               to: "bt:top",
-              waypoints: [[330, 215]],
+              waypoints: [[330, 170]],
             },
             { from: "bt:bottom", to: "global:top" },
             { from: "global:bottom", to: "local:top" },
@@ -203,41 +202,39 @@ export function MultibotPost() {
           sideText={[
             {
               x: 690,
-              y: 360,
+              y: 290,
               text: "↔ other bots",
               anchor: "end",
             },
           ]}
         />
         <p>
-          The behavior tree consumes both local perception and the fleet intent
-          stream. Everything downstream of the BT is a normal Nav2-style
-          planner-controller stack. Nothing about the planners knows that there
-          are other robots in the world; that knowledge is concentrated in the
-          BT.
+          The BT eats both local perception and the fleet intent stream.
+          Everything downstream is a normal Nav2-style planner-controller.
+          The planners don&apos;t know other robots exist; that knowledge
+          lives entirely in the BT.
         </p>
       </Section>
 
-      <Section number="03" label="protocol" title="Intent broadcast">
+      <Section number="03" label="protocol" title="Intent broadcast, v3">
         <p>
-          I went through three iterations of this message before landing on
-          something small enough to be cheap and rich enough to be useful.
+          Three iterations before I landed on something small enough to be
+          cheap and rich enough to be useful.
         </p>
         <p>
-          Iteration 1 was just{" "}
-          <InlineCode>(robot_id, pose)</InlineCode>. Neighbours had to predict
-          ETAs themselves, which meant each bot was effectively running an
-          internal model of every other bot. Wasteful and inconsistent.
+          <strong>v1</strong> was just <InlineCode>(robot_id, pose)</InlineCode>.
+          Every bot had to run an internal model of every other bot.
+          Wasteful and inconsistent.
         </p>
         <p>
-          Iteration 2 added <InlineCode>next_waypoint</InlineCode> and{" "}
-          <InlineCode>velocity</InlineCode>. Better, but neighbours still had
-          to figure out <em>which</em> intersection mattered. With a junction
-          every ~3 m in the mini-city, half the field was guesswork.
+          <strong>v2</strong> added <InlineCode>next_waypoint</InlineCode>{" "}
+          and <InlineCode>velocity</InlineCode>. Better, but with a junction
+          every ~3 m, neighbours still had to guess <em>which</em>{" "}
+          intersection mattered.
         </p>
         <p>
-          Iteration 3 — the one in the repo — pushes the inference into the
-          publisher, where it&apos;s cheap (the bot already knows its plan):
+          <strong>v3</strong> pushes the inference into the publisher, where
+          it&apos;s cheap (the bot already knows its plan):
         </p>
         <CodeBlock lang="msg" caption="fleet_msgs/msg/Intent.msg">
 {`std_msgs/Header header
@@ -257,34 +254,31 @@ uint8 STATE_CROSSING    = 3
 uint8 state`}
         </CodeBlock>
         <p>
-          ETAs are computed from the remaining arc length on the global plan
-          divided by a smoothed velocity estimate. They&apos;re noisy —
-          typically ±0.4 s at 3 m out — but the BT only needs the{" "}
-          <em>ordering</em>, not the absolute value.
+          ETAs are arc length on the global plan over a smoothed velocity
+          estimate. Noisy — ±0.4 s at 3 m out — but the BT only needs the
+          ordering, not the absolute value.
         </p>
         <Callout label="qos">
-          I publish on a best-effort DDS QoS profile, not reliable.
-          Right-of-way is decided every BT tick (10 Hz) so dropping a few
-          frames is fine, and reliable QoS introduced 30–60 ms of
-          head-of-line latency that occasionally caused the very deadlocks I
-          was trying to avoid. Best-effort + fresh data won.
+          Best-effort DDS, not reliable. Right-of-way ticks at 10 Hz so a
+          few dropped frames are fine, and reliable QoS added 30–60 ms of
+          head-of-line latency that occasionally caused the deadlocks I was
+          trying to avoid. Fresh beats guaranteed.
         </Callout>
       </Section>
 
-      <Section number="04" label="decisions" title="Behavior tree for right-of-way">
+      <Section number="04" label="decisions" title="Behavior tree instead of FSM">
         <p>
-          I started with a finite state machine. It worked for two bots. With
-          three, I had a state per pairwise interaction and the transition
-          table became something I no longer trusted. I rewrote it as a
-          behavior tree using BehaviorTree.CPP, mostly because Colledanchise and
-          Ögren&apos;s textbook<FootnoteRef n={2} /> makes a convincing case
-          that BTs compose better than FSMs once you have more than a handful
-          of states: subtrees are reusable, fallback semantics are explicit,
-          and you can hot-swap a branch without rederiving the transition
-          graph.
+          Started with a finite state machine. Worked for two bots. With
+          three I had a state per pairwise interaction and the transition
+          table became something I no longer trusted. Rewrote it as a
+          behavior tree on BehaviorTree.CPP, mostly because Colledanchise
+          and Ögren<FootnoteRef n={2} /> argue BTs compose better past a
+          handful of states: subtrees reuse, fallback semantics are
+          explicit, you can hot-swap a branch without rederiving the
+          transition graph.
         </p>
         <ASCIIDiagram
-          number="02"
+          number="03"
           caption="Right-of-way subtree. Fallback (?) tries children left-to-right; sequence (→) runs all in order."
         >
 {`                       [Root Sequence]
@@ -306,40 +300,38 @@ Fallback (?):  succeed on first child that succeeds
 Sequence (→): succeed only if all children succeed`}
         </ASCIIDiagram>
         <p>
-          The decision logic in one line: <em>go if no conflict, or if I
-          outrank my neighbour, or if I get there first; otherwise yield</em>.
-          The third clause is the one that did the heavy lifting (see Results).
+          The decision in one line: <em>go if no conflict, or if I outrank
+          my neighbour, or if I get there first; otherwise yield</em>. The
+          third clause did most of the work (see Results).
         </p>
         <p>
-          Why this beats an FSM in practice: when I added the traffic-light
-          rule three weeks in, it was a new subtree spliced under the root, not
-          a rewrite of every transition. The yield/go subtree didn&apos;t even
-          know traffic lights existed.
+          The payoff: when I added the traffic-light rule three weeks in,
+          it was a new subtree under the root, not a rewrite of every
+          transition. The yield/go subtree didn&apos;t even know traffic
+          lights existed.
         </p>
       </Section>
 
       <Section number="05" label="motion" title="Hybrid A* plus DWA">
         <p>
-          TurtleBots are differential-drive but the simulated bodies have
-          non-trivial turning radii at the velocities I run them at, so I treat
-          them as non-holonomic for planning purposes. Plain grid A* produces
-          plans with in-place rotations that the controller can&apos;t track
-          cleanly, especially when threading a curb cutout.
+          TurtleBots are diff-drive but the simulated bodies have
+          non-trivial turning radii at my run velocities, so I treat them
+          as non-holonomic. Plain grid A* produces in-place rotations the
+          controller can&apos;t track when threading a curb cutout.
         </p>
         <p>
-          <strong>Global: Hybrid A*.</strong> State is (x, y, θ); expansions
-          are short kinematically-feasible arcs at a fixed steering set.
-          Heuristic is the max of Reeds-Shepp distance (ignoring obstacles) and
-          2D Dijkstra (ignoring kinematics), which is a standard trick to keep
-          the search admissible while staying informed. Plans take 40–120 ms
-          on my laptop for a 20 m route.
+          <strong>Global: Hybrid A*.</strong> State is (x, y, θ);
+          expansions are short kinematically-feasible arcs at a fixed
+          steering set. Heuristic is the max of Reeds-Shepp distance
+          (ignoring obstacles) and 2D Dijkstra (ignoring kinematics).
+          Plans take <strong>40–120 ms</strong> on my laptop for a 20 m
+          route.
         </p>
         <p>
-          <strong>Local: DWA.</strong> Hybrid A* gives me a path; DWA picks the
-          next <InlineCode>(v, ω)</InlineCode> command from the dynamic window
-          of reachable velocities, scoring each candidate trajectory and
-          choosing the highest. This is where late-detected jaywalkers get
-          dodged — the global plan never sees them.
+          <strong>Local: DWA.</strong> Hybrid A* gives me a path; DWA picks
+          the next <InlineCode>(v, ω)</InlineCode> from the dynamic window
+          of reachable velocities. Late-detected jaywalkers get dodged
+          here — the global plan never sees them.
         </p>
         <p>The DWA objective, classic Fox et al.<FootnoteRef n={3} />:</p>
         <Equation
@@ -347,76 +339,77 @@ Sequence (→): succeed only if all children succeed`}
           tex={`G(v, \\omega) = \\sigma\\big(\\alpha \\cdot \\text{heading}(v, \\omega) + \\beta \\cdot \\text{clearance}(v, \\omega) + \\gamma \\cdot \\text{velocity}(v, \\omega)\\big)`}
         />
         <p>
-          Where <InlineCode>heading</InlineCode> rewards alignment with the
-          global path&apos;s next pose, <InlineCode>clearance</InlineCode>{" "}
-          rewards distance to the nearest costmap obstacle along the rolled-out
-          trajectory, <InlineCode>velocity</InlineCode> rewards forward speed
-          (so the bot doesn&apos;t choose to stop just to maximize clearance),
-          and σ is a smoothing/normalization step. I run with{" "}
-          <InlineCode>α=0.6, β=0.3, γ=0.1</InlineCode> after a small grid
-          search; jaywalker-heavy scenarios wanted higher β but then the bots
-          drove like learner drivers in open intersections.
+          <InlineCode>heading</InlineCode> rewards alignment with the next
+          pose, <InlineCode>clearance</InlineCode> rewards distance to the
+          nearest costmap obstacle, <InlineCode>velocity</InlineCode>{" "}
+          rewards forward speed (so the bot doesn&apos;t stop just to
+          maximize clearance). I run <InlineCode>α=0.6, β=0.3, γ=0.1</InlineCode>{" "}
+          after a small grid search. Jaywalker-heavy scenarios wanted
+          higher β but then the bots drove like learner drivers in open
+          intersections.
         </p>
         <p>
-          The interaction between BT and DWA matters: when the BT decides to{" "}
-          <em>yield</em>, it doesn&apos;t stop the controller. It clamps the
-          upper bound of the dynamic window to a crawl (0.05 m/s) and biases{" "}
-          <InlineCode>clearance</InlineCode> upward. The bot keeps moving
-          slowly, which makes resuming smooth, and crucially,{" "}
-          <em>keeps publishing a non-stale ETA</em>. A stopped robot with{" "}
-          <InlineCode>eta = ∞</InlineCode> confuses every neighbour&apos;s BT.
+          BT and DWA interaction matters: when the BT decides to{" "}
+          <em>yield</em>, it doesn&apos;t stop the controller. It clamps
+          the dynamic window&apos;s upper bound to a crawl (0.05 m/s) and
+          biases clearance up. The bot keeps creeping, which makes resuming
+          smooth and — crucially — <em>keeps publishing a non-stale ETA</em>.
+          A stopped robot with <InlineCode>eta = ∞</InlineCode> confuses
+          every neighbour&apos;s BT.
         </p>
       </Section>
 
       <Section number="06" label="perception" title="YOLO for signs and jaywalkers">
         <p>
-          Perception is a YOLOv8n<FootnoteRef n={4} /> fine-tuned on ~2,400
-          hand-labelled frames from the Gazebo cameras. Classes:{" "}
-          <InlineCode>stop_sign, yield_sign, traffic_light_(red/yellow/green),
-          pedestrian</InlineCode>. Training took about 40 minutes on a single
-          4070, mAP@0.5 around 0.88 on a held-out 300-frame set, with the
-          pedestrian class noticeably worse (0.79) than signs (0.93+).
+          YOLOv8n<FootnoteRef n={4} /> fine-tuned on ~2,400 hand-labelled
+          Gazebo frames. Classes: <InlineCode>stop_sign, yield_sign,
+          traffic_light_(red/yellow/green), pedestrian</InlineCode>. ~40
+          minutes on a 4070, mAP@0.5 around 0.88, pedestrians noticeably
+          worse (0.79) than signs (0.93+).
         </p>
         <p>
-          Signs are easy: they don&apos;t move, they&apos;re geometrically
-          distinctive, and you can afford a high confidence threshold (0.7)
-          because a missed detection on one frame is recovered on the next.
-          Pedestrians are the actual perception problem. A jaywalker can appear
-          from behind a parked car and be in the bot&apos;s path in under 400
-          ms. Drop the confidence threshold and you get phantom pedestrians
-          spawning from textured walls and the bot panic-stops in the middle of
-          an intersection. Raise it and you miss the actual person.
+          Signs are easy. They don&apos;t move, they&apos;re geometrically
+          distinct, you can run a high confidence threshold (0.7) because
+          a missed frame is recovered on the next. Pedestrians are the
+          actual problem. A jaywalker can appear from behind a parked car
+          and be in the bot&apos;s path in under 400 ms. Drop the
+          threshold and you get phantom pedestrians spawning from textured
+          walls and the bot panic-stops mid-intersection. Raise it and you
+          miss the real person.
         </p>
         <p>
-          What worked: a per-track temporal vote. I run a cheap IOU tracker
-          over detections and only commit to a pedestrian-in-path until
-          I&apos;ve seen the track in <strong>3 of the last 5 frames at
-          confidence ≥ 0.45</strong>. That&apos;s ~150 ms of latency, which the
-          DWA&apos;s planning horizon (~1.2 s) absorbs comfortably. Below that
-          threshold the BT treats the detection as advisory and only nudges
-          clearance weights up, rather than triggering a hard yield.
+          What worked: a per-track temporal vote. I run a cheap IOU
+          tracker and only commit to a pedestrian-in-path once I&apos;ve
+          seen the track in <strong>3 of the last 5 frames at confidence
+          ≥ 0.45</strong>. That&apos;s ~150 ms of latency, which the
+          DWA&apos;s ~1.2 s horizon absorbs comfortably. Below threshold
+          the BT treats the detection as advisory and only nudges
+          clearance weights up.
         </p>
         <Callout label="perception win">
-          This was the single biggest behavioural improvement on the perception
-          side. Frame-by-frame thresholding gave me 67% safe-arrival; temporal
-          voting got me to 94%.
+          Biggest single improvement on the perception side.
+          Frame-by-frame thresholding got 67% safe-arrival; temporal
+          voting got 94%.
         </Callout>
+        <MultibotTemporalVote
+          number="04"
+          caption="Per-track vote commits the real jaywalker, rejects the phantom."
+          meta="3 of last 5 @ conf ≥ 0.45"
+        />
       </Section>
 
       <Section number="07" label="results" title="200 runs in a mini-city">
         <p>
-          Setup: a 30 m × 30 m mini-city in Gazebo with 6 intersections (4
-          stop-controlled, 2 signalized), 3 TurtleBot3 Burgers, and 8 scripted
-          pedestrians who choose crossing times from a Poisson process with
-          rate matched roughly to a slow college campus. Each run lasts up to 5
-          minutes; each bot has a randomized 4-waypoint tour. I ran 200
-          randomized seeds.
+          Setup: a 30 m × 30 m Gazebo mini-city with 6 intersections (4
+          stop-controlled, 2 signalized), 3 TurtleBot3 Burgers, 8 scripted
+          pedestrians crossing on a Poisson process tuned to a slow
+          college campus. Each run is up to 5 minutes with a randomized
+          4-waypoint tour per bot. 200 seeds.
         </p>
         <p>
-          Baseline: no <InlineCode>/fleet/intent</InlineCode> topic; each bot
-          uses only its LIDAR-derived costmap and a naive &quot;slow if
-          obstacle in conflict zone&quot; rule. Same planners, same
-          perception, same BT <em>minus</em> the right-of-way subtree.
+          Baseline: same stack minus <InlineCode>/fleet/intent</InlineCode>{" "}
+          and the right-of-way subtree. Each bot uses only its LIDAR
+          costmap and &quot;slow if obstacle in conflict zone.&quot;
         </p>
         <table>
           <thead>
@@ -459,27 +452,25 @@ Sequence (→): succeed only if all children succeed`}
           </tbody>
         </table>
         <p>
-          *near-miss defined as pedestrian within 0.4 m of bot footprint at any
-          point.
+          *near-miss = pedestrian within 0.4 m of bot footprint.
         </p>
         <p>
-          The remaining 6% of failures cluster almost entirely around dense
-          pedestrian crossings rather than vehicle-vehicle conflicts. In 11 of
-          12 failures, the bot saw the pedestrian, yielded correctly, but a
-          second pedestrian entered the crossing before the first cleared and
-          the bot timed out waiting. That&apos;s a policy problem, not a
-          coordination one — the BT has no notion of &quot;creep into the
-          crossing once the leading pedestrian passes.&quot;
+          The remaining 6% of failures cluster around dense pedestrian
+          crossings, not vehicle-vehicle conflicts. In 11 of 12 failures
+          the bot saw the pedestrian, yielded correctly, and then a second
+          pedestrian entered before the first cleared and the bot timed
+          out waiting. That&apos;s a policy hole — the BT has no notion of
+          &quot;creep in once the leading pedestrian passes.&quot;
         </p>
       </Section>
 
-      <Section number="08" label="ablation" title="A surprising finding">
+      <Section number="08" label="ablation" title="The surprising field">
         <p>
-          I expected the <InlineCode>priority</InlineCode> field to do most of
-          the work. It&apos;s the most explicit conflict-resolution signal in
-          the protocol. It didn&apos;t.
+          I expected <InlineCode>priority</InlineCode> to do most of the
+          work. It&apos;s the most explicit conflict-resolution signal in
+          the message. It didn&apos;t.
         </p>
-        <p>Ablating the message field-by-field:</p>
+        <p>Field-by-field ablation:</p>
         <table>
           <thead>
             <tr>
@@ -516,70 +507,53 @@ Sequence (→): succeed only if all children succeed`}
             </tr>
           </tbody>
         </table>
-        <BarChart
-          number="03"
-          caption="Deadlocks per 5-min run by which intent field was ablated. Removing eta_intersection collapses the gains entirely."
-          meta="200 runs each"
-          bars={[
-            { label: "full", value: 0.18 },
-            { label: "no priority", value: 0.27 },
-            { label: "no waypoint", value: 0.41 },
-            { label: "no eta", value: 1.12, highlight: true },
-            { label: "baseline", value: 1.46, highlight: true },
-          ]}
-          yTicks={[0, 0.3, 0.6, 0.9, 1.2, 1.5]}
-          yMax={1.6}
-          yFormat={(v) => v.toFixed(2)}
-          xAxisLabel="condition"
-          yAxisLabel="deadlocks / run"
+        <MultibotEtaIsLoadBearing
+          number="05"
+          caption="Removing eta_intersection collapses ~80% of the deadlock-reduction gain."
+          meta="200 runs · deadlocks per 5-min run"
         />
         <p>
-          <InlineCode>eta_intersection</InlineCode> is doing roughly{" "}
-          <strong>80% of the deadlock reduction on its own</strong>. Why:
-          without an ETA, the only way for the BT to decide who goes first is
-          priority or pose-distance heuristics, and both are too coarse. Two
-          bots approaching at very different speeds but similar distances will
-          both think the other is &quot;ahead.&quot; Both yield. Standoff.
+          <InlineCode>eta_intersection</InlineCode> does roughly{" "}
+          <strong>80% of the deadlock reduction on its own</strong>.
+          Without an ETA, the BT has to fall back on priority or
+          pose-distance, and both are too coarse. Two bots approaching at
+          different speeds but similar distances will both think the other
+          is ahead. Both yield. Standoff.
         </p>
         <p>
-          With an ETA, the asymmetry is explicit and the &quot;yield only if
-          your neighbour gets there first&quot; rule fires cleanly. Priority
-          becomes a tiebreaker, not the primary signal. In retrospect this is
-          obvious — temporal ordering is what makes traffic legible to{" "}
-          <em>humans</em> too, not spatial ordering — but I had to watch a lot
-          of bots gently bow to each other for ten seconds at a time before I
-          believed it.
+          With an ETA the asymmetry is explicit and the &quot;yield only
+          if your neighbour gets there first&quot; rule fires cleanly.
+          Priority becomes a tiebreaker. Obvious in retrospect — temporal
+          ordering is what makes traffic legible to humans too — but I
+          had to watch a lot of bots gently bow to each other for ten
+          seconds at a time before I believed it.
         </p>
       </Section>
 
-      <Section number="09" label="next" title="What's next">
-        <p>Three things I&apos;d want to tackle before claiming this generalizes.</p>
+      <Section number="09" label="next" title="What I&apos;d push on next">
         <p>
-          <strong>Heterogeneous fleet.</strong> All three bots have identical
-          kinematics, sensors, and the same BT. A mixed fleet (a TurtleBot, a
-          slower load-carrier, a faster scout) would stress the ETA-based
-          ordering and likely require a learned or negotiated priority instead
-          of a static one.
+          <strong>Heterogeneous fleet.</strong> All three bots are
+          identical. Mix in a slow load-carrier and a fast scout and the
+          ETA ordering breaks; static priority probably needs to become
+          negotiated or learned.
         </p>
         <p>
-          <strong>Comms dropout.</strong> Best-effort DDS on a single Wi-Fi
-          network is generous. I&apos;d like to test with 30–50% packet loss
-          and intentional 200 ms latency spikes. My hypothesis: the BT will
-          need a &quot;stale intent&quot; timeout and a conservative fallback,
-          which is a clean subtree addition.
+          <strong>Comms dropout.</strong> Best-effort DDS on one Wi-Fi
+          network is generous. 30–50% packet loss and 200 ms spikes would
+          stress it. My guess: the BT needs a stale-intent timeout and a
+          conservative fallback, which is a clean subtree addition.
         </p>
         <p>
-          <strong>Real hardware.</strong> Gazebo cameras are too clean and the
-          LIDAR is too honest. Real TurtleBots<FootnoteRef n={5} /> with the
-          actual OAK-D camera will surface a different perception failure
-          distribution, and I expect the temporal-vote window to need
-          re-tuning.
+          <strong>Real hardware.</strong> Gazebo cameras are too clean and
+          the LIDAR too honest. Real TurtleBots<FootnoteRef n={5} /> with
+          an OAK-D will surface a different failure distribution and the
+          temporal-vote window will need re-tuning.
         </p>
         <p>
-          Longer term I&apos;m curious whether the intent topic should be
-          replaced by a learned message — let a small policy decide what to
-          broadcast — but that&apos;s a much bigger project and probably needs
-          more than one undergraduate&apos;s worth of evenings.
+          Longer term I want to know whether the intent topic should be
+          replaced by a learned message — let a small policy decide what
+          to broadcast. That&apos;s a much bigger project and probably
+          needs more than one undergrad&apos;s worth of evenings.
         </p>
       </Section>
 

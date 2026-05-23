@@ -20,7 +20,7 @@ export function CodeBlock({ lang, caption, children }: CodeBlockProps) {
         <span className="blog-figure-corner" aria-hidden />
       </div>
       {caption && (
-        <p className="mt-3 font-mono text-[0.65rem] uppercase tracking-[0.18em] text-muted">
+        <p className="mt-3 truncate text-center font-mono text-[0.58rem] uppercase tracking-[0.16em] text-muted">
           {caption}
         </p>
       )}

@@ -2,7 +2,6 @@ import {
   Section,
   TLDR,
   TLDRItem,
-  ASCIIDiagram,
   Callout,
   CodeBlock,
   Equation,
@@ -12,6 +11,9 @@ import {
   InlineCode,
   LineChart,
   FlowDiagram,
+  TradeLeakageGuard,
+  TradeCriticGate,
+  TradeSharpeCollapse,
 } from "@/components/blog";
 
 export function TradePost() {
@@ -19,96 +21,70 @@ export function TradePost() {
     <>
       <TLDR>
         <TLDRItem>
-          Built an LLM-driven trading research agent that ingests EDGAR Form 4
-          and PTR filings in near real-time, pulls vetted news context via Exa,
-          and uses Claude to generate a structured thesis explaining{" "}
-          <em>why</em> a trade likely happened.
+          LLM trading-research agent. Ingests EDGAR Form 4 and congressional
+          PTR filings, pulls news through Exa, and uses Claude to write a
+          structured thesis explaining <em>why</em> a trade probably happened.
         </TLDRItem>
         <TLDRItem>
-          A second Claude pass acts as adversarial reviewer, rejecting theses
-          built on clickbait, circular reasoning, or post-hoc rationalization.
-          Cut accepted theses by ~38% but raised downstream hit rate
-          meaningfully.
+          A second Claude pass plays adversary and tries to break the thesis.
+          It rejects about <strong>38%</strong>. Hit rate moved from 51% to{" "}
+          <strong>58%</strong>.
         </TLDRItem>
         <TLDRItem>
-          Wrote a filing-date-aware backtester that strictly enforces the
-          disclosure-lag inequality so no feature can leak information
-          unavailable at filing time.
+          Filing-date-aware backtester. No feature can see past{" "}
+          <InlineCode>t_filing</InlineCode>. Sharpe dropped from 3.2 to 1.6
+          after I fixed two leakage bugs.
         </TLDRItem>
         <TLDRItem>
-          Over a 90-day paper-trading window the strategy returned{" "}
-          <strong>+12.0%</strong> vs SPY at <strong>+4.1%</strong>, with a
-          Sharpe of ~1.6 and a hit rate of 58% on closed positions.
+          90-day paper window: <strong>+12.0%</strong> vs SPY at{" "}
+          <strong>+4.1%</strong>, Sharpe ~1.6, 58% hit rate on 141 closed
+          positions.
         </TLDRItem>
         <TLDRItem>
-          Stack: Next.js (UI + serverless API), Firebase (Firestore, Auth,
-          Functions), WebSockets for live filing pushes, Claude Sonnet for
-          reasoning, Exa for retrieval.
+          Stack: Next.js, Firebase (Firestore, Auth, Functions), WebSockets for
+          live filing pushes, Claude Sonnet, Exa.
         </TLDRItem>
       </TLDR>
 
-      <Section number="01" label="motivation" title="Why explaining the WHY is the hard part">
+      <Section number="01" label="context" title="What it does">
         <p>
-          There is no shortage of dashboards that <em>list</em> politician
-          trades. Quiver, Capitol Trades, Unusual Whales — they all show you
-          that Senator X bought $50K–$100K of NVDA on some date. What none of
-          them do well is answer the question a hiring manager (or a portfolio
-          manager) actually cares about: <strong>why did this trade happen, and
-          is the reason any good?</strong>
+          Quiver, Capitol Trades, and Unusual Whales already list politician
+          trades. None of them answer the question a portfolio manager
+          actually cares about: <strong>why, and is it any good?</strong>
         </p>
         <p>
-          That sounds like a tailor-made job for an LLM. It mostly isn&apos;t.
-          Naive approaches fail in three ugly ways.
-        </p>
-        <p>
-          <strong>Hallucinated rationales.</strong> Ask Claude{" "}
-          <em>&quot;why did Senator X buy NVDA on March 3?&quot;</em> without
-          grounding and you will get a beautifully written paragraph about AI
-          tailwinds, datacenter buildouts, and committee assignments — half of
-          which is wrong, and none of which is falsifiable from the prompt
-          alone.
-        </p>
-        <p>
-          <strong>Clickbait contamination.</strong> Even with retrieval, the
-          top results for{" "}
-          <em>&quot;Senator X NVDA&quot;</em> on any given day are a tier of SEO
-          farms (&quot;YOU WON&apos;T BELIEVE WHAT THIS SENATOR JUST
-          BOUGHT&quot;). Feed those in and the model dutifully launders them
-          into &quot;analyst sentiment.&quot;
-        </p>
-        <p>
-          <strong>Post-hoc rationalization.</strong> This is the subtle one. If
-          you query news from <em>after</em> the filing date, the model finds
-          whatever happened next and writes a thesis that &quot;predicts&quot;
-          it. The thesis looks brilliant. It is worthless. It is also what most
-          casual LLM-trading demos accidentally do.
-        </p>
-        <p>
-          The whole project is, in a sense, an engineered defense against those
-          three failure modes.
+          The naive version is easy to get wrong in three ways. Ask Claude
+          open-endedly <em>&quot;why did Senator X buy NVDA on March 3?&quot;</em>{" "}
+          and you get a clean paragraph about AI tailwinds that is mostly
+          invented. Add retrieval and the top results for politician plus
+          ticker queries are SEO farms that get laundered into &quot;analyst
+          sentiment.&quot; Worst, if the news query pulls from after the
+          filing date the model writes a thesis that &quot;predicts&quot; what
+          already happened. Most casual LLM-trading demos accidentally do
+          that. The pipeline is mostly defenses against those three.
         </p>
       </Section>
 
       <Section number="02" label="architecture" title="System overview">
         <p>
-          The hard architectural rule, drawn as the dashed line in Fig 1:
-          anything above it is computed using only data with{" "}
-          <InlineCode>available_at &lt;= t_filing</InlineCode>. Below the line
-          is allowed to peek at future prices, because that is the
-          backtest&apos;s job.
+          The hard rule, drawn as the dashed line in Fig 1. Anything above it
+          uses only data with{" "}
+          <InlineCode>available_at &lt;= t_filing</InlineCode>. Below it can
+          peek at future prices, because that&apos;s the backtester&apos;s
+          job.
         </p>
         <FlowDiagram
           number="01"
           caption="End-to-end pipeline. Everything above the dashed line runs on filing-time information only."
           meta="filing-time invariant"
-          viewBox="0 0 760 920"
+          viewBox="0 0 760 720"
           nodes={[
             {
               id: "edgar",
               x: 20,
-              y: 70,
+              y: 50,
               w: 170,
-              h: 80,
+              h: 70,
               badge: "feed",
               title: "EDGAR",
               items: ["Form 4 / PTR"],
@@ -118,34 +94,32 @@ export function TradePost() {
               x: 230,
               y: 30,
               w: 510,
-              h: 130,
+              h: 100,
               badge: "01 / ingest",
               title: "Filing Ingest",
               items: [
-                "normalize ticker, side, size, filer",
-                "dedupe vs Firestore",
+                "normalize ticker, side, size · dedupe vs Firestore",
               ],
             },
             {
               id: "context",
               x: 230,
-              y: 210,
+              y: 160,
               w: 510,
-              h: 150,
+              h: 120,
               badge: "02 / retrieval",
               title: "Context Builder",
               items: [
                 "Exa neural search (published_before t_f)",
-                "source allow-list + domain trust score",
-                "8-K · earnings · committee schedule",
+                "domain trust + 8-K · earnings · committee schedule",
               ],
             },
             {
               id: "thesis",
               x: 230,
-              y: 410,
+              y: 310,
               w: 510,
-              h: 115,
+              h: 90,
               badge: "03 / claude · json-mode",
               title: "Thesis Generator",
               items: ["→ { driver, evidence[], confidence, ... }"],
@@ -153,9 +127,9 @@ export function TradePost() {
             {
               id: "critic",
               x: 230,
-              y: 575,
+              y: 430,
               w: 510,
-              h: 130,
+              h: 110,
               badge: "04 / claude · adversary",
               title: "Self-Check Critic",
               items: [
@@ -166,9 +140,9 @@ export function TradePost() {
             {
               id: "backtest",
               x: 230,
-              y: 790,
+              y: 580,
               w: 510,
-              h: 115,
+              h: 90,
               badge: "05 / paper trader",
               title: "Backtester · Live Paper Trader",
               items: [
@@ -188,74 +162,61 @@ export function TradePost() {
             { from: "thesis:bottom", to: "critic:top" },
             { from: "critic:bottom", to: "backtest:top" },
           ]}
-          cutoff={{ y: 750, label: "filing time" }}
+          cutoff={{ y: 555, label: "filing time" }}
         />
       </Section>
 
-      <Section number="03" label="data" title="Data sources">
-        <p>I leaned on three feeds.</p>
+      <Section number="03" label="data" title="Three feeds">
         <p>
-          <strong>EDGAR Form 4 and Periodic Transaction Reports (PTRs).</strong>{" "}
-          Form 4 covers corporate insiders and lands within two business days
-          <FootnoteRef n={1} />. Congressional PTRs are the messier feed —
-          required by the STOCK Act within 30 days of notification, with a hard
-          45-day ceiling. In practice many disclosures arrive at the ceiling,
-          sometimes later, often as PDFs that need OCR. I built a small parser
-          that normalizes both into a shared{" "}
-          <InlineCode>Filing</InlineCode> document in Firestore. The schema has
-          a <InlineCode>t_filing</InlineCode> field (when the filing became
-          public) and a <InlineCode>t_trade</InlineCode> field (when the trade
-          actually executed). These two timestamps are the single most important
-          pair of values in the whole project.
+          <strong>EDGAR Form 4 and PTRs.</strong> Form 4 covers corporate
+          insiders and lands within two business days<FootnoteRef n={1} />.
+          Congressional PTRs are messier. STOCK Act<FootnoteRef n={4} /> says
+          30 days, hard ceiling 45. Most arrive at the ceiling, sometimes
+          later, often as scanned PDFs. A parser normalizes both into a
+          shared <InlineCode>Filing</InlineCode> doc in Firestore with two
+          timestamps: <InlineCode>t_filing</InlineCode> (when it became
+          public) and <InlineCode>t_trade</InlineCode> (when it executed).
+          Single most important pair of values in the project.
         </p>
         <p>
-          <strong>Exa for vetted news.</strong> I went back and forth on this.
-          Bing News API is cheaper. Google Programmable Search has more
-          coverage. But Exa&apos;s neural search lets me query semantically
-          (&quot;evidence that NVDA datacenter demand was strengthening before
-          2026-03-03&quot;) and — crucially — supports a{" "}
-          <InlineCode>published_before</InlineCode> filter that actually works
-          <FootnoteRef n={2} />. I also maintain a per-domain trust score:
-          Reuters, Bloomberg, WSJ, FT, the company&apos;s own 8-Ks score high;
-          Seeking Alpha contributor posts score middling; a long tail of content
-          farms score zero and get filtered out entirely.
+          <strong>Exa for news.</strong> Bing News is cheaper and Google
+          Programmable Search has more coverage. I picked Exa because the
+          neural search lets me query semantically (&quot;evidence NVDA
+          datacenter demand was strengthening before 2026-03-03&quot;) and
+          its <InlineCode>published_before</InlineCode> filter actually works
+          <FootnoteRef n={2} />. On top of that I keep a per-domain trust
+          score: Reuters, Bloomberg, WSJ, FT, and company 8-Ks score high.
+          Seeking Alpha contributor posts sit in the middle. Content farms
+          score zero and get filtered out.
         </p>
         <p>
-          <strong>SEC 8-Ks and earnings transcripts.</strong> Cheap, structured,
-          free, and almost always the actual cause of any interesting
-          institutional trade. I rank these above news whenever both are
-          available.
-        </p>
-        <p>
-          Why not just headlines? Because headlines optimize for clicks, not for
-          causal explanation. A headline tells you what happened. An 8-K tells
-          you what the company is legally telling investors happened. Those are
-          very different texts.
+          <strong>SEC 8-Ks and earnings transcripts.</strong> Free,
+          structured, and usually the actual cause of any interesting
+          institutional trade. Ranked above news when both are available.
         </p>
       </Section>
 
-      <Section number="04" label="prompt design" title="Thesis generation">
+      <Section number="04" label="prompt" title="Thesis generation">
         <p>
-          The thesis-generation prompt is the most-iterated artifact in the
-          codebase. Early versions asked Claude open-endedly to{" "}
-          <em>&quot;explain why this trade likely happened.&quot;</em> The
-          outputs were lovely English and useless data. The current prompt does
-          four things:
+          The thesis prompt is the most-iterated artifact in the codebase.
+          Early versions asked Claude<FootnoteRef n={3} /> open-endedly to{" "}
+          <em>&quot;explain why this trade likely happened.&quot;</em> Pretty
+          prose, no structure. The current prompt does four things.
         </p>
         <p>
-          <strong>1. Forces JSON output</strong> against a strict schema, so
-          downstream code can score and compare theses.{" "}
-          <strong>2. Provides evidence first, question last.</strong> Claude
-          sees the curated Exa context block <em>before</em> it sees the
-          filing. This was a small change that meaningfully reduced the
-          tendency to anchor on the ticker and confabulate.{" "}
-          <strong>3. Requires inline citation IDs</strong> for every claim in{" "}
-          <InlineCode>evidence[]</InlineCode>. Any claim with no citation is
-          auto-rejected before the critic even sees it.{" "}
-          <strong>4. Asks for a falsifiable counter-signal.</strong>{" "}
-          <em>&quot;What would have to be true for this thesis to be
-          wrong?&quot;</em> This single field is the most useful one in the
-          whole schema, both for the critic and for me reading it.
+          <strong>1.</strong> Forces JSON against a strict schema so
+          downstream code can score theses. <strong>2.</strong> Provides
+          evidence first and the question last, so Claude sees the Exa
+          context block before the filing. Small change, big drop in
+          ticker-anchored confabulation. <strong>3.</strong> Requires inline
+          citation IDs for every claim in{" "}
+          <InlineCode>evidence[]</InlineCode>. No citation, auto-reject
+          before the critic sees it. <strong>4.</strong> Asks for a
+          falsifiable counter-signal:{" "}
+          <em>
+            &quot;what would have to be true for this thesis to be
+            wrong?&quot;
+          </em>
         </p>
         <CodeBlock lang="json" caption="The thesis schema Claude must emit.">
 {`{
@@ -277,35 +238,28 @@ export function TradePost() {
 }`}
         </CodeBlock>
         <p>
-          Note <InlineCode>latest_inclusive</InlineCode>. That field is the
-          contract with the backtester. If a single piece of evidence has a{" "}
-          <InlineCode>published_at</InlineCode> later than that timestamp, the
-          whole thesis is invalid and gets dropped on the floor.
+          <InlineCode>latest_inclusive</InlineCode> is the contract with the
+          backtester. Any evidence with a{" "}
+          <InlineCode>published_at</InlineCode> later than that timestamp and
+          the whole thesis gets dropped.
         </p>
       </Section>
 
       <Section number="05" label="critic" title="The self-check loop">
         <p>
-          This is the part I am proudest of, and also the part that took the
-          longest to get right.
+          First version was a single critic prompt:{" "}
+          <em>&quot;Here is a thesis. Score it 1 to 10.&quot;</em> It scored
+          everything a 7.
         </p>
         <p>
-          The first version was a single critic prompt: <em>&quot;Here is a
-          thesis. Score it 1–10.&quot;</em> It scored everything a 7. Useless.
-        </p>
-        <p>
-          The current critic is structured as an <em>adversary</em>. It is
-          told its job is to break the thesis, not evaluate it. It runs through
-          a checklist:
-        </p>
-        <p>
-          Does every evidence item have a citation that actually loads and
-          contains the claim? Is any evidence from a domain with trust score
-          below 0.5? Is the thesis <em>circular</em> (does it cite the filing
-          itself, or news that exists only because of the filing)? Does the{" "}
-          <InlineCode>counter_signal</InlineCode> field point at something
-          genuinely observable, or is it a tautology? Is the confidence
-          calibrated against the weight-sum of evidence?
+          The current critic is structured as an <em>adversary</em>. Its job
+          is to break the thesis, not evaluate it. Does every evidence item
+          have a citation that actually loads? Is any evidence from a domain
+          with trust under 0.5? Is the thesis circular, meaning does it cite
+          the filing itself or news that only exists because of the filing?
+          Is the <InlineCode>counter_signal</InlineCode> observable or a
+          tautology? Is confidence calibrated against the weight-sum of
+          evidence?
         </p>
         <CodeBlock lang="python" caption="The critic gate. Reject early, fail loud.">
 {`def self_check(thesis, context):
@@ -331,94 +285,91 @@ export function TradePost() {
 
     return Accept(score=critique["adversary_score"])`}
         </CodeBlock>
+        <TradeCriticGate
+          number="02"
+          caption="Adversarial critic on a 100-thesis batch. Smaller accepted set, materially better hit rate."
+          meta="−38% rejected · 51% → 58%"
+        />
         <p>
-          About 38% of generated theses get rejected outright. Another ~15% get
-          sent back for a single revision pass. The remaining ~47% reach the
-          paper trader. Pre-self-check, the strategy&apos;s hit rate was around
-          51%; post-self-check it sits at 58%. The accepted-set is smaller but
-          materially better.
+          About <strong>38%</strong> get rejected outright, another ~15% are
+          sent back for one revision, and the remaining ~47% reach the paper
+          trader. Pre-critic hit rate was 51%. Post-critic, 58%.
         </p>
         <Callout label="design note">
           The critic uses a separate system prompt and a higher temperature
           than the generator. Same temperature in both passes collapsed into
-          agreement; the critic just rubber-stamped. Disagreement is a feature.
+          agreement and the critic just rubber-stamped. Disagreement is the
+          point.
         </Callout>
       </Section>
 
       <Section number="06" label="backtest" title="Filing-date-aware backtesting">
         <p>
-          This is the boring, unglamorous part of the project that I think
-          actually matters most.
+          Politicians disclose late. Form 4 insiders disclose less late but
+          still not in real time. Use any information dated after{" "}
+          <InlineCode>t_filing</InlineCode>, including price action between{" "}
+          <InlineCode>t_trade</InlineCode> and{" "}
+          <InlineCode>t_filing</InlineCode>, and the backtest is contaminated
+          and the paper returns are fiction.
         </p>
         <p>
-          Politicians disclose late. Form 4 insiders disclose less late, but
-          still not in real time. If I build a feature for a trade using{" "}
-          <em>any</em> information dated after{" "}
-          <InlineCode>t_filing</InlineCode> — including the price action that
-          occurred between <InlineCode>t_trade</InlineCode> and{" "}
-          <InlineCode>t_filing</InlineCode> — my backtest is contaminated and
-          my paper returns are fiction.
-        </p>
-        <p>
-          The guard rule, applied to every feature{" "}
+          The guard, applied to every feature{" "}
           <InlineCode>x_i</InlineCode> used to construct or score a thesis:
         </p>
         <Equation
           label="leakage guard"
           tex={`\\forall \\, x_i \\in \\mathcal{F}(\\text{filing}_j): \\quad \\tau(x_i) \\leq t_{\\text{filing}}^{(j)} \\quad \\text{and} \\quad t_{\\text{trade}}^{(j)} \\leq t_{\\text{filing}}^{(j)}`}
         />
+        <TradeLeakageGuard
+          number="03"
+          caption="Evidence-pinning gate. Documents published after t_filing are dropped before Claude sees them."
+          meta="7 candidates · 4 admitted · ≤ t_filing"
+        />
         <p>
-          Where <InlineCode>τ(x_i)</InlineCode> is the timestamp at which
-          feature <InlineCode>x_i</InlineCode> first became publicly available,
-          and <InlineCode>F(filing_j)</InlineCode> is the feature set for
-          filing <InlineCode>j</InlineCode>. The second clause is just the
-          definition of disclosure lag and is always true by construction; the
-          first is the one the system has to actively enforce.
-        </p>
-        <p>
-          Concretely, the backtester does three things to enforce this.{" "}
-          <strong>Evidence-window pinning</strong>: every Exa query is issued
-          with <InlineCode>published_before = t_filing</InlineCode>. Any
-          document returned with a later{" "}
-          <InlineCode>published_at</InlineCode> is dropped before being shown
-          to Claude. <strong>Price-feature lag</strong>: any rolling indicator
-          (e.g. 20-day momentum) used as a feature is computed on{" "}
-          <InlineCode>[t_filing - 20d, t_filing]</InlineCode>, never{" "}
-          <InlineCode>[t_trade - 20d, t_trade]</InlineCode>. The latter would
-          be cheating on roughly 30 days of lookahead.{" "}
-          <strong>Entry simulation</strong>: the simulated entry price is the
-          open on the <em>next</em> trading day after{" "}
-          <InlineCode>t_filing</InlineCode>, not the politician&apos;s actual
-          fill price. This is what a real follower could have done.
+          <InlineCode>τ(x_i)</InlineCode> is when feature{" "}
+          <InlineCode>x_i</InlineCode> first became public. The second clause
+          is the definition of disclosure lag, true by construction. The
+          first is enforced in three places. <strong>Evidence pinning</strong>:
+          every Exa query carries{" "}
+          <InlineCode>published_before = t_filing</InlineCode>, so later docs
+          get dropped before Claude sees them.{" "}
+          <strong>Price-feature lag</strong>: rolling indicators (e.g. 20-day
+          momentum) compute on{" "}
+          <InlineCode>[t_filing - 20d, t_filing]</InlineCode>, never on{" "}
+          <InlineCode>[t_trade - 20d, t_trade]</InlineCode>, since the latter
+          is 30 days of free lookahead. <strong>Entry simulation</strong>:
+          simulated entry is the open on the next trading day after{" "}
+          <InlineCode>t_filing</InlineCode>, not the politician&apos;s fill
+          price. What a real follower could have done.
         </p>
         <Callout label="war story">
-          Implementing this surfaced two real bugs: an Exa client that was
-          caching results by query string and silently serving future-dated
-          docs to earlier filings, and a Firestore index on{" "}
-          <InlineCode>published_at</InlineCode> that was sorted descending and
-          being read as ascending. Both bugs <em>helped</em> returns. After
-          fixing them, my apparent Sharpe fell from a fantasy 3.2 to a more
-          believable 1.6. That moment was the single best lesson in this whole
-          project.
+          Building this surfaced two real bugs. An Exa client was caching by
+          query string and silently serving future-dated docs to earlier
+          filings. A Firestore index on{" "}
+          <InlineCode>published_at</InlineCode> was sorted descending but
+          read ascending. Both bugs helped returns. After fixing them my
+          Sharpe dropped from 3.2 to 1.6.
         </Callout>
+        <TradeSharpeCollapse
+          number="04"
+          caption="Two leakage bugs were inflating Sharpe by ~2×. Honest backtester after the fix."
+          meta="sharpe 3.2 → 1.6"
+        />
       </Section>
 
       <Section number="07" label="results" title="Paper-trading results">
-        <p>Over a 90-day paper-trading window (Jan–Mar 2026):</p>
+        <p>Over a 90-day paper window (Jan to Mar 2026):</p>
         <p>
-          <strong>Cumulative return:</strong> +12.0% vs SPY at +4.1% over the
-          same window. <strong>Sharpe (daily, annualized):</strong> ~1.6 — not
-          hedge-fund-tier; respectable for a single-signal system.{" "}
-          <strong>Hit rate on closed positions:</strong> 58% (n=141 trades).{" "}
-          <strong>Average holding period:</strong> 31 days, set by the
-          thesis&apos; <InlineCode>horizon_days</InlineCode> field, with an
-          early-exit if the <InlineCode>counter_signal</InlineCode> event
-          triggers. <strong>Largest drawdown:</strong> -6.4%, driven mostly by
-          a cluster of accepted theses around a regional bank that turned out
-          to be wrong about the rate-cut path.
+          <strong>+12.0%</strong> vs SPY at <strong>+4.1%</strong>. Sharpe
+          ~1.6. Hit rate <strong>58%</strong> on 141 closed positions.
+          Average hold 31 days, set by the thesis&apos;{" "}
+          <InlineCode>horizon_days</InlineCode>, with early exit when the{" "}
+          <InlineCode>counter_signal</InlineCode> triggers. Largest drawdown
+          was 6.4%, mostly a cluster of accepted theses around a regional
+          bank that was wrong about the rate-cut path.
         </p>
         <LineChart
-          number="02"
+          number="05"
           caption="Paper-trading equity curve vs SPY, Jan–Mar 2026 (90-day window, n=141 closed positions)."
           meta="n=141 · sharpe 1.6"
           series={[
@@ -455,59 +406,35 @@ export function TradePost() {
           annotation={{ x: 8, label: "drawdown −6.4%" }}
         />
         <p>
-          If you sketch the equity curve in your head: roughly linear
-          outperformance for the first 45 days, a sharp drawdown in
-          mid-February, recovery and acceleration through March. The strategy
-          is meaningfully positive on <em>committee-aligned</em> trades (e.g.
-          Armed Services members trading defense names) and approximately flat
-          on broad-market index trades, which I think is exactly the right
-          shape — the alpha is in informational asymmetry, not in copying
-          directional bets.
+          The strategy was meaningfully positive on committee-aligned trades
+          (Armed Services members trading defense names) and roughly flat on
+          broad-market index trades. Alpha sits in informational asymmetry,
+          not in copying directional bets<FootnoteRef n={5} />.
         </p>
         <p>
-          The thing that surprised me:{" "}
-          <strong>Senate trades did not outperform House trades.</strong>{" "}
-          Conventional wisdom (and the popular &quot;Pelosi Tracker&quot;
-          framing) suggests the opposite. In my window, House PTRs that
-          survived the self-check actually had slightly higher hit rates. I do
-          not yet have a clean explanation. My current guess is selection:
-          there are simply more House filers, so after self-check filtering I
-          get more independent signals from the House.
+          Senate trades did not outperform House trades, which is the
+          opposite of the conventional &quot;Pelosi Tracker&quot; framing.
+          In my window, House PTRs that survived the critic had slightly
+          higher hit rates. I don&apos;t have a clean explanation. Best
+          guess is selection, since more House filers means more independent
+          signals after filtering.
         </p>
       </Section>
 
-      <Section number="08" label="open problems" title="What I'd do differently">
-        <p>A few honest reflections.</p>
+      <Section number="08" label="reflection" title="What I'd do differently">
         <p>
-          <strong>The self-check critic should be a different model family.</strong>{" "}
-          Both passes are Claude. They share priors. I want to run the critic
-          on a non-Anthropic model and see if rejection rates shift; my prior
-          is that they will.
-        </p>
-        <p>
-          <strong>Position sizing is naive.</strong> Equal-weight, capped at 2%
-          NAV per trade. A Kelly-style sizer keyed off the critic&apos;s{" "}
+          Both passes are Claude, so they share priors. I want to run the
+          critic on a non-Anthropic model and watch rejection rates shift.
+          Position sizing is equal-weight capped at 2% NAV; a Kelly-style
+          sizer keyed off the critic&apos;s{" "}
           <InlineCode>recomputed_confidence</InlineCode> is the obvious next
-          step, and I have been nervous to ship it because I do not trust my
-          confidence calibration yet.
-        </p>
-        <p>
-          <strong>PTR OCR is fragile.</strong> Roughly 4% of PTRs come through
-          as scanned PDFs from older filers&apos; offices. My parser drops
-          these; a non-trivial fraction of the most interesting trades may live
-          in that 4%.
-        </p>
-        <p>
-          <strong>90 days is not a backtest.</strong> It is a demo. I want at
-          least two years of out-of-sample data before I would put real money
-          behind this, and that requires building a historical Exa-snapshot
-          corpus, which is its own project.
-        </p>
-        <p>
-          <strong>The UI lies a little.</strong> The Next.js dashboard renders
-          accepted theses with a confidence bar. Users read that bar as
-          &quot;probability of profit&quot; and it is not that. I am going to
-          relabel it.
+          step, but I don&apos;t trust my confidence calibration yet. About
+          4% of PTRs come through as scanned PDFs from older filers&apos;
+          offices and my parser drops them, which probably hides some of the
+          most interesting trades. And 90 days isn&apos;t a backtest,
+          it&apos;s a demo. I want at least two years of out-of-sample data
+          before any real money goes near this, which means a historical
+          Exa-snapshot corpus. That&apos;s its own project.
         </p>
       </Section>
 
@@ -577,9 +504,9 @@ export function TradePost() {
         <Fn n={5}>
           Ziobrowski et al., &quot;Abnormal Returns from the Common Stock
           Investments of the U.S. Senate,&quot; Journal of Financial and
-          Quantitative Analysis — foundational paper on politician-trade alpha
-          and the basis for the &quot;informational asymmetry&quot; framing I
-          used when designing the thesis schema.{" "}
+          Quantitative Analysis. Foundational paper on politician-trade
+          alpha and the basis for the &quot;informational asymmetry&quot;
+          framing.{" "}
           <a
             href="https://www.jstor.org/stable/4126772"
             target="_blank"
