@@ -13,12 +13,23 @@ export function ExperienceShell({ experience, children }: ExperienceShellProps) 
     <main className="blog-screen min-h-screen px-5 py-6 md:px-8 md:py-12">
       <div className="blog-grain" aria-hidden />
       <article className="relative z-10 mx-auto w-full max-w-2xl pb-24">
-        <Link
-          href="/work"
-          className="font-mono text-xs uppercase tracking-[0.18em] text-muted transition-colors hover:text-foreground"
+        <nav
+          aria-label="Breadcrumb"
+          className="font-mono text-xs uppercase tracking-[0.18em] text-muted"
         >
-          / work
-        </Link>
+          <Link
+            href="/"
+            className="transition-colors hover:text-foreground"
+          >
+            / home
+          </Link>
+          <Link
+            href="/work"
+            className="ml-2 transition-colors hover:text-foreground"
+          >
+            / work
+          </Link>
+        </nav>
 
         <header className="mt-14">
           <div className="flex items-center gap-4">

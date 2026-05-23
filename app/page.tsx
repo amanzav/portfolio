@@ -41,7 +41,7 @@ export default function Home() {
               in New York, building an internal software factory, NLP search
               over the alumni network, and a two-stage neural retriever for job
               matching. At{" "}
-              <Link href="/experience/ford-2024" className="text-link">
+              <Link href="/experience/ford-2025" className="text-link">
                 Ford
               </Link>
               , shipped fuel-efficient routing in the{" "}
