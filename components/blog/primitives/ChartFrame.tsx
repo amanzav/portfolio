@@ -21,8 +21,8 @@ export function ChartFrame({ caption, number, meta, children }: ChartFrameProps)
         <div className="px-3 py-4 md:px-5 md:py-5">{children}</div>
         <span className="blog-figure-corner" aria-hidden />
       </div>
-      <figcaption className="mt-3 flex items-baseline gap-3 font-mono text-[0.65rem] uppercase tracking-[0.18em] text-muted">
-        {number && <span className="text-foreground/60">fig {number}</span>}
+      <figcaption className="mt-3 truncate text-center font-mono text-[0.58rem] uppercase tracking-[0.16em] text-muted">
+        {number && <span className="mr-2 text-foreground/60">fig {number}</span>}
         <span>{caption}</span>
       </figcaption>
     </figure>

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Github, Linkedin, Download, Mail } from "lucide-react";
 import { HomeChrome } from "@/components/HomeChrome";
 
 const resumeUrl =
@@ -22,9 +23,9 @@ export default function Home() {
             Aman Zaveri
           </h1>
 
-          <div className="mt-7 space-y-5 text-sm leading-7 text-foreground/75 md:text-[0.95rem] md:leading-8">
+          <div className="mt-7 text-sm leading-7 text-foreground/75 md:text-[0.95rem] md:leading-8">
             <p className="glitch-in [animation-delay:120ms]">
-              I&apos;m studying Mechatronics Engineering at the{" "}
+              3A Mechatronics at the{" "}
               <a
                 href="https://uwaterloo.ca"
                 target="_blank"
@@ -33,45 +34,20 @@ export default function Home() {
               >
                 University of Waterloo
               </a>
-              .
-            </p>
-
-            <p className="glitch-in [animation-delay:180ms]">
-              Currently an SWE intern at{" "}
+              . SWE intern at{" "}
               <Link href="/experience/boomerang" className="text-link">
                 Boomerang
               </Link>{" "}
-              in New York — building Claude-driven internal tooling, an NLP
-              search layer over the alumni network, and a two-stage neural
-              retriever for candidate-to-job matching. Previously at{" "}
-              <Link href="/experience/ford-2024" className="text-link">
+              in New York, building an internal software factory, NLP search
+              over the alumni network, and a two-stage neural retriever for job
+              matching. At{" "}
+              <Link href="/experience/ford-2025" className="text-link">
                 Ford
               </Link>
-              , wrote the C++ graph router shipping in the{" "}
-              <strong>2027 F-150 and Mach-E</strong> lineup, and owned the
-              tire-pressure interrupt path that runs in production cars.
-            </p>
-
-            <p className="glitch-in [animation-delay:280ms]">
-              Notable independent work:{" "}
-              <Link href="/trade" className="text-link">
-                Trade Reasoning Agent
-              </Link>
-              ,{" "}
-              <Link href="/tennis" className="text-link">
-                AI Tennis Coach
-              </Link>
-              ,{" "}
-              <Link href="/autopark" className="text-link">
-                Auto Park
-              </Link>
-              ,{" "}
-              <Link href="/multibot" className="text-link">
-                Multi-Bot Traffic Sim
-              </Link>
-              , and{" "}
+              , shipped fuel-efficient routing in the{" "}
+              <strong>2027 F-150 and Mach-E</strong>. Also worked on{" "}
               <Link href="/projects" className="text-link">
-                more
+                some cool shit
               </Link>
               .
             </p>
@@ -79,34 +55,45 @@ export default function Home() {
 
           <nav
             aria-label="Primary navigation"
-            className="glitch-in mt-10 flex flex-wrap gap-x-5 gap-y-2 text-sm text-foreground/60 [animation-delay:340ms]"
+            className="glitch-in mt-10 flex flex-wrap items-center gap-5 text-foreground/55 [animation-delay:340ms]"
           >
             <a
-              href="https://github.com/Aman-Zaveri"
+              href="https://github.com/amanzav"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-link"
+              aria-label="GitHub"
+              title="GitHub"
+              className="transition-all duration-150 hover:scale-110 hover:text-foreground"
             >
-              GitHub
+              <Github size={19} strokeWidth={1.75} />
             </a>
             <a
-              href="https://linkedin.com/in/aman-zaveri"
+              href="https://linkedin.com/in/amanzav"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-link"
+              aria-label="LinkedIn"
+              title="LinkedIn"
+              className="transition-all duration-150 hover:scale-110 hover:text-foreground"
             >
-              LinkedIn
+              <Linkedin size={19} strokeWidth={1.75} />
             </a>
             <a
               href={resumeUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-link"
+              aria-label="Resume"
+              title="Resume"
+              className="transition-all duration-150 hover:scale-110 hover:text-foreground"
             >
-              Resume
+              <Download size={19} strokeWidth={1.75} />
             </a>
-            <a href="mailto:a2zaveri@uwaterloo.ca" className="text-link">
-              Email
+            <a
+              href="mailto:a2zaveri@uwaterloo.ca"
+              aria-label="Email"
+              title="Email"
+              className="transition-all duration-150 hover:scale-110 hover:text-foreground"
+            >
+              <Mail size={19} strokeWidth={1.75} />
             </a>
           </nav>
         </div>

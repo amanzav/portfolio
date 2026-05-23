@@ -17,12 +17,23 @@ export default function ProjectDetailClient({ project }: ProjectDetailClientProp
       transition={{ duration: 0.18, ease: "easeOut" }}
     >
       <header>
-        <Link
-          href="/projects"
-          className="font-mono text-xs uppercase tracking-[0.18em] text-muted transition-colors hover:text-foreground"
+        <nav
+          aria-label="Breadcrumb"
+          className="font-mono text-xs uppercase tracking-[0.18em] text-muted"
         >
-          / projects
-        </Link>
+          <Link
+            href="/"
+            className="transition-colors hover:text-foreground"
+          >
+            / home
+          </Link>
+          <Link
+            href="/projects"
+            className="ml-2 transition-colors hover:text-foreground"
+          >
+            / projects
+          </Link>
+        </nav>
 
         <p className="mt-14 font-mono text-xs uppercase tracking-[0.22em] text-muted">
           project record

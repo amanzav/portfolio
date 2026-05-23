@@ -24,17 +24,17 @@ export function Equation({ tex, label, display = true }: EquationProps) {
 
   return (
     <div className="my-8">
-      <div className="relative border border-border bg-foreground/[0.015] px-5 py-5 pixel-corners">
+      <div className="border border-border bg-foreground/[0.015] px-5 py-5 pixel-corners overflow-hidden">
         <div
-          className="blog-equation-block overflow-x-auto"
+          className="blog-equation-block max-w-full [&_.katex-display]:!my-0 [&_.katex-display]:overflow-hidden [&_.katex]:text-sm sm:[&_.katex]:text-base"
           dangerouslySetInnerHTML={{ __html: html }}
         />
-        {label && (
-          <span className="absolute right-4 top-3 font-mono text-[0.6rem] uppercase tracking-[0.22em] text-muted">
-            ({label})
-          </span>
-        )}
       </div>
+      {label && (
+        <div className="mt-2 text-center font-mono text-[0.6rem] uppercase tracking-[0.22em] text-muted">
+          ({label})
+        </div>
+      )}
     </div>
   );
 }

@@ -35,9 +35,9 @@ export const experiences: ExperienceItem[] = [
     shortRole: "SWE Intern",
     date: "May 2025 – Aug 2025",
     location: "Waterloo, ON",
-    skills: ["Python", "FastAPI", "PyTorch", "Kafka", "Slack API"],
+    skills: ["C++", "CAN Bus", "Kafka", "Graph Algorithms"],
     description:
-      "Slack LLM copilot over 8M Kafka events + LSTM modem-dropout detector.",
+      "C++ TPMS interrupt path on 1.2M cars + fuel-routing for the 2027 F-150 + Mach-E.",
   },
   {
     id: "ford-2024",
@@ -48,9 +48,9 @@ export const experiences: ExperienceItem[] = [
     shortRole: "SWE Intern",
     date: "Sep 2024 – Dec 2024",
     location: "Waterloo, ON",
-    skills: ["C++", "CAN Bus", "Kafka", "Graph Algorithms"],
+    skills: ["Python", "FastAPI", "PyTorch", "Kafka", "Slack API"],
     description:
-      "C++ TPMS interrupt path on 1.2M cars + fuel-routing for the 2027 F-150 + Mach-E.",
+      "Slack LLM copilot over 8M Kafka events + LSTM modem-dropout detector.",
   },
   {
     id: "transpire",

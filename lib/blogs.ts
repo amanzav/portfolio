@@ -12,11 +12,11 @@ export const blogs: BlogMeta[] = [
     slug: "trade",
     title: "Trade Reasoning Agent",
     subtitle:
-      "An LLM that explains the why behind every politician and retail trade — and self-checks before it speaks.",
+      "An LLM that explains the why behind politician and insider trades, with a second pass that tries to break its own answer.",
     date: "Apr 2026",
     stack: ["Claude", "Exa", "EDGAR", "Next.js", "Firebase"],
     blurb:
-      "Filing-date-aware backtest. 12% paper-trading gain over 90 days. The fight against hallucinated rationales.",
+      "Filing-date-aware backtest. 12% paper-trading gain over 90 days. Mostly defenses against hallucinated rationales.",
   },
   {
     slug: "tennis",
