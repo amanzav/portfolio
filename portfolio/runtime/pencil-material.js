@@ -16,6 +16,8 @@ export function createPencilMaterial(originalMaterial, geometry) {
     side: originalMaterial.side ?? THREE.FrontSide,
     clipping: true,
     uniforms: {
+      graphiteReveal: { value: 1 },
+      paperOpacity: { value: 1 },
       graphiteBase: { value: THREE.MathUtils.lerp(0.998, 0.4, hardware) },
       hardwareAmount: { value: hardware },
       pencilLight: { value: new THREE.Vector3(-0.5, 0.8, 1).normalize() },
@@ -45,6 +47,8 @@ export function createPencilMaterial(originalMaterial, geometry) {
     `,
     fragmentShader: /* glsl */`
       #include <clipping_planes_pars_fragment>
+      uniform float graphiteReveal;
+      uniform float paperOpacity;
       uniform float graphiteBase;
       uniform float hardwareAmount;
       uniform vec3 pencilLight;
@@ -119,7 +123,8 @@ export function createPencilMaterial(originalMaterial, geometry) {
                     + hatch.y * crossWeight * 0.35;
         float intensity = graphiteBase - softGraphite - marks;
         intensity -= hardwareAmount * shade * 0.065;
-        gl_FragColor = vec4(vec3(clamp(intensity, 0.20, 1.0)), 1.0);
+        vec3 graphite = mix(vec3(1.0), vec3(clamp(intensity, 0.20, 1.0)), graphiteReveal);
+        gl_FragColor = vec4(graphite, paperOpacity);
         #include <colorspace_fragment>
       }
     `,

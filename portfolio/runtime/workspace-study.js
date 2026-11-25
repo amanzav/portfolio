@@ -25,6 +25,7 @@ import { createExperienceFollow } from './experience-follow.js';
 import { magneticBlockRepulsion, settleSpring } from './text-repulsion.js';
 import { portfolioFlowField } from './portfolio-field.js';
 import { configurePhoneWorkspace } from './phone-workspace.js';
+import { createArmEntrance } from './arm-entrance.js';
 
 export function mountPortfolio(root) {
   const controller = new AbortController();
@@ -197,6 +198,8 @@ export function mountPortfolio(root) {
     let phone = null;
     let phoneTextTransition = null;
     let observer;
+    const entrance = createArmEntrance({ arm, drawing, options, stage, reducedMotion });
+    cleanup.push(() => entrance.dispose());
     stopRuntime = () => {
       cancelPhoneTextTransition();
       stopFrame();
@@ -971,6 +974,7 @@ export function mountPortfolio(root) {
       if (!phone || phone.needsDrawing) {
         applyArmPose(arm, armPose);
         drawing.update(camera);
+        entrance.draw();
         renderer.render(scene, camera);
         if (phone) phone.needsDrawing = false;
       }
@@ -1001,8 +1005,13 @@ export function mountPortfolio(root) {
       const elapsed = lastTimestamp ? Math.max(0, (timestamp - lastTimestamp) / 1000) : 0;
       lastTimestamp = timestamp;
       const dt = Math.min(elapsed || 1 / 60, .05);
+      if (busy()) entrance.finish();
       let armChanged = false;
-      if (busy() && !motion.paused) {
+      if (entrance.running) {
+        const destination = followGuard.constrain({ fromPose: homePose, candidatePose: followPose, ...followOptions });
+        armPose = entrance.advance(dt, destination.pose);
+        armChanged = true;
+      } else if (busy() && !motion.paused) {
         motion.time = Math.min(motion.plan.endTime, motion.time + elapsed * motion.playbackRate);
         applyMotion();
         if (motion.time === motion.plan.endTime) commitMotion();
@@ -1039,7 +1048,7 @@ export function mountPortfolio(root) {
       }
       if (armChanged) { render(); syncViewState(); }
       else paintOptionOffsets();
-      if ((busy() && !motion.paused) || following || ambientRunning() || (!busy() && optionsSettling)) {
+      if (entrance.running || (busy() && !motion.paused) || following || ambientRunning() || (!busy() && optionsSettling)) {
         if (!frameId) frameId = requestAnimationFrame(animate);
       } else lastTimestamp = 0;
     }
@@ -1077,6 +1086,8 @@ export function mountPortfolio(root) {
       const size = isPhone ? `phone,${rect.width},${viewportHeight},${header.getBoundingClientRect().height}` : `desktop,${rect.width},${rect.height}`;
       if (size === previousSize) return;
       previousSize = size;
+      entrance.finish('resize');
+      entrance.setMode(isPhone);
       const pendingPhoneChange = cancelPhoneTextTransition();
       stage.scrollTop = 0;
       const returningHome = pendingPhoneChange ? !pendingPhoneChange.item : busy() && motion.type === 'home';
@@ -1184,6 +1195,8 @@ export function mountPortfolio(root) {
         }
       }
       if (!ready) {
+        if (!selected) armPose = entrance.start(homePose, Boolean(phone));
+        render(); wake();
         ready = true;
         root.dataset.ready = 'true';
         root.dispatchEvent(new Event('portfolio-ready'));
@@ -1204,9 +1217,11 @@ export function mountPortfolio(root) {
     on(document, 'keydown',event=>{if(event.key==='Escape')requestHome();});
     on(document, 'visibilitychange',()=>{
       if(document.hidden){stopFrame();if(busy())motion.paused=true;}
-      else {if(busy())motion.paused=false;if(busy()||following||ambientRunning())wake();}
+      else {if(busy())motion.paused=false;if(entrance.running||busy()||following||ambientRunning())wake();}
     });
     on(reducedMotion, 'change',()=>{
+      entrance.finish(); entrance.setMode(Boolean(phone));
+      armPose = { ...idlePose };
       stopFrame(); following=false;
       cancelPhoneTextTransition(true);
       for(const item of items){item.offset=0;item.velocity=0;item.repelX=item.repelY=item.repelVX=item.repelVY=0;}
@@ -1221,7 +1236,7 @@ export function mountPortfolio(root) {
       previousSize = '';
       resize();
       if (busy()) motion.paused = false;
-      if (busy() || following || ambientRunning()) wake();
+      if (entrance.running || busy() || following || ambientRunning()) wake();
     });
     on(window, 'pagehide',event=>{
       cancelPhoneTextTransition();
