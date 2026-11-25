@@ -32,21 +32,21 @@ export const blogs: BlogMeta[] = [
     slug: "autopark",
     title: "Auto Park",
     subtitle:
-      "Autonomous parking stack for UWAFT's competition EV. Perception → planning → control, validated in CARLA.",
+      "I trained a simulated car in PyBullet, starting with goal points and then following planned paths.",
     date: "Feb 2026",
-    stack: ["ROS2", "CARLA", "YOLO", "Hybrid A*", "PID"],
+    stack: ["PyBullet", "Gym", "PyTorch", "PPO", "TRPO"],
     blurb:
-      "Why parking is harder than driving. Hybrid A* + Reeds-Shepp, 8 cm tracking RMSE across 50+ scenarios.",
+      "I compared PPO and TRPO updates and worked through why learning one path didn’t transfer reliably to new ones.",
   },
   {
     slug: "multibot",
     title: "Multi-Bot Traffic Sim",
     subtitle:
-      "Three TurtleBots, one mini-city, zero deadlocks. Intent broadcast + behaviour trees.",
+      "I coordinated three simulated TurtleBots through shared crossings using intent messages and behavior trees.",
     date: "Jan 2026",
     stack: ["ROS2", "TurtleBot", "Behaviour Trees", "Hybrid A*", "DWA"],
     blurb:
-      "Deadlocks down 8x vs baseline. The single change that did 80% of the work was broadcasting ETA-at-intersection.",
+      "I worked on arrival estimates, right-of-way decisions, and local motion, then checked both safe arrival and whether the robots kept making progress.",
   },
 ];
 

@@ -1,55 +1,48 @@
-# Aman Zaveri — Portfolio
+# Aman Zaveri - portfolio
 
-A minimal, one-page portfolio built with Next.js, Tailwind CSS, and Framer Motion.
+A static Next.js portfolio with a pencil-rendered robotic arm, responsive work summaries, and standalone engineering articles.
 
-## 🚀 Getting Started
+## Develop
 
-### Install dependencies
+Use Node.js 22.13 or newer.
 
-```bash
-npm install
-```
-
-### Run development server
-
-```bash
+```sh
+npm ci
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+The development command builds the arm bundle before starting Next.js.
+After editing `portfolio/runtime/`, run `npm run build:portfolio` to refresh that bundle.
 
-### Build for production
+## Verify and preview production
 
-```bash
+```sh
+npm run lint
 npm run build
+npm test
+npm start
 ```
 
-This generates a static export in the `/out` folder, ready for GitHub Pages or any static hosting.
+Open http://127.0.0.1:3000/ to review the exact static files that will be deployed.
+Tests include the arm geometry and carries, article links, exported routes, and publishing metadata.
 
-## 🎨 Features
+## Structure
 
-- **No Scrolling** — All content fits above the fold
-- **Dark Theme** — Soft black background with muted accent colors
-- **Subtle Animations** — Framer Motion fades and slides
-- **Static Export** — Fully compatible with GitHub Pages
-- **Optional AI Chat** — "Ask Reva" modal using Groq API
+- `app/(sketch)/` contains the new homepage and article routes.
+- `portfolio/runtime/` contains the approved arm model, pencil renderer, interaction logic, and geometry tests.
+- `components/portfolio/` bridges the isolated animation runtime into React and supplies readable fallback content.
+- `content/articles/` contains the reviewed article markup, rendered on the server at build time.
+- `app/(legacy)/` preserves existing project and experience URLs in their original layout.
 
-## 📦 Tech Stack
+The homepage renders readable work and contact links before JavaScript runs.
+The 3D code loads only on the homepage, retains the fixed phone arm, respects reduced motion, and releases resources when unmounted.
+If the renderer fails or loses its context, the readable summaries remain available.
 
-- Next.js 14+ (App Router)
-- Tailwind CSS
-- Framer Motion
-- shadcn/ui
-- Lucide Icons
+The articles remain directly accessible at `/vooma/`, `/boomerang/`, `/ford/`, `/autopark/`, `/autopark/ppo/`, and `/multibot/`.
+They are intentionally not linked from the homepage summaries.
 
-## 🌐 Deployment
+## Deployment
 
-Deploy to GitHub Pages:
-
-1. Build the project: `npm run build`
-2. Push the `/out` folder to `gh-pages` branch
-3. Enable GitHub Pages in repository settings
-
-## 📄 License
-
-MIT
+GitHub Actions builds and tests the static export, then deploys `out/` to GitHub Pages when `main` is pushed.
+The custom domain is `www.azaveri.com`.
+Generated bundles in `public/portfolio/` and local design studies in `prototypes/` are excluded from Git.

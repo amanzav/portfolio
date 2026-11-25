@@ -135,15 +135,14 @@ export function SyncDirtySet({
   const inView = useInView(ref, { once: false, amount: 0.4 });
   const reduced = useReducedMotion();
 
-  const [phase, setPhase] = useState(0);
-  const [t, setT] = useState(0);
+  const [animatedPhase, setPhase] = useState(0);
+  const [animatedT, setT] = useState(0);
+
+  const phase = reduced ? 3 : animatedPhase;
+  const t = reduced ? 1 : animatedT;
 
   useEffect(() => {
-    if (reduced) {
-      setPhase(3);
-      setT(1);
-      return;
-    }
+    if (reduced) return;
     if (!inView) return;
     let cancelled = false;
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -157,7 +156,7 @@ export function SyncDirtySet({
       at(8000, 3);
       timers.push(setTimeout(() => !cancelled && run(), 11500));
     };
-    run();
+    timers.push(setTimeout(run, 0));
     return () => {
       cancelled = true;
       timers.forEach(clearTimeout);

@@ -1,35 +1,39 @@
-import { MetadataRoute } from 'next'
-import { experiences } from '@/lib/experiences'
-import { projects } from '@/lib/projects'
+import type { MetadataRoute } from "next";
+import { experiences } from "@/lib/experiences";
+import { projects } from "@/lib/projects";
+import { siteUrl } from "@/lib/site";
+
+export const dynamic = "force-static";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://amanzav.github.io'
-  
-  // Main pages
-  const routes = [
-    {
-      url: baseUrl,
-      lastModified: new Date(),
-      changeFrequency: 'weekly' as const,
-      priority: 1,
-    },
-  ]
+  const articlePaths = [
+    "/vooma/",
+    "/boomerang/",
+    "/ford/",
+    "/autopark/",
+    "/autopark/ppo/",
+    "/multibot/",
+  ];
+  const legacyPaths = [
+    "/work/",
+    "/projects/",
+    "/tennis/",
+    "/trade/",
+    ...experiences.map(({ id }) => `/experience/${id}/`),
+    ...projects.map(({ id }) => `/projects/${id}/`),
+  ];
 
-  // Experience detail pages
-  const experienceRoutes = experiences.map((exp) => ({
-    url: `${baseUrl}/experience/${exp.id}`,
-    lastModified: new Date(),
-    changeFrequency: 'monthly' as const,
-    priority: 0.8,
-  }))
-
-  // Project detail pages
-  const projectRoutes = projects.map((project) => ({
-    url: `${baseUrl}/projects/${project.id}`,
-    lastModified: new Date(),
-    changeFrequency: 'monthly' as const,
-    priority: 0.8,
-  }))
-
-  return [...routes, ...experienceRoutes, ...projectRoutes]
+  return [
+    { url: siteUrl(), changeFrequency: "monthly", priority: 1 },
+    ...articlePaths.map((path) => ({
+      url: siteUrl(path),
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    })),
+    ...legacyPaths.map((path) => ({
+      url: siteUrl(path),
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    })),
+  ];
 }

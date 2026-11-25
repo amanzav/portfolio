@@ -88,13 +88,12 @@ export function TennisHomographyProjection({
   // phase: 0 idle · 1 corner markers blink in · 2 H glyph + correspondences
   //        · 3 player + bounce markers appear on left and project across
   //        · 4 right panel border ticks up, coverage tick under p1
-  const [phase, setPhase] = useState(0);
+  const [animatedPhase, setPhase] = useState(0);
+
+  const phase = reduced ? 4 : animatedPhase;
 
   useEffect(() => {
-    if (reduced) {
-      setPhase(4);
-      return;
-    }
+    if (reduced) return;
     if (!inView) return;
     let cancelled = false;
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -108,7 +107,7 @@ export function TennisHomographyProjection({
       at(5400, 4);
       timers.push(setTimeout(() => !cancelled && run(), 7800));
     };
-    run();
+    timers.push(setTimeout(run, 0));
     return () => {
       cancelled = true;
       timers.forEach(clearTimeout);

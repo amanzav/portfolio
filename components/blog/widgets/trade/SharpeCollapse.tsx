@@ -57,7 +57,7 @@ export function TradeSharpeCollapse({
   //        2 BEFORE bar shrinks 3.2 → 1.6 ·
   //        3 reframes as AFTER (slides down to BAR_AFTER_Y), ghost stays ·
   //        4 bottom callout fades in
-  const [phase, setPhase] = useState(0);
+  const [animatedPhase, setPhase] = useState(0);
 
   // Stamp positions, above BEFORE bar — narrower so the fixed-tick ✓ stays
   // inside the 720 px viewbox.
@@ -74,11 +74,10 @@ export function TradeSharpeCollapse({
     [bugs]
   );
 
+  const phase = reduced ? 4 : animatedPhase;
+
   useEffect(() => {
-    if (reduced) {
-      setPhase(4);
-      return;
-    }
+    if (reduced) return;
     if (!inView) return;
     let cancelled = false;
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -92,7 +91,7 @@ export function TradeSharpeCollapse({
       at(4100, 4);
       timers.push(setTimeout(() => !cancelled && run(), 7800));
     };
-    run();
+    timers.push(setTimeout(run, 0));
     return () => {
       cancelled = true;
       timers.forEach(clearTimeout);

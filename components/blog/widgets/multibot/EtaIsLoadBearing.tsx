@@ -56,15 +56,14 @@ export function MultibotEtaIsLoadBearing({
   const reduced = useReducedMotion();
 
   // phase 1 idle · 2 bars grow · 3 highlight no-eta · 4 highlight baseline + connector · 5 footer
-  const [phase, setPhase] = useState(1);
-  const [progress, setProgress] = useState(0); // 0..1 for bar fill + counters
+  const [animatedPhase, setPhase] = useState(1);
+  const [animatedProgress, setProgress] = useState(0); // 0..1 for bar fill + counters
+
+  const phase = reduced ? 5 : animatedPhase;
+  const progress = reduced ? 1 : phase < 2 ? 0 : animatedProgress;
 
   useEffect(() => {
-    if (reduced) {
-      setPhase(5);
-      setProgress(1);
-      return;
-    }
+    if (reduced) return;
     if (!inView) return;
     let cancelled = false;
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -79,7 +78,7 @@ export function MultibotEtaIsLoadBearing({
       at(4100, 5);
       timers.push(setTimeout(() => !cancelled && run(), 7500));
     };
-    run();
+    timers.push(setTimeout(run, 0));
     return () => {
       cancelled = true;
       timers.forEach(clearTimeout);
@@ -90,7 +89,6 @@ export function MultibotEtaIsLoadBearing({
   useEffect(() => {
     if (reduced) return;
     if (phase < 2) {
-      setProgress(0);
       return;
     }
     const start = performance.now();
@@ -207,7 +205,7 @@ export function MultibotEtaIsLoadBearing({
           {/* ===== Rows ===== */}
           {rows.map((row, i) => {
             const rowY = ROW_YS[i];
-            const barCenterY = rowY;
+
             const barTopY = rowY - BAR_H / 2;
             const fullBarW = xBar(row.value, xMax) - BAR_X;
             const animatedW = fullBarW * progress;

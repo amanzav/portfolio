@@ -70,14 +70,13 @@ export function RetrieverFunnel({
   const reduced = useReducedMotion();
 
   // phase: 0 idle · 1 pool · 2 embed/sort · 3 cull · 4 bars · 5 reorder+accent
-  const [phase, setPhase] = useState(0);
+  const [animatedPhase, setPhase] = useState(0);
 
   // looping phase machine
+  const phase = reduced ? 5 : animatedPhase;
+
   useEffect(() => {
-    if (reduced) {
-      setPhase(5);
-      return;
-    }
+    if (reduced) return;
     if (!inView) return;
     let cancelled = false;
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -92,7 +91,7 @@ export function RetrieverFunnel({
       at(4300, 5);
       timers.push(setTimeout(() => !cancelled && run(), 8000));
     };
-    run();
+    timers.push(setTimeout(run, 0));
     return () => {
       cancelled = true;
       timers.forEach(clearTimeout);

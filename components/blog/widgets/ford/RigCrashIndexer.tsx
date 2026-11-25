@@ -82,7 +82,6 @@ export function RigCrashIndexer({
   number,
   meta = "8M events/day · constrained packet",
   // query intentionally unused; retained for caller compatibility
-  query: _query,
   hypotheses = DEFAULT_HYPOTHESES,
 }: RigCrashIndexerProps) {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -94,13 +93,12 @@ export function RigCrashIndexer({
   //   1 — consumer + stores light up, traffic flows to all three
   //   2 — packet wrapper draws around digest+excerpts; beam to LLM lights;
   //       single packet-dot travels; response card appears with citations
-  const [phase, setPhase] = useState(0);
+  const [animatedPhase, setPhase] = useState(0);
+
+  const phase = reduced ? 2 : animatedPhase;
 
   useEffect(() => {
-    if (reduced) {
-      setPhase(2);
-      return;
-    }
+    if (reduced) return;
     if (!inView) return;
     let cancelled = false;
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -112,7 +110,7 @@ export function RigCrashIndexer({
       at(2400, 2);
       timers.push(setTimeout(() => !cancelled && run(), 7000));
     };
-    run();
+    timers.push(setTimeout(run, 0));
     return () => {
       cancelled = true;
       timers.forEach(clearTimeout);

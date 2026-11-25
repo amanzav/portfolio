@@ -89,7 +89,7 @@ export function AutoparkCommitPoint({
 
   // phase 0 idle · 1 rows draw · 2 before trace climbs · 3 before oscillates with X marks
   //       · 4 after trace climbs + commit bar slams · 5 after settles past bar
-  const [phase, setPhase] = useState(0);
+  const [animatedPhase, setPhase] = useState(0);
 
   const beforePath = useMemo(() => buildPath(progressBefore, mapBefore), []);
   const afterPath = useMemo(() => buildPath(progressAfter, mapAfter), []);
@@ -105,11 +105,10 @@ export function AutoparkCommitPoint({
     []
   );
 
+  const phase = reduced ? 5 : animatedPhase;
+
   useEffect(() => {
-    if (reduced) {
-      setPhase(5);
-      return;
-    }
+    if (reduced) return;
     if (!inView) return;
     let cancelled = false;
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -124,7 +123,7 @@ export function AutoparkCommitPoint({
       at(5200, 5);
       timers.push(setTimeout(() => !cancelled && run(), 7800));
     };
-    run();
+    timers.push(setTimeout(run, 0));
     return () => {
       cancelled = true;
       timers.forEach(clearTimeout);

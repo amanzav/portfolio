@@ -44,16 +44,15 @@ export function BugWidgetWorkflow({
   const reduced = useReducedMotion();
 
   // 0 idle · 1 modal · 2 typing · 3 enter · 4-8 workflow steps 0..4
-  const [phase, setPhase] = useState(0);
-  const [typed, setTyped] = useState(0);
+  const [animatedPhase, setPhase] = useState(0);
+  const [animatedTyped, setTyped] = useState(0);
 
   // looping phase machine
+  const phase = reduced ? 8 : animatedPhase;
+  const typed = reduced ? report.length : animatedTyped;
+
   useEffect(() => {
-    if (reduced) {
-      setPhase(8);
-      setTyped(report.length);
-      return;
-    }
+    if (reduced) return;
     if (!inView) return;
     let cancelled = false;
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -72,7 +71,7 @@ export function BugWidgetWorkflow({
       at(8500, 8);
       timers.push(setTimeout(() => !cancelled && run(), 12000));
     };
-    run();
+    timers.push(setTimeout(run, 0));
     return () => {
       cancelled = true;
       timers.forEach(clearTimeout);

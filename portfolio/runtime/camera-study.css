@@ -1,0 +1,33 @@
+@import './shape.css';
+.camera-study { padding-top: 32px; }
+.camera-stage { position: relative; height: min(60vh, 540px); min-height: 360px; margin: 16px 0 22px; }
+.camera-stage canvas { width: 100%; height: 100%; }
+#camera-choices { position: absolute; inset: 0; pointer-events: none; }
+.camera-choice { position: absolute; transform: translateY(-50%); pointer-events: auto; text-align: left; padding: 7px 0; font-size: 13px; line-height: 1.5; }
+.camera-choice[data-side="left"] { transform: translate(-100%, -50%); }
+.camera-choice .choice-title { display: block; text-decoration: underline; text-decoration-color: #b2b7b7; text-underline-offset: 6px; }
+.camera-choice .choice-company { display: block; margin-top: 8px; font-size: 11px; line-height: 1.4; color: #65696b; }
+.camera-choice:hover { border-color: transparent; }
+.camera-choice:hover .choice-title { text-decoration-color: #292c2d; }
+#camera-preview { position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); width: min(360px, 80%); min-height: 42px; text-align: center; font-size: 12px; }
+#camera-article { position: absolute; top: 50%; left: 50%; width: 430px; max-width: calc(100% - 48px); transform: translate(-50%, -50%); visibility: hidden; opacity: 0; }
+#camera-article[data-visible="true"] { visibility: visible; }
+#camera-article h2 { margin: 0; font-size: 19px; line-height: 1.45; font-weight: 400; letter-spacing: -.01em; outline-offset: 6px; }
+.article-context { margin-top: 6px; font-size: 11px; }
+.article-intro { margin-top: 26px; color: #34393b; font-size: 13px; line-height: 1.85; }
+.article-placeholder { margin-top: 18px; font-size: 12px; }
+#camera-back { margin-top: 24px; font-size: 11px; border-bottom-color: #b2b7b7; }
+.camera-views { display: flex; justify-content: center; gap: 28px; margin-bottom: 16px; }
+.camera-inspector { display: flex; align-items: center; justify-content: center; gap: 14px; font-size: 11px; color: #65696b; }
+.camera-inspector input { width: 180px; accent-color: #52656a; }
+#camera-status { margin-top: 10px; min-height: 20px; font-size: 11px; font-variant-numeric: tabular-nums; }
+.previous-study { display: inline-block; margin-top: 10px; color: #65696b; font-size: 11px; text-decoration-color: #b2b7b7; text-underline-offset: 4px; }
+.throw-study .camera-choice { transform: none; }
+.throw-study .camera-choice[data-side="left"] { transform: translateX(-100%); }
+.throw-study .choice-title { line-height: 1.45; }
+#throw-title { position: absolute; pointer-events: none; width: max-content; color: #34393b; line-height: 1.45; }
+#throw-title .choice-title { display: block; white-space: pre; line-height: 1.45; }
+.throw-study #camera-article .choice-title { display: inline-block; white-space: pre; line-height: 1.45; }
+
+.orbit-study { padding-top: 24px; padding-bottom: 8px; }
+.orbit-study .camera-stage { margin-bottom: 16px; }

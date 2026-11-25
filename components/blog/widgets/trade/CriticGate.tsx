@@ -64,10 +64,10 @@ export function TradeCriticGate({
   // phase: 0 idle (pool full, bins empty) · 1 critic lights · 2 dots stream
   //        through critic · 3 dots fan to bins, counters tick ·
   //        4 ACCEPTED bin strokes thicken; REJ/REV dim · 5 bottom strip
-  const [phase, setPhase] = useState(0);
-  const [tallyRej, setTallyRej] = useState(0);
-  const [tallyRev, setTallyRev] = useState(0);
-  const [tallyAcc, setTallyAcc] = useState(0);
+  const [animatedPhase, setPhase] = useState(0);
+  const [animatedTallyRej, setTallyRej] = useState(0);
+  const [animatedTallyRev, setTallyRev] = useState(0);
+  const [animatedTallyAcc, setTallyAcc] = useState(0);
 
   // 100 deterministic dots, each with an outcome pre-assigned by threshold
   const dots = useMemo(() => {
@@ -104,14 +104,13 @@ export function TradeCriticGate({
     };
   };
 
+  const phase = reduced ? 5 : animatedPhase;
+  const tallyRej = reduced ? rejectedPct : phase < 3 ? 0 : animatedTallyRej;
+  const tallyRev = reduced ? revisedPct : phase < 3 ? 0 : animatedTallyRev;
+  const tallyAcc = reduced ? acceptedPct : phase < 3 ? 0 : animatedTallyAcc;
+
   useEffect(() => {
-    if (reduced) {
-      setPhase(5);
-      setTallyRej(rejectedPct);
-      setTallyRev(revisedPct);
-      setTallyAcc(acceptedPct);
-      return;
-    }
+    if (reduced) return;
     if (!inView) return;
     let cancelled = false;
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -129,7 +128,7 @@ export function TradeCriticGate({
       at(4100, 5);
       timers.push(setTimeout(() => !cancelled && run(), 8000));
     };
-    run();
+    timers.push(setTimeout(run, 0));
     return () => {
       cancelled = true;
       timers.forEach(clearTimeout);
@@ -140,9 +139,6 @@ export function TradeCriticGate({
   useEffect(() => {
     if (reduced) return;
     if (phase < 3) {
-      setTallyRej(0);
-      setTallyRev(0);
-      setTallyAcc(0);
       return;
     }
     const start = performance.now();

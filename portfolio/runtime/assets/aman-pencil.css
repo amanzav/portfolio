@@ -1,0 +1,8 @@
+@font-face {
+  font-family: 'Aman Pencil';
+  src: url('./kalam-light-aman.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  unicode-range: U+0020, U+0041, U+0061, U+006D-006E;
+}

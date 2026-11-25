@@ -32,3 +32,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Local design studies and generated arm bundle
+/prototypes/
+/.impeccable/
+/public/portfolio/

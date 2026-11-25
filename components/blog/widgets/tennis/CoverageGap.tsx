@@ -95,7 +95,7 @@ export function TennisCoverageGap({
   // phase: 0 idle · 1 court only · 2 cells fade in row-by-row
   //        · 3 non-gap cells dim, gap cells outlined · 4 bracket + label
   //        · 5 "deuce-side bias" sub-note
-  const [phase, setPhase] = useState(0);
+  const [animatedPhase, setPhase] = useState(0);
 
   const matrix = useMemo(
     () => grid ?? buildDefaultGrid(gapCells),
@@ -108,11 +108,10 @@ export function TennisCoverageGap({
     return s;
   }, [gapCells]);
 
+  const phase = reduced ? 5 : animatedPhase;
+
   useEffect(() => {
-    if (reduced) {
-      setPhase(5);
-      return;
-    }
+    if (reduced) return;
     if (!inView) return;
     let cancelled = false;
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -127,7 +126,7 @@ export function TennisCoverageGap({
       at(5400, 5);
       timers.push(setTimeout(() => !cancelled && run(), 8000));
     };
-    run();
+    timers.push(setTimeout(run, 0));
     return () => {
       cancelled = true;
       timers.forEach(clearTimeout);

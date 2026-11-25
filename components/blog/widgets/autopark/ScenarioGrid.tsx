@@ -110,7 +110,7 @@ export function AutoparkScenarioGrid({
   const reduced = useReducedMotion();
 
   // phase 0 idle · 1 axis + big card · 2 dots fade in · 3 rmse drops · 4 timeouts cluster
-  const [phase, setPhase] = useState(0);
+  const [animatedPhase, setPhase] = useState(0);
 
   const scenarios = useMemo(
     () => generateScenarios(seed, successCount, rmseCm, rubricCm),
@@ -129,11 +129,10 @@ export function AutoparkScenarioGrid({
     });
   }, [timeoutCount, seed]);
 
+  const phase = reduced ? 4 : animatedPhase;
+
   useEffect(() => {
-    if (reduced) {
-      setPhase(4);
-      return;
-    }
+    if (reduced) return;
     if (!inView) return;
     let cancelled = false;
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -147,7 +146,7 @@ export function AutoparkScenarioGrid({
       at(4800, 4);
       timers.push(setTimeout(() => !cancelled && run(), 7800));
     };
-    run();
+    timers.push(setTimeout(run, 0));
     return () => {
       cancelled = true;
       timers.forEach(clearTimeout);

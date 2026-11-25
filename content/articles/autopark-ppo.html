@@ -1,0 +1,92 @@
+<a class="skip-link" href="#article-content">Skip to section</a>
+    <main id="article-content" class="work-article">
+      <article aria-labelledby="article-title">
+        <a class="article-back pencil-link" href="/autopark/">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 12.1 4 12m5.5-5.3L4 12l5.5 5.4" /></svg>
+          <span>Auto Park</span>
+        </a>
+        <header class="article-header">
+          <h1 id="article-title">PPO: learning without overcorrecting.</h1>
+          <p class="article-context">One section from Auto Park</p>
+        </header>
+
+        <div class="article-opening">
+          <p>I used Proximal Policy Optimization, or PPO, to train a model called a <strong>policy</strong> to choose throttle and steering in the parking experiments. I gave it the car’s state and a target directly from PyBullet, then used the drives it collected to update the model.</p>
+          <p>I scored what the car did through rewards from the environment and combined those over time into a return, giving later rewards less weight. Even when a maneuver earned a good return, making its actions much more likely after one batch could make the next drives worse. I used PPO-Clip to limit how much extra credit the objective gave that kind of increase.</p>
+        </div>
+
+        <section class="article-section" aria-labelledby="update-heading">
+          <h2 id="update-heading">What gets updated?</h2>
+          <p>I sampled actions from the policy during training, then compared how likely the new and old policies made the same action in the same state. I used their ratio, <code>r</code>, which starts at 1 before the update, rises when the action becomes more likely, and falls when it becomes less likely. Because throttle and steering are continuous, I was comparing probability <em>densities</em>.</p>
+          <p>I also needed an <strong>advantage</strong> estimate to judge whether the action led to a better or worse outcome than expected from that state. I used its sign to decide whether the update should make that action more likely or less likely.</p>
+          <p>I collected drives with the old policy and updated the model using smaller groups of those samples, called minibatches, while keeping their stored log-likelihoods fixed. Subtracting those log-likelihoods and taking <code>exp</code> gave me the new likelihood divided by the old one.</p>
+          <figure class="code-example">
+            <figcaption>I used the smaller of the raw and clipped contributions when calculating the policy loss.</figcaption>
+            <pre tabindex="0" aria-label="PPO clipped objective pseudocode"><code><span class="comment"># Old scores and advantages stay fixed.</span>
+<span class="keyword">for</span> batch <span class="keyword">in</span> minibatches(drives):
+    joint_logp = policy.joint_log_prob(
+        batch.states, batch.actions)
+    r = exp(joint_logp - batch.old_joint_logp)
+    A = batch.advantages
+
+    raw = r * A
+    limited_r = clip(r, <span class="number">0.8</span>, <span class="number">1.2</span>)
+    clipped = limited_r * A
+    loss = -mean(minimum(raw, clipped))
+    gradient_step(policy, loss)</code></pre>
+          </figure>
+          <p>I used <code>minimum</code> to take the smaller contribution for each sample, then averaged those contributions across the batch. I used the minus sign to turn the objective into a loss I could minimize. I’ve used an illustrative <code>ε = 0.2</code> for the bounds here.</p>
+          <p>I’ve only shown the policy update in this snippet. In the full PPO implementation, I also needed advantage estimates and a trained value function, and could reuse a rollout across several optimization passes. I used the conceptual helper <code>joint_log_prob</code> for the log-likelihood of the whole throttle-and-steering pair, summing across the action dimensions when they’re modeled independently.</p>
+        </section>
+
+        <section class="article-section" aria-labelledby="example-heading">
+          <h2 id="example-heading">One control decision</h2>
+          <p>To work through one update, I can take a sampled throttle-and-steering action with <code>A = +1</code>. If the new policy makes it 1.5 times as likely, the raw contribution becomes 1.5, while the clipped contribution stays at 1.2. I use the smaller value, 1.2, in the objective.</p>
+          <figure class="clip-example">
+            <svg viewBox="0 0 360 258" role="img" aria-labelledby="clip-title clip-description">
+              <title id="clip-title">A positive-advantage sample stops gaining objective credit above a ratio of 1.2</title>
+              <desc id="clip-description">Illustrative calculation, not a training result. With advantage plus one and epsilon 0.2, the raw contribution rises with the likelihood ratio. The PPO objective follows it up to 1.2 and then stays level. At ratio 1.5, raw is 1.5 and the PPO objective is 1.2.</desc>
+              <path d="M49 18V184H338" class="plot-axis" />
+              <path d="M50 134H335 M50 84H335" class="plot-guide" />
+              <path d="M50 184 335 9" class="plot-raw" />
+              <path d="M50 184 245 64 335 64" class="plot-objective" />
+              <path d="M294 34V184" class="plot-guide" />
+              <circle cx="294" cy="34" r="3.5" class="raw-point" />
+              <circle cx="294" cy="64" r="4" class="objective-point" />
+              <text x="37" y="190" text-anchor="end">0</text>
+              <text x="37" y="140" text-anchor="end">0.5</text>
+              <text x="37" y="90" text-anchor="end">1</text>
+              <text x="37" y="40" text-anchor="end">1.5</text>
+              <text x="131" y="209" text-anchor="middle">0.5</text>
+              <text x="213" y="209" text-anchor="middle">1</text>
+              <text x="245" y="209" text-anchor="middle">1.2</text>
+              <text x="294" y="209" text-anchor="middle">1.5</text>
+              <text x="195" y="240" text-anchor="middle">Likelihood ratio r</text>
+              <text x="66" y="27">Contribution, A = +1</text>
+              <text x="260" y="112" class="plot-label">PPO-Clip</text>
+              <path d="M282 96V72" class="plot-leader" />
+              <text x="308" y="29" class="raw-label">raw</text>
+            </svg>
+            <figcaption>For this sample, I stopped getting extra objective credit once the ratio passed 1.2, even when the action became more likely.</figcaption>
+          </figure>
+          <p>I checked the other direction with <code>A = −1</code> and <code>r = 0.5</code>, which gives <code>min(−0.5, −0.8) = −0.8</code>. That stops me gaining more from this sample just by making the bad action even less likely, while still penalizing a change that makes it more likely.</p>
+        </section>
+
+        <section class="article-section" aria-labelledby="limit-heading">
+          <h2 id="limit-heading">What clipping doesn’t promise</h2>
+          <p>I could still end up with ratios outside the clipping bounds, because clipping changed the objective’s incentive without enforcing a hard boundary on the policy. I handled the car’s steering limits separately in the environment.</p>
+          <p>I had to keep that distinction in mind when reading a parking result: making the training update more conservative didn’t prove the car could handle a new path. I still needed to evaluate it in situations it hadn’t practiced.</p>
+          <p class="implementation-note">I used Stable-Baselines3’s PPO implementation for these experiments, and I’ve kept the pseudocode focused on its central objective so the update is easier to follow.</p>
+        </section>
+
+        <footer class="article-footer section-references" aria-label="References">
+          <p>Code and further reading</p>
+          <ul>
+            <li><a href="https://github.com/KEV-MA/auto_park/blob/453b68740f508cafa633d7c9ea3035f83b77110d/main.py">PPO experiment code</a></li>
+            <li><a href="https://arxiv.org/abs/1707.06347">PPO paper · Schulman et al.</a></li>
+            <li><a href="https://spinningup.openai.com/en/latest/algorithms/ppo.html">OpenAI’s explanation of PPO-Clip</a></li>
+            <li><a href="https://stable-baselines3.readthedocs.io/en/master/modules/ppo.html">Stable-Baselines3 PPO documentation</a></li>
+          </ul>
+        </footer>
+      </article>
+    </main>

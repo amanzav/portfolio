@@ -43,13 +43,12 @@ export function TennisShotEvent({
 
   // phase: 0 idle · 1 incoming trace · 2 proximity + contact crosshair
   //        · 3 outgoing trace · 4 status chip lights up
-  const [phase, setPhase] = useState(0);
+  const [animatedPhase, setPhase] = useState(0);
+
+  const phase = reduced ? 4 : animatedPhase;
 
   useEffect(() => {
-    if (reduced) {
-      setPhase(4);
-      return;
-    }
+    if (reduced) return;
     if (!inView) return;
     let cancelled = false;
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -63,7 +62,7 @@ export function TennisShotEvent({
       at(3600, 4);
       timers.push(setTimeout(() => !cancelled && run(), 6200));
     };
-    run();
+    timers.push(setTimeout(run, 0));
     return () => {
       cancelled = true;
       timers.forEach(clearTimeout);

@@ -58,8 +58,8 @@ export function TradeLeakageGuard({
   // phase: 0 idle (chips stacked left) · 1 chips slide to dates ·
   //        2 barrier solidifies · 3 right-of-barrier dimmed + strike ·
   //        4 counter ticks 7 → 4
-  const [phase, setPhase] = useState(0);
-  const [admitted, setAdmitted] = useState(7);
+  const [animatedPhase, setPhase] = useState(0);
+  const [animatedAdmitted, setAdmitted] = useState(7);
 
   const totalDocs = docs.length;
   const admittedCount = useMemo(
@@ -95,12 +95,11 @@ export function TradeLeakageGuard({
     return result.sort((a, b) => a.i - b.i);
   }, [docs]);
 
+  const phase = reduced ? 4 : animatedPhase;
+  const admitted = reduced ? admittedCount : phase < 4 ? totalDocs : animatedAdmitted;
+
   useEffect(() => {
-    if (reduced) {
-      setPhase(4);
-      setAdmitted(admittedCount);
-      return;
-    }
+    if (reduced) return;
     if (!inView) return;
     let cancelled = false;
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -115,7 +114,7 @@ export function TradeLeakageGuard({
       at(3400, 4);
       timers.push(setTimeout(() => !cancelled && run(), 7500));
     };
-    run();
+    timers.push(setTimeout(run, 0));
     return () => {
       cancelled = true;
       timers.forEach(clearTimeout);
@@ -126,7 +125,6 @@ export function TradeLeakageGuard({
   useEffect(() => {
     if (reduced) return;
     if (phase < 4) {
-      setAdmitted(totalDocs);
       return;
     }
     const start = performance.now();

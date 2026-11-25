@@ -1,9 +1,10 @@
 "use client"
 
 import { useEffect, useMemo, useRef, useState } from "react"
-import { motion, MotionProps, useInView } from "motion/react"
+import { MotionProps, useInView } from "motion/react"
 
 import { cn } from "@/lib/utils"
+import { motionElements } from "./motion-elements"
 
 interface TypingAnimationProps extends MotionProps {
   children?: string
@@ -15,7 +16,7 @@ interface TypingAnimationProps extends MotionProps {
   delay?: number
   pauseDelay?: number
   loop?: boolean
-  as?: React.ElementType
+  as?: keyof typeof motionElements
   startOnView?: boolean
   showCursor?: boolean
   blinkCursor?: boolean
@@ -39,9 +40,7 @@ export function TypingAnimation({
   cursorStyle = "line",
   ...props
 }: TypingAnimationProps) {
-  const MotionComponent = motion.create(Component, {
-    forwardMotionProps: true,
-  })
+  const MotionComponent = motionElements[Component]
 
   const [displayedText, setDisplayedText] = useState<string>("")
   const [currentWordIndex, setCurrentWordIndex] = useState(0)
@@ -156,7 +155,7 @@ export function TypingAnimation({
 
   return (
     <MotionComponent
-      ref={elementRef}
+      ref={(node: HTMLElement | null) => { elementRef.current = node }}
       className={cn("leading-[5rem] tracking-[-0.02em]", className)}
       {...props}
     >

@@ -52,15 +52,14 @@ export function MultibotPoliteHalt({
   const reduced = useReducedMotion();
 
   // phase: 1 idle · 2 no-eta encounter · 3 mode swap · 4 with-eta · 5 exit
-  const [phase, setPhase] = useState(1);
+  const [animatedPhase, setPhase] = useState(1);
   // verdict cycle tick for no-eta mode (drives the crossfade)
   const [verdictTick, setVerdictTick] = useState(0);
 
+  const phase = reduced ? 5 : animatedPhase;
+
   useEffect(() => {
-    if (reduced) {
-      setPhase(5);
-      return;
-    }
+    if (reduced) return;
     if (!inView) return;
     let cancelled = false;
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -75,7 +74,7 @@ export function MultibotPoliteHalt({
       at(7800, 5);  // exit
       timers.push(setTimeout(() => !cancelled && run(), 10500));
     };
-    run();
+    timers.push(setTimeout(run, 0));
     return () => {
       cancelled = true;
       timers.forEach(clearTimeout);

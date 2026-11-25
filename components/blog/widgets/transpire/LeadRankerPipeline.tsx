@@ -51,10 +51,10 @@ export function LeadRankerPipeline({
 
   // phase: 0 idle · 1 scraper pulse · 2 dots stream → xgb
   //        · 3 dots fan out into buckets · 4 tallies tick up
-  const [phase, setPhase] = useState(0);
-  const [tallyHigh, setTallyHigh] = useState(0);
-  const [tallyMid, setTallyMid] = useState(0);
-  const [tallyLow, setTallyLow] = useState(0);
+  const [animatedPhase, setPhase] = useState(0);
+  const [animatedTallyHigh, setTallyHigh] = useState(0);
+  const [animatedTallyMid, setTallyMid] = useState(0);
+  const [animatedTallyLow, setTallyLow] = useState(0);
 
   // ===== Layout anchors =====
   const SCRAPER = { x: 24, y: 92, w: 148, h: 80 };
@@ -92,14 +92,13 @@ export function LeadRankerPipeline({
   const midCount = dots.length - highCount - lowCount;
 
   // looping phase machine
+  const phase = reduced ? 4 : animatedPhase;
+  const tallyHigh = reduced ? highCount : phase < 4 ? 0 : animatedTallyHigh;
+  const tallyMid = reduced ? midCount : phase < 4 ? 0 : animatedTallyMid;
+  const tallyLow = reduced ? lowCount : phase < 4 ? 0 : animatedTallyLow;
+
   useEffect(() => {
-    if (reduced) {
-      setPhase(4);
-      setTallyHigh(highCount);
-      setTallyMid(midCount);
-      setTallyLow(lowCount);
-      return;
-    }
+    if (reduced) return;
     if (!inView) return;
     let cancelled = false;
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -116,7 +115,7 @@ export function LeadRankerPipeline({
       at(3400, 4);
       timers.push(setTimeout(() => !cancelled && run(), 8000));
     };
-    run();
+    timers.push(setTimeout(run, 0));
     return () => {
       cancelled = true;
       timers.forEach(clearTimeout);
@@ -127,9 +126,6 @@ export function LeadRankerPipeline({
   useEffect(() => {
     if (reduced) return;
     if (phase < 4) {
-      setTallyHigh(0);
-      setTallyMid(0);
-      setTallyLow(0);
       return;
     }
     const start = performance.now();

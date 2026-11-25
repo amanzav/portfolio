@@ -113,18 +113,17 @@ export function AutoparkHybridSearch({
   const reduced = useReducedMotion();
 
   // phase 0 scene · 1 tree expands · 2 tree stops short · 3 reeds-shepp draws · 4 settle
-  const [phase, setPhase] = useState(0);
-  const [counter, setCounter] = useState(0);
+  const [animatedPhase, setPhase] = useState(0);
+  const [animatedCounter, setCounter] = useState(0);
 
   const branches = useMemo(() => buildSearchTree(), []);
 
   // looping phase machine
+  const phase = reduced ? 4 : animatedPhase;
+  const counter = reduced ? nodeCountWith : phase < 1 ? 0 : phase === 4 ? nodeCountWith : animatedCounter;
+
   useEffect(() => {
-    if (reduced) {
-      setPhase(4);
-      setCounter(nodeCountWith);
-      return;
-    }
+    if (reduced) return;
     if (!inView) return;
     let cancelled = false;
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -139,7 +138,7 @@ export function AutoparkHybridSearch({
       at(5200, 4);
       timers.push(setTimeout(() => !cancelled && run(), 7800));
     };
-    run();
+    timers.push(setTimeout(run, 0));
     return () => {
       cancelled = true;
       timers.forEach(clearTimeout);
@@ -150,7 +149,6 @@ export function AutoparkHybridSearch({
   useEffect(() => {
     if (reduced) return;
     if (phase < 1) {
-      setCounter(0);
       return;
     }
     if (phase === 1 || phase === 2 || phase === 3) {
@@ -167,9 +165,6 @@ export function AutoparkHybridSearch({
       };
       raf = requestAnimationFrame(tick);
       return () => cancelAnimationFrame(raf);
-    }
-    if (phase === 4) {
-      setCounter(nodeCountWith);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, reduced, nodeCountWith]);

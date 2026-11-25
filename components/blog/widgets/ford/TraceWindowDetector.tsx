@@ -60,12 +60,12 @@ const CNN_Y = TRACES_BOTTOM + 30;
 const CNN_H = 50;
 const CNN_WIN_W = 90; // ~15 of 90 samples
 const GAUGE_X = 620;
-const GAUGE_W = 60;
+
 const GAUGE_H = 10;
 
 // LSTM row
 const LSTM_Y = CNN_Y + CNN_H + 28;
-const LSTM_H = 50;
+
 const LSTM_CELLS = 30;
 const LSTM_CELL_W = (TRACE_W - (LSTM_CELLS - 1) * 2) / LSTM_CELLS;
 const LSTM_CELL_H = 10;
@@ -85,17 +85,16 @@ export function TraceWindowDetector({
   const reduced = useReducedMotion();
 
   // 0 idle · 1 traces fade in + drop pulse · 2 cnn slides · 3 cnn dim, lstm activates · 4 both frozen with final values
-  const [phase, setPhase] = useState(0);
-  const [cnnT, setCnnT] = useState(0); // 0..1 window slide
-  const [lstmT, setLstmT] = useState(0); // 0..1 cells fill / gauge climb
+  const [animatedPhase, setPhase] = useState(0);
+  const [animatedCnnT, setCnnT] = useState(0); // 0..1 window slide
+  const [animatedLstmT, setLstmT] = useState(0); // 0..1 cells fill / gauge climb
+
+  const phase = reduced ? 4 : animatedPhase;
+  const cnnT = reduced ? 1 : animatedCnnT;
+  const lstmT = reduced ? 1 : animatedLstmT;
 
   useEffect(() => {
-    if (reduced) {
-      setPhase(4);
-      setCnnT(1);
-      setLstmT(1);
-      return;
-    }
+    if (reduced) return;
     if (!inView) return;
     let cancelled = false;
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -111,7 +110,7 @@ export function TraceWindowDetector({
       at(7800, 4);
       timers.push(setTimeout(() => !cancelled && run(), 10500));
     };
-    run();
+    timers.push(setTimeout(run, 0));
     return () => {
       cancelled = true;
       timers.forEach(clearTimeout);

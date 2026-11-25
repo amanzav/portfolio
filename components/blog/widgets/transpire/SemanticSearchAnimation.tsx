@@ -60,13 +60,12 @@ export function SemanticSearchAnimation({
   const reduced = useReducedMotion();
 
   // phase: 0 typing · 1 rewrite/fork · 2 filters+residual · 3 pipeline · 4 result
-  const [phase, setPhase] = useState(0);
+  const [animatedPhase, setPhase] = useState(0);
+
+  const phase = reduced ? 4 : animatedPhase;
 
   useEffect(() => {
-    if (reduced) {
-      setPhase(4);
-      return;
-    }
+    if (reduced) return;
     if (!inView) return;
     const typeDur = query.length * typeSpeed + 200;
     const timers = [

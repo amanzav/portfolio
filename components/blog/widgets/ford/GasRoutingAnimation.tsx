@@ -85,14 +85,13 @@ export function GasRoutingAnimation({
   // 2 vehicle flip → EV
   // 3 EV: route C highlighted (regen wins)
   // 4 payoff line "time-optimal → energy-optimal"
-  const [phase, setPhase] = useState(0);
+  const [animatedPhase, setPhase] = useState(0);
   const FINAL = 4;
 
+  const phase = reduced ? FINAL : animatedPhase;
+
   useEffect(() => {
-    if (reduced) {
-      setPhase(FINAL);
-      return;
-    }
+    if (reduced) return;
     if (!inView) return;
     let cancelled = false;
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -106,7 +105,7 @@ export function GasRoutingAnimation({
       at(4400, 4); // payoff
       timers.push(setTimeout(() => !cancelled && run(), 7800));
     };
-    run();
+    timers.push(setTimeout(run, 0));
     return () => {
       cancelled = true;
       timers.forEach(clearTimeout);

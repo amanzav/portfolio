@@ -37,7 +37,7 @@ export function OnboardingShrink({
   const reduced = useReducedMotion();
 
   // phase: 0 idle · 1 before lane fills · 2 after lane fills · 3 payoff
-  const [phase, setPhase] = useState(0);
+  const [animatedPhase, setPhase] = useState(0);
 
   // Shared day axis
   const AXIS_X = 24;
@@ -83,11 +83,10 @@ export function OnboardingShrink({
   );
 
   // looping phase machine
+  const phase = reduced ? 3 : animatedPhase;
+
   useEffect(() => {
-    if (reduced) {
-      setPhase(3);
-      return;
-    }
+    if (reduced) return;
     if (!inView) return;
     let cancelled = false;
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -100,7 +99,7 @@ export function OnboardingShrink({
       at(3600, 3);
       timers.push(setTimeout(() => !cancelled && run(), 7500));
     };
-    run();
+    timers.push(setTimeout(run, 0));
     return () => {
       cancelled = true;
       timers.forEach(clearTimeout);

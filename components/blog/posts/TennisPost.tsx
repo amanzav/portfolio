@@ -2,7 +2,6 @@ import {
   Section,
   TLDR,
   TLDRItem,
-  ASCIIDiagram,
   Callout,
   CodeBlock,
   Equation,

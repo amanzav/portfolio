@@ -27,14 +27,19 @@ export function BootOverlay() {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const duration = reduceMotion ? REDUCED_BOOT_DURATION_MS : BOOT_DURATION_MS;
 
-    setReducedMotion(reduceMotion);
-    setVisible(true);
-
-    const timeout = window.setTimeout(() => {
-      window.sessionStorage.setItem(BOOT_STORAGE_KEY, "true");
-      setVisible(false);
-    }, duration);
-    return () => window.clearTimeout(timeout);
+    let timeout: number;
+    const frame = window.requestAnimationFrame(() => {
+      setReducedMotion(reduceMotion);
+      setVisible(true);
+      timeout = window.setTimeout(() => {
+        window.sessionStorage.setItem(BOOT_STORAGE_KEY, "true");
+        setVisible(false);
+      }, duration);
+    });
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(timeout);
+    };
   }, []);
 
   if (!visible) return null;

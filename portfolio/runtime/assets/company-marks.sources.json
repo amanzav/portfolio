@@ -1,0 +1,30 @@
+{
+  "vooma": {
+    "page": "https://www.vooma.com/",
+    "asset": "Inline nav SVG, logo_mark group",
+    "monochrome": true
+  },
+  "boomerang": {
+    "page": "https://boomeranghr.com/",
+    "identity": "Alumni-management platform, New York + Toronto; matches repo/resume employment context",
+    "asset": "https://cdn.prod.website-files.com/6a98a1a2797b794fc6d09999/6a9976870276b356ce512d66_boomerang-logo.svg",
+    "extraction": "Official boomerang symbol path extracted from wordmark; no redrawing"
+  },
+  "ford": {
+    "page": "https://www.ford.com/",
+    "asset": "public/logos/ford.svg",
+    "note": "Existing genuine Ford script geometry reused; official direct asset endpoint rejected download."
+  },
+  "font": {
+    "family": "Kalam",
+    "weight": 300,
+    "source": "https://raw.githubusercontent.com/google/fonts/main/ofl/kalam/Kalam-Light.ttf",
+    "license": "https://raw.githubusercontent.com/google/fonts/main/ofl/kalam/OFL.txt",
+    "subset": "Aman + space, TTF, original outlines and license preserved",
+    "localFamily": "Aman Pencil"
+  },
+  "icons": {
+    "source": "https://github.com/feathericons/feather/tree/master/icons",
+    "license": "https://raw.githubusercontent.com/feathericons/feather/master/LICENSE"
+  }
+}

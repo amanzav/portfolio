@@ -44,16 +44,15 @@ export function CostStack({
   const reduced = useReducedMotion();
 
   // 0 idle · 1 baseline · 2..n levers applied
-  const [phase, setPhase] = useState(0);
-  const [display, setDisplay] = useState(baseline);
+  const [animatedPhase, setPhase] = useState(0);
+  const [animatedDisplay, setDisplay] = useState(baseline);
 
   const finalPhase = 1 + levers.length;
 
+  const phase = reduced ? finalPhase : animatedPhase;
+
   useEffect(() => {
-    if (reduced) {
-      setPhase(finalPhase);
-      return;
-    }
+    if (reduced) return;
     if (!inView) return;
     let cancelled = false;
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -67,7 +66,7 @@ export function CostStack({
         setTimeout(() => !cancelled && run(), 1100 + levers.length * 1100 + 3000)
       );
     };
-    run();
+    timers.push(setTimeout(run, 0));
     return () => {
       cancelled = true;
       timers.forEach(clearTimeout);
@@ -79,12 +78,11 @@ export function CostStack({
   const target =
     baseline - levers.slice(0, applied).reduce((s, l) => s + l.delta, 0);
 
+  const display = reduced ? target : animatedDisplay;
+
   // ease the displayed number toward target
   useEffect(() => {
-    if (reduced) {
-      setDisplay(target);
-      return;
-    }
+    if (reduced) return;
     const start = performance.now();
     const from = display;
     const dur = 700;
@@ -104,7 +102,6 @@ export function CostStack({
   const barLen = (v: number) => (v / baseline) * BAR_W;
 
   // segment boundaries for the deduction chips under the bar
-  let cursor = baseline;
 
   return (
     <ChartFrame caption={caption} number={number} meta={meta}>
@@ -204,8 +201,7 @@ export function CostStack({
 
           {/* lever deductions */}
           {levers.map((l, i) => {
-            const startVal = cursor;
-            cursor -= l.delta;
+            const cursor = baseline - levers.slice(0, i + 1).reduce((sum, lever) => sum + lever.delta, 0);
             const segX = BAR_X + barLen(cursor);
             const segW = barLen(l.delta);
             const active = show(2 + i);

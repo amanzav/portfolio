@@ -41,7 +41,6 @@ const RIG_W = 10;
 const RIG_H = 12;
 const RIG_GAP_X = 5;
 const RIG_GAP_Y = 6;
-const RIG_W_TOTAL = RIG_COLS * RIG_W + (RIG_COLS - 1) * RIG_GAP_X; // 145
 const RIG_H_TOTAL = RIG_ROWS * RIG_H + (RIG_ROWS - 1) * RIG_GAP_Y; // 48
 
 // kafka spine
@@ -117,20 +116,19 @@ export function TriageRoutingAnimation({
   // 1 rigs + kafka + classifier + lanes appear
   // 2 dots flow rig → kafka → classifier → lane (counts fill)
   // 3 stat-panel counter eases from 6h20m down to 3h25m
-  const [phase, setPhase] = useState(0);
+  const [animatedPhase, setPhase] = useState(0);
   const FINAL = 3;
 
   // continuous tick 0..1 for dot flow
-  const [t, setT] = useState(0);
-  const [count, setCount] = useState(parseHM(reviewTimeBefore));
+  const [animatedT, setT] = useState(0);
+  const [animatedCount, setCount] = useState(parseHM(reviewTimeBefore));
+
+  const phase = reduced ? FINAL : animatedPhase;
+  const t = reduced ? 1 : animatedT;
+  const count = reduced ? parseHM(reviewTimeAfter) : animatedCount;
 
   useEffect(() => {
-    if (reduced) {
-      setPhase(FINAL);
-      setT(1);
-      setCount(parseHM(reviewTimeAfter));
-      return;
-    }
+    if (reduced) return;
     if (!inView) return;
     let cancelled = false;
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -145,7 +143,7 @@ export function TriageRoutingAnimation({
       at(4200, 3);
       timers.push(setTimeout(() => !cancelled && run(), 8200));
     };
-    run();
+    timers.push(setTimeout(run, 0));
     return () => {
       cancelled = true;
       timers.forEach(clearTimeout);

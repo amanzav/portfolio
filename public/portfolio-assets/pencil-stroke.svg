@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 12" preserveAspectRatio="none">
+  <defs>
+    <filter id="graphite" x="-2%" y="-30%" width="104%" height="160%">
+      <feTurbulence type="fractalNoise" baseFrequency=".42 .75" numOctaves="3" seed="12" result="tooth"/>
+      <feColorMatrix in="tooth" type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.8 -.1"/>
+      <feComposite in="SourceGraphic" operator="in"/>
+    </filter>
+  </defs>
+  <g fill="none" stroke="#454b4b" stroke-linecap="round" filter="url(#graphite)">
+    <path d="M3 7.7 Q26 5.7 47 6.2 T88 5.6 T132 5.9 T173 5.1 Q195 5.5 216 6.5" stroke-width="3.1" opacity=".83"/>
+    <path d="M1 8.6 Q28 7.4 49 7.1 T91 6.8 T136 6.7 T181 6.9 L219 7.2" stroke-width="1.1" opacity=".6"/>
+    <path d="M8 5.9 Q38 5 62 5.3 M73 4.9 Q95 4.5 121 5 M139 4.6 Q169 4.3 196 5.2" stroke-width=".55" opacity=".38"/>
+    <path d="M15 9 Q46 8.2 78 8.4 M93 8.1 Q126 7.8 151 8 M166 7.7 L206 8.4" stroke-width=".45" opacity=".3"/>
+  </g>
+</svg>

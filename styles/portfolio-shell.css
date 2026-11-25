@@ -1,0 +1,26 @@
+.portfolio-shell { position: relative; min-height: 100svh; background: #fff; color: #303638; font-family: 'Helvetica Neue', Arial, sans-serif; }
+.portfolio-runtime { position: absolute; inset: 0; visibility: hidden; pointer-events: none; }
+.portfolio-shell[data-ready="true"] .portfolio-runtime { position: relative; visibility: visible; pointer-events: auto; }
+.portfolio-fallback[hidden] { display: none; }
+.static-portfolio { display: grid; align-content: center; gap: 40px; width: min(1100px,100%); min-height: 100svh; margin: auto; padding: 24px 28px; }
+.static-portfolio header { text-align: center; }
+.static-portfolio h1, .static-portfolio header p { margin: 0; color: #303638; font-size: 20px; font-weight: 400; line-height: 1.55; letter-spacing: -.015em; }
+.static-contacts { display: flex; justify-content: center; gap: 16px; margin: 22px 0 0; }
+.static-contacts a { display: grid; place-items: center; position: relative; width: 44px; height: 44px; color: #51595a; }
+.static-contacts svg { display: block; width: 24px; height: 24px; }
+.static-tooltip { position: absolute; top: 100%; left: 50%; transform: translate(-50%, -3px); font-size: 11px; opacity: 0; pointer-events: none; transition: opacity 150ms, transform 150ms; }
+.static-contacts a:hover .static-tooltip, .static-contacts a:focus-visible .static-tooltip { opacity: 1; transform: translate(-50%, 4px); }
+.static-work { display: grid; gap: 30px; width: min(640px,100%); margin: 0 auto; }
+.static-work details { min-height: 80px; }
+.static-work summary { cursor: pointer; list-style: none; }
+.static-work summary::-webkit-details-marker { display: none; }
+.static-work summary > span { color: #666b6c; font-size: 13px; }
+.static-work h2 { margin: 6px 0 10px; font-size: 22px; }
+.static-work details p { max-width: 65ch; color: #535a5b; }
+@media (max-width: 700px) {
+  .static-portfolio { padding: 28px 24px; gap: 28px; }
+  .static-portfolio h1, .static-portfolio header p { font-size: 16px; }
+  .static-work h2 { font-size: 18px; }
+  .static-work { gap: 24px; }
+}
+@media (prefers-reduced-motion: reduce) { .static-tooltip { transition: none; } }

@@ -1,0 +1,103 @@
+<a class="skip-link" href="#article-content">Skip to article</a>
+<main id="article-content" class="work-article">
+<article aria-labelledby="article-title">
+<a class="article-back pencil-link" href="/"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 12.1 4 12m5.5-5.3L4 12l5.5 5.4" /></svg><span>Back home</span></a>
+<header class="article-header"><h1 id="article-title">Teaching a car to park.</h1><p class="article-context">Reinforcement learning · PyBullet</p></header>
+<div class="article-opening"><p>I tried PPO and TRPO to teach a simulated car to park, starting with reaching goal points and then moving on to following planned paths. I could get a policy working on a particular path, but getting it to handle unfamiliar ones was where things became difficult.</p></div>
+<nav class="article-contents" aria-label="Article sections"><a href="#setup">Setup</a><a href="#rewards">Rewards</a><a href="#ppo">PPO</a><a href="#trpo">TRPO</a><a href="#results">What I learned</a></nav>
+<section class="article-section" id="setup" aria-labelledby="setup-heading">
+<h2 id="setup-heading">A controller, a car, and a target</h2>
+<p>I ran the experiments in Gym and PyBullet, where I trained a model called a <strong>policy</strong> to choose throttle and steering from the car’s state and target. I fed it that information directly from the simulator so I could focus on how it learned to control the car.</p>
+<figure class="article-diagram control-diagram">
+<img class="diagram-wide" src="/article-diagrams/control-wide.svg" width="640" height="268" alt="Illustrative path-following experiment: a car follows a curved path toward a parking bay, with the current waypoint, throttle, and steering labeled." />
+<img class="diagram-mobile" src="/article-diagrams/control-mobile.svg" width="320" height="358" alt="A car follows a planned path into a bay. The policy chooses throttle and steering using the car state and the current waypoint." />
+<figcaption>I’ve drawn a simplified version of the path-following setup here to show what I asked the policy to do.</figcaption>
+</figure>
+<details class="article-detail" id="state-details"><summary><svg class="disclosure-mark" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10"/><path class="vertical-mark" d="M8 3v10"/></svg><span>What goes into the model?</span></summary><div class="detail-body"><p>I gave the path-following model 11 values, including velocity and heading, because I needed it to know how the car was moving as well as how close it was to the next waypoint.</p><figure class="code-example"><figcaption>I passed the car’s state and target into the model as an 11-value observation.</figcaption><pre tabindex="0" aria-label="Controller observation · simplified field names"><code>state = [
+    x, y, cos(heading), sin(heading),
+    velocity_x, velocity_y,
+    target_x, target_y, target_heading,
+    distance_to_target, heading_error
+]
+throttle, steering = policy.sample(state)</code></pre></figure><p>I represented the car’s heading with sine and cosine so nearby directions stayed close even when the angle wrapped from a full turn back to zero. I kept the target heading and heading error as separate scalar values in this implementation.</p><p>During training, I sampled continuous actions from the policy and let the environment clip them to its throttle and steering limits. I also rendered a camera view to watch the car, while the policy continued to receive the state values shown above.</p></div></details></section>
+<section class="article-section" id="paths" aria-labelledby="paths-heading">
+<h2 id="paths-heading">Giving the controller a path</h2>
+<p>I started by asking the model to reach goal points, then tried using a planner to supply a path while the policy controlled the car. I gave it waypoints describing where the car should go and which way it should face, and left it to learn the throttle and steering needed to follow them.</p>
+<details class="article-detail" id="planner-details"><summary><svg class="disclosure-mark" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10"/><path class="vertical-mark" d="M8 3v10"/></svg><span>What RRT* and Reeds–Shepp handle</span></summary><div class="detail-body"><p>I used RRT* with Reeds–Shepp connections to generate those paths. With RRT*, I could grow a tree of possible routes and reconnect nearby branches when a lower-cost connection turned up. The Reeds–Shepp curves let those connections include forward and reverse motion while respecting a turning constraint.</p><p>I used the planner’s existing implementation, which credits Atsushi Sakai’s sample code. I reversed its goal-to-start output into the order the car needed to follow, then moved the target to the next waypoint as the car reached each one.</p><p>That gave me a route through the scene, but I still needed the policy to turn it into a sequence of throttle and steering commands that actually moved the car along it.</p></div></details></section>
+<section class="article-section" id="rewards" aria-labelledby="rewards-heading">
+<h2 id="rewards-heading">Deciding what a good drive looks like</h2>
+<p>I scored the car’s actions using alignment with the path, distance to the next waypoint, and heading error, with penalties for collisions and leaving the map. I combined those rewards over time into a <strong>return</strong> so an earlier steering choice could get credit for what happened afterward, while giving later rewards less weight.</p>
+<figure class="code-example"><figcaption>I updated the policy from a batch of driving experience using one of these methods.</figcaption><pre tabindex="0" aria-label="One training cycle · pseudocode"><code>drives = collect_drives(policy, simulator)
+returns = discounted_rewards(drives)
+signal = learning_signal(drives, returns)
+policy = update_with_ppo_or_trpo(
+    policy, drives, signal)</code></pre></figure><p>I let the car collect a batch of driving experience before updating the model. I tried PPO and TRPO as separate ways of making that update, so I wasn’t running both algorithms every time the car steered.</p><details class="article-detail" id="reward-details"><summary><svg class="disclosure-mark" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10"/><path class="vertical-mark" d="M8 3v10"/></svg><span>Why the reward and learning signal matter</span></summary><div class="detail-body"><p>I included intermediate reward terms because a model that rarely reached the parking spot would otherwise have very little useful feedback to learn from early in training.</p><figure class="code-example"><figcaption>This pseudocode shows how I combined the reward terms, with the weights and some terminal conditions left out.</figcaption><pre tabindex="0" aria-label="Reward intent · schematic, not the exact equation"><code>reward = path_alignment
+reward -= distance_to_waypoint
+reward -= abs(heading_error)
+<span class="keyword">if</span> collision or outside_map:
+    reward -= collision_penalty
+<span class="keyword">if</span> reached_waypoint:
+    reward += waypoint_bonus</code></pre></figure><p>I also had to be careful about what those terms encouraged, because getting the car to reach a waypoint didn’t necessarily mean it had finished a clean parking maneuver. I needed to look at the final heading and speed alongside the reward it earned.</p><p>For PPO, I used an <strong>advantage</strong> estimate to judge whether an action worked out better or worse than expected from that state, with a value function supplying the expectation. The custom TRPO implementation I experimented with handled this differently: it used normalized discounted returns without a learned value critic.</p></div></details></section>
+<section class="article-section" id="ppo" aria-labelledby="ppo-heading">
+<h2 id="ppo-heading">PPO: learning without overcorrecting</h2>
+<p>I used Stable-Baselines3’s <strong>Proximal Policy Optimization</strong> implementation to update the policy from the drives it collected. PPO uses an <strong>advantage</strong> estimate to judge whether an action worked out better or worse than expected, then encourages actions with a positive advantage and discourages those with a negative one. Its clipped objective stops an increasingly large favorable change from earning extra credit on that sample.</p><p>I compared the new and old policy’s likelihood of the same throttle-and-steering action using the ratio <code>r</code>. In the pseudocode below, I calculate it from their log-likelihoods and use an illustrative <code>eps = 0.2</code> to set the clipping width.</p>
+<figure class="code-example"><figcaption>I used the smaller of the raw and clipped contributions when calculating the policy loss.</figcaption><pre tabindex="0" aria-label="PPO-Clip policy objective · simplified"><code>eps = 0.2
+r = exp(
+    new_joint_logp - old_joint_logp)
+raw = r * advantage
+limited = clip(r, 1 - eps, 1 + eps)
+clipped = limited * advantage
+loss = -mean(minimum(raw, clipped))
+gradient_step(policy, loss)</code></pre></figure><p>I used <code>minimum</code> to take the smaller contribution for each sample, then averaged those contributions across the batch. I kept the old log-likelihoods and advantages fixed, and used the minus sign to turn the objective I wanted to maximize into a loss I could minimize.</p><details class="article-detail" id="ppo-details"><summary><svg class="disclosure-mark" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10"/><path class="vertical-mark" d="M8 3v10"/></svg><span>Walk through one PPO update</span></summary><div class="detail-body"><p>Because I was working with continuous actions, I compared probability densities for the throttle-and-steering pair. Taking <code>exp(new_joint_logp − old_joint_logp)</code> gave me the new density divided by the old one.</p><p>To make that concrete, I can take a sample with <code>advantage = +1</code> and use <code>eps = 0.2</code>. If the new policy makes that action 1.5 times as likely, the raw contribution becomes 1.5, but the clipped contribution stays at 1.2, which is the value the objective uses.</p><figure class="clip-example">
+            <svg viewBox="0 0 360 258" role="img" aria-labelledby="clip-title clip-description">
+              <title id="clip-title">A positive-advantage sample stops gaining objective credit above a ratio of 1.2</title>
+              <desc id="clip-description">Illustrative calculation, not a training result. With advantage plus one and epsilon 0.2, the raw contribution rises with the likelihood ratio. The PPO objective follows it up to 1.2 and then stays level. At ratio 1.5, raw is 1.5 and the PPO objective is 1.2.</desc>
+              <path d="M49 18V184H338" class="plot-axis" />
+              <path d="M50 134H335 M50 84H335" class="plot-guide" />
+              <path d="M50 184 335 9" class="plot-raw" />
+              <path d="M50 184 245 64 335 64" class="plot-objective" />
+              <path d="M294 34V184" class="plot-guide" />
+              <circle cx="294" cy="34" r="3.5" class="raw-point" />
+              <circle cx="294" cy="64" r="4" class="objective-point" />
+              <text x="37" y="190" text-anchor="end">0</text>
+              <text x="37" y="140" text-anchor="end">0.5</text>
+              <text x="37" y="90" text-anchor="end">1</text>
+              <text x="37" y="40" text-anchor="end">1.5</text>
+              <text x="131" y="209" text-anchor="middle">0.5</text>
+              <text x="213" y="209" text-anchor="middle">1</text>
+              <text x="245" y="209" text-anchor="middle">1.2</text>
+              <text x="294" y="209" text-anchor="middle">1.5</text>
+              <text x="195" y="240" text-anchor="middle">Likelihood ratio r</text>
+              <text x="66" y="27">Contribution, A = +1</text>
+              <text x="260" y="112" class="plot-label">PPO-Clip</text>
+              <path d="M282 96V72" class="plot-leader" />
+              <text x="308" y="29" class="raw-label">raw</text>
+            </svg>
+            <figcaption>For this sample, I stopped getting extra objective credit once the ratio passed 1.2, even when the action became more likely.</figcaption>
+          </figure><p>I checked the negative case too: with <code>advantage = −1</code> and <code>r = 0.5</code>, the objective gives <code>min(−0.5, −0.8) = −0.8</code>. That stops me getting more benefit from this sample just by making the bad action even less likely, while still penalizing a change that makes it more likely.</p><p>I treated clipping as a change to the learning objective, because it doesn’t enforce a hard boundary on policy change or directly limit the steering command. The full PPO implementation also trains a value function and can make several optimization passes over the collected drives.</p></div></details></section>
+<section class="article-section" id="trpo" aria-labelledby="trpo-heading">
+<h2 id="trpo-heading">TRPO: checking the size of the update</h2>
+<p>I also experimented with a custom <strong>Trust Region Policy Optimization</strong> agent, where I checked proposed updates against a limit on <strong>KL divergence</strong>. That gave me a way to measure how much the policy’s action distribution changed across the sampled states, then try smaller steps until a candidate stayed within the limit and improved the batch objective.</p>
+<p>I was looking at the same problem with both methods: how to improve the policy without pushing an update too far. With PPO, I used a clipped objective; with TRPO, I worked with a constrained step and a backtracking check.</p>
+<details class="article-detail" id="trpo-details"><summary><svg class="disclosure-mark" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10"/><path class="vertical-mark" d="M8 3v10"/></svg><span>How the trust-region step works</span></summary><div class="detail-body"><p>I’m using the canonical joint-action form below to explain the update; the code in the repository averages the action-dimension ratios separately. To work through that form, I keep the old policy, collected actions, old log-likelihoods, and learning signal fixed, then use the mean joint likelihood ratio times that signal as a surrogate <code>score</code>. Taking its gradient, <code>g</code>, gives me a direction that would increase it.</p><p>I used <strong>conjugate gradient</strong> to approximately solve <code>Hx = g</code> through matrix-vector products, which let me work with the local curvature of the KL change without building and inverting the full matrix. I then scaled the proposed step to the KL budget, <code>delta</code>, and checked it with backtracking.</p><figure class="code-example"><figcaption>I tried smaller update steps until one met the KL limit and improved the batch score.</figcaption><pre tabindex="0" aria-label="Conceptual TRPO update · pseudocode"><code>old_params = copy(policy.parameters)
+g = gradient(score, old_params)
+Fv = damped_kl_hessian_product
+x = conjugate_gradient(Fv, g)
+curvature = dot(x, Fv(x))
+if curvature &lt;= 0:
+    return old_params
+step = sqrt(2 * delta / curvature) * x
+<span class="keyword">for</span> scale <span class="keyword">in</span> shrinking_scales:
+    trial = old_params + scale * step
+    kl = mean_kl(old_params, trial)
+    improves = score(trial) &gt; score(old_params)
+    <span class="keyword">if</span> kl &lt;= delta and improves:
+        <span class="keyword">return</span> trial
+<span class="keyword">return</span> old_params</code></pre></figure><p>I used <code>Fv</code> for the KL Hessian-vector product at the old parameters, adding damping for numerical stability. For backtracking, I tried a bounded sequence of shrinking scales such as <code>1, beta, beta², …</code>, where <code>0 &lt; beta &lt; 1</code>, and checked the average <code>KL(old || trial)</code> across the collected states. If none of the candidates passed, I kept the old parameters.</p><p>The version I experimented with in the repository also uses normalized returns without a learned value critic, and its conjugate-gradient code credits an upstream implementation. I kept those details in mind when reading the results, because passing the sampled checks didn’t guarantee better parking on a new path.</p></div></details></section>
+
+<section class="article-section" id="results" aria-labelledby="results-heading">
+<h2 id="results-heading">Following one path wasn’t enough</h2>
+<p>I could learn a policy for a particular path, but I couldn’t get the attempts across new paths to work reliably. That was the result I needed to pay attention to, because a good run on a practiced route didn’t show that I had trained a general parking controller.</p>
+<p>I came away looking more carefully at what each result actually told me. Alongside the reward, I needed to know whether the route was familiar, where the car finished, which way it was facing, and whether it could recover when something went wrong.</p>
+<details class="article-detail" id="results-details"><summary><svg class="disclosure-mark" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10"/><path class="vertical-mark" d="M8 3v10"/></svg><span>What I would test next</span></summary><div class="detail-body"><p>I’d set aside some start and goal configurations before training, then test them without making further updates to the model. I’d track completion, collisions, final pose, and speed, and look through the failed runs as well as the successful parks.</p><p>I also need to account for the current configuration, which generates one path per environment instance, even though the README describes broader experiments. I can’t use that setting alone to claim held-out performance, and I don’t have a recorded comparison here that would let me call PPO or TRPO the winner.</p><p>The default runner has since moved to TD3, so I’ve focused this explanation on the earlier PPO experiments and custom TRPO entry point that are still in the repository.</p></div></details></section><footer class="article-footer section-references"><details class="article-detail" id="reference-details"><summary><svg class="disclosure-mark" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10"/><path class="vertical-mark" d="M8 3v10"/></svg><span>Code and papers</span></summary><div class="detail-body"><ul><li><a href="https://github.com/KEV-MA/auto_park/tree/453b68740f508cafa633d7c9ea3035f83b77110d">Auto Park repository and results</a></li><li><a href="https://github.com/KEV-MA/auto_park/blob/453b68740f508cafa633d7c9ea3035f83b77110d/sim_env/simple_driving_env.py">Environment, observations, and rewards</a></li><li><a href="https://github.com/KEV-MA/auto_park/blob/453b68740f508cafa633d7c9ea3035f83b77110d/agent.py">Custom TRPO agent</a></li><li><a href="https://arxiv.org/abs/1707.06347">PPO paper · Schulman et al.</a></li><li><a href="https://arxiv.org/abs/1502.05477">TRPO paper · Schulman et al.</a></li><li><a href="https://spinningup.openai.com/en/latest/algorithms/ppo.html">OpenAI’s PPO explanation</a></li><li><a href="https://spinningup.openai.com/en/latest/algorithms/trpo.html">OpenAI’s TRPO explanation</a></li><li><a href="https://stable-baselines3.readthedocs.io/en/master/modules/ppo.html">Stable-Baselines3 PPO</a></li></ul></div></details><a class="article-back pencil-link footer-home" href="/"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 12.1 4 12m5.5-5.3L4 12l5.5 5.4" /></svg><span>Back home</span></a></footer>
+</article></main>

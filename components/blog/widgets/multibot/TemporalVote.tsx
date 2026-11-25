@@ -21,7 +21,7 @@ const VB_H = 280;
 
 const CELL_W = 56;
 const CELL_H = 56;
-const CELL_GAP = 12;
+
 // Cell x positions (5 cells, 4 gaps inside x=120..540 band)
 const CELL_XS = [166, 234, 302, 370, 438]; // centers: 194, 262, 330, 398, 466
 const CELL_CENTERS = CELL_XS.map((x) => x + CELL_W / 2);
@@ -51,13 +51,12 @@ export function MultibotTemporalVote({
   const reduced = useReducedMotion();
 
   // phase 1 idle · 2 track A streams · 3 track B streams · 4 verdicts · 5 footer pulse
-  const [phase, setPhase] = useState(1);
+  const [animatedPhase, setPhase] = useState(1);
+
+  const phase = reduced ? 5 : animatedPhase;
 
   useEffect(() => {
-    if (reduced) {
-      setPhase(5);
-      return;
-    }
+    if (reduced) return;
     if (!inView) return;
     let cancelled = false;
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -71,7 +70,7 @@ export function MultibotTemporalVote({
       at(5800, 5);
       timers.push(setTimeout(() => !cancelled && run(), 7800));
     };
-    run();
+    timers.push(setTimeout(run, 0));
     return () => {
       cancelled = true;
       timers.forEach(clearTimeout);
@@ -91,8 +90,8 @@ export function MultibotTemporalVote({
   const bCommit = bHits >= commitMin;
 
   // Per-cell visible threshold across phases
-  const showCellA = (i: number) => phase >= 2;
-  const showCellB = (i: number) => phase >= 3;
+  const showCellA = () => phase >= 2;
+  const showCellB = () => phase >= 3;
 
   // Stagger delays per cell (after the phase activates)
   const cellDelay = (i: number) => (reduced ? 0 : i * 0.32);
@@ -249,8 +248,8 @@ export function MultibotTemporalVote({
                   }
                   fontFamily="var(--font-mono)"
                   initial={false}
-                  animate={{ opacity: showCellA(i) ? 1 : 0, y: showCellA(i) ? y + 22 : y + 26 }}
-                  transition={{ duration: 0.4, ease, delay: showCellA(i) ? cellDelay(i) : 0 }}
+                  animate={{ opacity: showCellA() ? 1 : 0, y: showCellA() ? y + 22 : y + 26 }}
+                  transition={{ duration: 0.4, ease, delay: showCellA() ? cellDelay(i) : 0 }}
                 >
                   {conf.toFixed(2)}
                 </motion.text>
@@ -285,16 +284,16 @@ export function MultibotTemporalVote({
                   }
                   initial={false}
                   animate={{
-                    y: showCellA(i) ? barY + (BAR_H - fillH) : barY + BAR_H,
-                    height: showCellA(i) ? fillH : 0,
+                    y: showCellA() ? barY + (BAR_H - fillH) : barY + BAR_H,
+                    height: showCellA() ? fillH : 0,
                   }}
-                  transition={{ duration: 0.45, ease, delay: showCellA(i) ? cellDelay(i) : 0 }}
+                  transition={{ duration: 0.45, ease, delay: showCellA() ? cellDelay(i) : 0 }}
                 />
                 {/* hit/miss pill below cell */}
                 <motion.g
                   initial={false}
-                  animate={{ opacity: showCellA(i) ? 1 : 0 }}
-                  transition={{ duration: 0.3, ease, delay: showCellA(i) ? cellDelay(i) + 0.18 : 0 }}
+                  animate={{ opacity: showCellA() ? 1 : 0 }}
+                  transition={{ duration: 0.3, ease, delay: showCellA() ? cellDelay(i) + 0.18 : 0 }}
                 >
                   <rect
                     x={x + CELL_W / 2 - 16}
@@ -371,8 +370,8 @@ export function MultibotTemporalVote({
                   }
                   fontFamily="var(--font-mono)"
                   initial={false}
-                  animate={{ opacity: showCellB(i) ? 1 : 0, y: showCellB(i) ? y + 22 : y + 26 }}
-                  transition={{ duration: 0.4, ease, delay: showCellB(i) ? cellDelay(i) : 0 }}
+                  animate={{ opacity: showCellB() ? 1 : 0, y: showCellB() ? y + 22 : y + 26 }}
+                  transition={{ duration: 0.4, ease, delay: showCellB() ? cellDelay(i) : 0 }}
                 >
                   {conf.toFixed(2)}
                 </motion.text>
@@ -404,15 +403,15 @@ export function MultibotTemporalVote({
                   }
                   initial={false}
                   animate={{
-                    y: showCellB(i) ? barY + (BAR_H - fillH) : barY + BAR_H,
-                    height: showCellB(i) ? fillH : 0,
+                    y: showCellB() ? barY + (BAR_H - fillH) : barY + BAR_H,
+                    height: showCellB() ? fillH : 0,
                   }}
-                  transition={{ duration: 0.45, ease, delay: showCellB(i) ? cellDelay(i) : 0 }}
+                  transition={{ duration: 0.45, ease, delay: showCellB() ? cellDelay(i) : 0 }}
                 />
                 <motion.g
                   initial={false}
-                  animate={{ opacity: showCellB(i) ? 1 : 0 }}
-                  transition={{ duration: 0.3, ease, delay: showCellB(i) ? cellDelay(i) + 0.18 : 0 }}
+                  animate={{ opacity: showCellB() ? 1 : 0 }}
+                  transition={{ duration: 0.3, ease, delay: showCellB() ? cellDelay(i) + 0.18 : 0 }}
                 >
                   <rect
                     x={x + CELL_W / 2 - 16}

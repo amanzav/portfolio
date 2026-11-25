@@ -2,7 +2,8 @@
 
 import { motion } from "motion/react";
 import Link from "next/link";
-import { Github, MoveUpRight } from "lucide-react";
+import { MoveUpRight } from "lucide-react";
+import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import { ProjectItem } from "@/lib/projects";
 
 interface ProjectDetailClientProps {
@@ -62,7 +63,7 @@ export default function ProjectDetailClient({ project }: ProjectDetailClientProp
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 text-foreground/70 transition-colors hover:text-foreground"
           >
-            <Github className="h-4 w-4" />
+            <GitHubLogoIcon className="h-4 w-4" />
             github
           </a>
           {project.siteUrl && (

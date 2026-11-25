@@ -1,0 +1,39 @@
+@import './camera-study.css';
+#drag-choices { position: absolute; inset: 0; pointer-events: none; }
+.drag-option { position: absolute; pointer-events: auto; padding: 7px 0; text-align: left; font-size: 13px; line-height: 1.45; }
+.drag-option[data-side="left"] { transform: translateX(-100%); }
+.drag-title { display: block; white-space: pre; line-height: 1.45; }
+.drag-option .drag-title { text-decoration: underline; text-decoration-color: #b2b7b7; text-underline-offset: 6px; }
+.drag-company { display: block; margin-top: 8px; color: #65696b; font-size: 11px; line-height: 1.4; }
+.drag-option:hover { border-color: transparent; }
+.drag-option:hover .drag-title, .drag-option:active .drag-title { text-decoration-color: #292c2d; }
+#drag-carrier { position: absolute; width: max-content; color: #34393b; line-height: 1.45; pointer-events: none; isolation: isolate; }
+#drag-preview { position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); width: min(360px, 80%); min-height: 42px; text-align: center; font-size: 12px; }
+.drag-controls { display: flex; justify-content: center; gap: 26px; margin-bottom: 16px; }
+.drag-inspector { display: flex; align-items: center; justify-content: center; gap: 14px; color: #65696b; font-size: 11px; }
+.drag-inspector input { width: 170px; accent-color: #52656a; }
+#drag-status { margin: 10px 0 4px; min-height: 20px; font-size: 11px; font-variant-numeric: tabular-nums; }
+#reading { position: absolute; visibility: hidden; color: #34393b; }
+#reading h2 { margin: 0; font-size: 19px; line-height: 1.45; font-weight: 400; outline-offset: 6px; }
+#reading h2 span { display: inline-block; white-space: pre; }
+#reading[data-side="left"] h2, #reading[data-side="left"] .reading-context { text-align: right; }
+.reading-context { margin: 6px 0 24px; font-size: 11px; color: #65696b; }
+.reading-intro { font-size: 13px; line-height: 1.85; margin: 0 0 18px; }
+#read-notes, #reading-back { font-size: 12px; border-bottom: 1px solid #b2b7b7; padding: 2px 0; }
+#reading-back { display: block; margin-top: 20px; }
+.reading-notes { max-height: 180px; overflow-y: auto; margin-top: 16px; padding-right: 10px; font-size: 13px; line-height: 1.85; }
+.reading-notes p { margin: 0 0 14px; }
+.motion-marks { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+#fling-trace { fill: none; stroke: #747b7b; stroke-width: 1; stroke-dasharray: 4 5; opacity: .24; }
+header { will-change: opacity; }
+
+.title-glyph { display: inline-block; white-space: pre; transform-origin: center; }
+#drag-carrier .title-glyph { will-change: transform; }
+#grip-contact { fill: none; stroke: #454d4e; stroke-width: 1.4; stroke-linecap: round; }
+#release-streak { fill: none; stroke: #687273; stroke-width: .85; stroke-linecap: round; }
+
+.arm-only #reading h2 { font-size: 13px; }
+.arm-only .reading-context, .arm-only .reading-intro, .arm-only #read-notes, .arm-only .reading-notes { display: none; }
+.arm-only #reading-back { margin-top: 16px; }
+.arm-only { padding-top: 24px; padding-bottom: 8px; }
+.arm-only .camera-stage { margin-bottom: 16px; }

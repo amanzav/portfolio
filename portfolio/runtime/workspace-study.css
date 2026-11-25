@@ -1,0 +1,160 @@
+.portfolio-mount.portfolio-preview { font-family: 'Helvetica Neue', Arial, sans-serif; min-height: 100svh; display: grid; align-items: center; }
+.workspace-study {
+  position: relative;
+  --graphite: #303638;
+  --muted-pencil: #666b6c;
+  --pencil-stroke: url('./assets/pencil-stroke.svg');
+  width: min(1100px, 100%);
+  margin: 0 auto;
+  padding: 24px 28px;
+  color: var(--graphite);
+}
+.workspace-study::before, .workspace-study::after { content: ''; position: fixed; inset: 0; pointer-events: none; }
+.workspace-study::before { z-index: 9; background: url('./assets/dot-paper.svg') repeat; opacity: .55; }
+.workspace-study::after { z-index: 10; background: url('./assets/sketchbook-paper.webp') repeat; background-size: 620px 620px; mix-blend-mode: multiply; opacity: .45; }
+.workspace-study header { width: 100%; position: static; margin: auto; text-align: center; }
+.workspace-study header h1, .workspace-study header p { margin: 0; color: var(--graphite); font-size: 20px; font-weight: 400; line-height: 1.55; letter-spacing: -.015em; }
+.workspace-study .pencil-name { position: relative; display: inline-block; padding: 0 2px; font-family: 'Aman Pencil', cursive; font-size: 1.3em; font-weight: 300; line-height: .9; }
+.workspace-study .pencil-name::after { content: ''; position: absolute; left: -2px; right: -2px; bottom: -7px; height: 5px; background: currentColor; mask: var(--pencil-stroke) center / 100% 100% no-repeat; opacity: .48; }
+.workspace-study header .pencil-contact-links { min-height: 44px; margin-top: 22px; gap: 16px; }
+.workspace-study .camera-stage { height: 440px; min-height: 440px; margin: 40px 0 0; overflow: hidden; }
+.workspace-study .camera-stage > canvas { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.workspace-study #drag-choices, .workspace-study #drag-carrier, .workspace-study #reading, .workspace-study .work-navigation { z-index: 2; }
+.workspace-study .drag-option { transform: none; border: 0; color: #414748; text-align: left; width: 320px; }
+.workspace-study .drag-title { position: relative; width: max-content; text-decoration: none; }
+.workspace-study .drag-title::after, .workspace-study .pencil-link::after {
+  content: ''; position: absolute; left: -3px; bottom: -5px; width: calc(100% + 6px); height: 9px;
+  background-color: currentColor; mask: var(--pencil-stroke) center / 100% 100% no-repeat; opacity: .66;
+  pointer-events: none; clip-path: inset(0 100% 0 0); transition: clip-path 210ms cubic-bezier(.2,.7,.2,1);
+}
+.workspace-study .drag-option[data-side="left"] .drag-title::after { clip-path: inset(0 0 0 100%); }
+.workspace-study .drag-option.is-hovered .drag-title::after, .workspace-study .drag-option.is-queued .drag-title::after,
+.workspace-study .pencil-link:hover::after, .workspace-study .pencil-link:focus-visible::after { clip-path: inset(0); }
+.workspace-study .option-content { display: block; pointer-events: none; }
+.workspace-study .drag-option::before { content: ''; position: absolute; inset: 0 -12px 0 -52px; }
+.workspace-study .camera-stage[data-mode="home"] .drag-option::before { top: -4px; }
+.workspace-study .drag-company { display: inline-block; height: auto; margin: 0; font-size: 13px; line-height: 1.45; color: var(--muted-pencil); vertical-align: top; }
+.workspace-study .experience-meta { display: flex; align-items: center; gap: 8px; white-space: nowrap; font-size: 12px; line-height: 1.45; }
+.workspace-study .company-extra { display: inline-block; overflow: hidden; vertical-align: top; font-size: inherit; color: var(--muted-pencil); }
+.workspace-study .experience-headline { margin-top: 6px; font-size: 22px; line-height: 1.25; white-space: nowrap; }
+.workspace-study .experience-preview { display: block; max-width: none; margin-top: 8px; color: #626a6b; font-size: 14px; line-height: 1.5; overflow: hidden; }
+.workspace-study .experience-company::after, .workspace-study #reading h2 .drag-title::after,
+.workspace-study .summary-company .drag-title::after, .workspace-study #drag-carrier .drag-title::after { content: none; }
+.workspace-study .company-mark { display: inline-block; flex: 0 0 auto; width: 18px; height: 18px; color: inherit; }
+.workspace-study .company-mark svg { display: block; width: 100%; height: 100%; fill: currentColor; }
+.workspace-study .company-mark--ford { width: 26px; }
+.workspace-study #reading { max-width: none; color: var(--graphite); }
+.workspace-study #reading h2 { margin: 0; font-size: 24px; line-height: 1.25; text-align: left; font-weight: 400; }
+.workspace-study #reading h2 > .drag-title { display: block; }
+.workspace-study .reading-context { display: flex; align-items: center; width: max-content; height: 20px; white-space: nowrap; margin: 12px 0 22px; color: var(--muted-pencil); font-size: 13px; line-height: 20px; }
+.workspace-study .summary-company { display: inline-flex; align-items: center; margin-right: 6px; }
+.workspace-study .summary-role { display: block; line-height: 20px; }
+.workspace-study .summary-company .drag-title { display: block; }
+.workspace-study .summary-mark { display: flex; align-items: center; justify-content: center; flex: 0 0 18px; width: 18px; height: 18px; margin-right: 8px; line-height: 0; }
+.workspace-study .summary-mark .company-mark { width: 100%; height: 100%; }
+.workspace-study .reading-intro { margin-bottom: 24px; font-size: 16px; line-height: 1.65; color: #535a5b; }
+.workspace-study .reading-intro p { margin: 0 0 18px; font: inherit; color: inherit; }
+.workspace-study .pencil-link { position: relative; border: 0; color: #51595a; }
+.workspace-study .work-navigation { position: absolute; top: 70px; left: 0; width: 100%; height: 36px; }
+.workspace-study .work-navigation button {
+  position: absolute; top: 0; transform: translateX(-50%); width: auto; display: inline-flex; align-items: center;
+  gap: 7px; padding: 8px 0; margin: 0; text-align: left; font-size: 13px; font-weight: 400;
+  white-space: nowrap; background: none; border: 0; color: var(--graphite); line-height: 20px;
+}
+.workspace-study .work-navigation #reading-back { position: absolute; display: grid; place-items: center; width: 28px; height: 36px; margin: 0; padding: 8px 0; border: 0; transform: none; color: var(--muted-pencil); transition: left 180ms cubic-bezier(.2,.7,.2,1); }
+.workspace-study .work-navigation .work-caption { transform: none; transition: left 180ms cubic-bezier(.2,.7,.2,1); }
+.workspace-study .work-navigation .company-mark { width: 16px; height: 16px; }
+.workspace-study .work-navigation .company-mark--ford { width: 23px; }
+.workspace-study .caption-company { display: block; width: max-content; color: var(--muted-pencil); font-size: 13px; line-height: 20px; }
+.workspace-study .work-caption:hover .caption-company::after, .workspace-study .work-caption:focus-visible .caption-company::after { clip-path: inset(0); }
+.workspace-study .work-navigation button[hidden] { display: none; }
+.workspace-study .work-navigation .is-queued { opacity: .6; }
+.workspace-study .work-navigation button:disabled { opacity: 1; cursor: default; }
+.workspace-study .motion-marks { z-index: 3; }
+.workspace-study #grip-contact { stroke-width: 1.2; }
+.workspace-study #release-streak { stroke-width: .9; stroke-linecap: round; }
+.workspace-heading-measure { position: absolute; visibility: hidden; font-size: 24px; font-weight: 400; line-height: 1.25; }
+.workspace-study :focus-visible { outline: 1.5px solid #57747b; outline-offset: 7px; }
+.workspace-study ::selection { background: #e2eaeb; color: #252d2f; }
+.workspace-study .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+@media (prefers-reduced-motion: reduce) { .workspace-study .drag-title::after, .workspace-study .pencil-link::after, .workspace-study .work-navigation .work-caption { transition: none; } }
+
+.workspace-study .title-glyph { pointer-events: none; }
+
+.workspace-study .caption-payload { display: inline-flex; align-items: center; width: max-content; color: var(--muted-pencil); }
+.workspace-study .caption-payload .drag-title { margin: 0; }
+
+.workspace-study .icon-back > svg { display: block; width: 20px; height: 20px; }
+@media (prefers-reduced-motion: reduce) { .workspace-study .work-navigation #reading-back { transition: none; } }
+
+@media (max-width: 700px) {
+  .portfolio-mount.portfolio-preview { display: grid; align-items: safe center; overflow-x: clip; }
+  .workspace-study.phone-workspace { width: min(600px, 100%); padding: 28px 24px 32px; }
+  .phone-workspace header h1, .phone-workspace header p { font-size: 16px; line-height: 1.6; }
+  .phone-workspace header p { width: auto; max-width: none; margin: 4px 0 0; }
+  .phone-workspace header .pencil-contact-links { margin-top: 18px; gap: 14px; }
+  .phone-workspace .pencil-contact-link > svg { width: 22px; height: 22px; }
+  .workspace-study.phone-workspace .camera-stage { min-height: 0; margin: 20px 0 0; overflow: hidden; overflow-anchor: none; }
+  .phone-workspace .experience-headline { font-size: 18px; }
+  .phone-workspace .drag-option, .phone-workspace #reading { text-align: left; }
+  .phone-workspace .experience-preview { font-size: 13.5px; line-height: 1.5; }
+  .phone-workspace .drag-option::before { inset: 0 -8px; }
+  .phone-workspace .drag-option:active .drag-title::after { clip-path: inset(0); }
+  .phone-workspace #reading h2 { font-size: 20px; }
+  .phone-workspace .reading-context { height: auto; min-height: 20px; font-size: 12px; white-space: normal; align-items: flex-start; }
+  .phone-workspace .summary-role { white-space: normal; }
+  .phone-workspace .reading-intro { font-size: 15px; line-height: 1.7; }
+  .phone-workspace .work-navigation { top: 0; height: 44px; }
+  .phone-workspace .work-navigation button { min-height: 44px; font-size: 12px; }
+  .phone-workspace .work-navigation #reading-back { width: 44px; height: 44px; }
+  .phone-workspace .pencil-contact-link:active { color: #252d2f; }
+}
+
+.company-token { display: inline-flex; align-items: center; gap: 8px; width: max-content; flex: 0 0 auto; }
+.phone-company-slot { display: none; }
+@media (max-width: 700px) {
+  .phone-workspace .experience-meta { min-height: 18px; }
+  .phone-workspace .company-token { font-size: 12px; line-height: 20px; height: 20px; color: var(--muted-pencil); }
+  .phone-workspace .company-token .drag-company { font-size: 12px; line-height: 20px; }
+  .phone-workspace .company-token .company-mark { width: 18px; height: 18px; }
+  .phone-workspace .company-token .company-mark--ford { width: 26px; }
+  .phone-workspace .work-caption > :not(.company-token) { display: none; }
+  .phone-workspace .camera-stage > canvas { clip-path: inset(0 0 calc(100% - 340px) 0); }
+  .phone-workspace .phone-company-slot { display: flex; justify-content: flex-start; height: 20px; margin: 0 0 20px; }
+  .phone-workspace .summary-mark, .phone-workspace .summary-company { display: none; }
+  .phone-workspace .reading-context { margin: 12px 0 22px; }
+  .phone-workspace #drag-carrier { white-space: nowrap; line-height: 20px; }
+}
+
+@media (max-width: 700px) {
+  .workspace-study.phone-workspace { padding: 16px 24px; }
+  .phone-workspace header h1, .phone-workspace header p { font-size: 15px; line-height: 1.55; }
+  .phone-workspace header .pencil-contact-links { margin-top: 14px; margin-bottom: 0; }
+  .workspace-study.phone-workspace .camera-stage { margin-top: 16px; margin-bottom: 0; }
+  .phone-workspace .phone-company-slot { margin-bottom: 10px; }
+  .phone-workspace .reading-context { margin: 8px 0 14px; }
+  .phone-workspace .reading-intro { font-size: 14px; line-height: 1.6; margin-bottom: 8px; }
+  .phone-workspace .reading-intro p:last-child { margin-bottom: 0; }
+  .phone-workspace.compact-phone .experience-preview { display: none; }
+}
+
+@media (max-width: 700px) {
+  .phone-workspace *, .phone-workspace *::before, .phone-workspace *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .workspace-study.phone-workspace .camera-stage { overflow: clip; }
+}
+
+@media (max-width: 700px) {
+  .phone-workspace header .pencil-contact-links { margin-top: 10px; }
+  .workspace-study.phone-workspace .camera-stage { margin-top: 8px; }
+}
+
+.phone-headline-window { display: contents; }
+@media (max-width: 700px) {
+  .phone-workspace .phone-headline-window { display: block; overflow: clip; }
+}

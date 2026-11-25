@@ -75,15 +75,14 @@ export function TirePressureAnimation({
   // 11 optimised dot enters transport
   // 12 optimised dot enters cluster
   // 13 optimised dot hits lamp · final state
-  const [phase, setPhase] = useState(0);
+  const [animatedPhase, setPhase] = useState(0);
   const FINAL = 13;
+  const phase = reduced ? FINAL : animatedPhase;
+
   const mode: "baseline" | "optimised" = phase >= 8 ? "optimised" : "baseline";
 
   useEffect(() => {
-    if (reduced) {
-      setPhase(FINAL);
-      return;
-    }
+    if (reduced) return;
     if (!inView) return;
     let cancelled = false;
     const timers: ReturnType<typeof setTimeout>[] = [];
@@ -106,7 +105,7 @@ export function TirePressureAnimation({
       at(6400, 13);
       timers.push(setTimeout(() => !cancelled && run(), 8800));
     };
-    run();
+    timers.push(setTimeout(run, 0));
     return () => {
       cancelled = true;
       timers.forEach(clearTimeout);

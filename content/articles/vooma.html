@@ -1,0 +1,77 @@
+<a class="skip-link" href="#article-content">Skip to article</a><main id="article-content" class="work-article"><article aria-labelledby="article-title">
+<a class="article-back pencil-link" href="/?work=vooma"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 12.1 4 12m5.5-5.3L4 12l5.5 5.4" /></svg><span>Vooma</span></a>
+<header class="article-header"><h1 id="article-title">Memory and workflows at Vooma.</h1><p class="article-context">AI platform engineering</p></header>
+<div class="article-opening"><p>At Vooma, I’m working on Vee, our AI assistant, mostly on how it remembers a conversation and picks up tasks later. I’m also building the checks around that behavior so I can work out where a response went wrong and whether a change actually helped.</p></div>
+<nav class="article-contents" aria-label="Article sections"><a href="#memory">Memory</a><a href="#retrieval">Retrieval</a><a href="#workflows">Workflows</a><a href="#evaluation">Evaluations</a><a href="#other-work">Other work</a></nav>
+<section class="article-section" id="memory" aria-labelledby="memory-heading"><h2 id="memory-heading">Keeping the parts of a conversation that still matter</h2>
+<p>I kept recent messages in the prompt and compacted older history into shorter notes, which I could retrieve later. When someone asked Vee to get a quote and then moved on, I needed that request to remain an unfinished task rather than disappear into a general summary of the conversation.</p>
+<details class="article-detail" id="memory-details"><summary><svg class="disclosure-mark" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10"/><path class="vertical-mark" d="M8 3v10"/></svg><span>How I kept unfinished tasks through compaction</span></summary><div class="detail-body"><p>I treated facts and tasks as different kinds of memory. A preference like “email me updates” could stay as a fact, while a quote request needed an identity and a state so a later message could refer to the same piece of work.</p><figure class="code-example"><figcaption>I’ve shortened the compaction logic here to show what I needed to retain.</figcaption><pre tabindex="0" aria-label="Conceptual pseudocode"><code>items = extract_memory(older_turns)
+for item in items:
+    entity = link_entity(item)
+    if item.is_task:
+        reconcile_task(entity, item)
+    else:
+        retain_fact(entity, item)
+    keep_source_turns(item)</code></pre></figure><p>In this sketch, reconciliation means matching a new observation to an existing task and updating its state when there is evidence for a transition. A follow-up about a quote doesn’t by itself mean the quote arrived, so I kept the task pending until I had a reason to mark it complete.</p><p>I kept references to the source turns so I could trace a retained record back to the conversation. Compaction can omit or distort details, and those references gave me something to inspect when a memory looked wrong.</p></div></details>
+</section>
+<section class="article-section" id="retrieval" aria-labelledby="retrieval-heading"><h2 id="retrieval-heading">Finding the memory the user is referring to</h2>
+<p>I linked memories to the people and companies they were about so I could use those relationships during retrieval. For a follow-up about an open quote, I needed the pending task for that company, with the right access scope, even when another company had a very similar request.</p>
+<figure class="code-example"><figcaption>I checked the company and pending state before bringing an older task back into the prompt.</figcaption><pre tabindex="0" aria-label="Conceptual pseudocode"><code>scope = authorized_scope(request)
+entity = resolve_entity(request, scope)
+tasks = pending_tasks(scope, entity)
+selected = rank_relevant(tasks, request)
+facts = relevant_facts(scope, entity)
+prompt = assemble_prompt(
+    recent_turns, facts, selected)</code></pre></figure><figure class="article-diagram learning-diagram technical-diagram">
+<svg class="diagram-wide" viewBox="0 0 640 240" role="img" aria-labelledby="task-wide-title task-wide-desc">
+<title id="task-wide-title">Selecting the pending task for the company in the follow-up</title><desc id="task-wide-desc">Illustrative records. For a follow-up about Northstar, q17 is pending and eligible. q52 belongs to another company and q08 is already complete, so both are excluded.</desc>
+<text x="12" y="27">A follow-up about Northstar</text>
+<text x="12" y="72">Task</text><text x="145" y="72">Company</text><text x="345" y="72">State</text><text x="480" y="72">Use in follow-up?</text>
+<g class="diagram-outline"><path d="M12 85Q320 84.5 628 85M12 133Q320 133.5 628 133M12 181Q320 180.5 628 181M12 229Q320 229.5 628 229" stroke-opacity=".35"/><path class="diagram-echo" d="M13 85.8 627 85.5"/></g>
+<path d="M8 93H632V126H8Z" fill="#57747b" fill-opacity=".09"/>
+<text x="12" y="115">q17</text><text x="145" y="115">Northstar</text><text x="345" y="115">pending</text><text x="480" y="115" class="diagram-value-accent">yes</text>
+<text x="12" y="163">q52</text><text x="145" y="163">Another company</text><text x="345" y="163">pending</text><text x="480" y="163">wrong company</text>
+<text x="12" y="211">q08</text><text x="145" y="211">Northstar</text><text x="345" y="211">complete</text><text x="480" y="211">already done</text>
+</svg>
+<svg class="diagram-mobile" viewBox="0 0 320 330" role="img" aria-labelledby="task-mobile-title task-mobile-desc">
+<title id="task-mobile-title">Selecting the pending task for the company in the follow-up</title><desc id="task-mobile-desc">Illustrative records. Only q17 belongs to Northstar and is still pending; q52 belongs to another company and q08 is complete.</desc>
+<text x="8" y="27">A follow-up about Northstar</text>
+<path d="M4 48H316V120H4Z" fill="#57747b" fill-opacity=".09"/>
+<text x="14" y="76">q17 · Northstar</text><text x="14" y="105" class="diagram-value-accent">pending · include</text>
+<g class="diagram-outline"><path d="M8 137Q160 136.5 312 137M8 229Q160 229.5 312 229M8 321Q160 320.5 312 321" stroke-opacity=".35"/><path class="diagram-echo" d="M9 137.8 311 137.5"/></g>
+<text x="14" y="168">q52 · another company</text><text x="14" y="197">pending · exclude</text>
+<text x="14" y="260">q08 · Northstar</text><text x="14" y="289">complete · exclude</text>
+</svg>
+<figcaption>I checked the company and pending state before bringing q17 back into the reply; the task records here are illustrative.</figcaption>
+</figure><details class="article-detail" id="retrieval-details"><summary><svg class="disclosure-mark" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10"/><path class="vertical-mark" d="M8 3v10"/></svg><span>Why similarity alone wasn’t enough</span></summary><div class="detail-body"><p>I used relevance to choose useful context within the eligible records, but a similar description couldn’t make a task from another company appropriate for this follow-up. I needed the access scope, entity, and pending state to remain explicit checks.</p><p>The example keeps q17’s identity through retrieval so I can explain why it was selected. q52 is still pending but belongs to another company, while q08 belongs to Northstar but is complete. I wanted both exclusions to remain visible when debugging an answer.</p><p>I still included recent conversation turns in the prompt. Retrieved memory supplied older facts and unfinished work alongside them; it didn’t replace the immediate conversation or prove that the final answer would use the context correctly.</p></div></details>
+</section>
+<section class="article-section" id="workflows" aria-labelledby="workflow-heading"><h2 id="workflow-heading">Reusing a sequence without running everything in order</h2>
+<p>I pulled reusable workflows out of previous runs so Jev, our classifier, could pick a workflow and model for a familiar request. I kept the tool dependencies explicit, which let me run independent lookups together while holding back a call that still needed an earlier result.</p>
+<figure class="code-example"><figcaption>I grouped calls by which inputs were ready, rather than by their position in a list.</figcaption><pre tabindex="0" aria-label="Conceptual pseudocode"><code>completed = {}
+<span class="keyword">while</span> waiting:
+    ready = ready_tasks(waiting, completed)
+    <span class="keyword">if</span> not ready:
+        <span class="keyword">raise</span> InvalidWorkflow
+    results = run_concurrently(ready)
+    <span class="keyword">if</span> any_failed(results):
+        <span class="keyword">return</span> review_or_retry(results)
+    completed.update(successful(results))
+    waiting.remove_all(ready)</code></pre></figure><details class="article-detail" id="workflow-details"><summary><svg class="disclosure-mark" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10"/><path class="vertical-mark" d="M8 3v10"/></svg><span>What the dependency checks changed</span></summary><div class="detail-body"><p>If one lookup retrieves a company record and another retrieves a conversation, I can run them together when neither needs the other’s output. A later tool that needs a field from the company record still has to wait for that field.</p><p>In this conceptual sketch, a task becomes ready only when its required inputs are available. I still need to distinguish a valid result from a failed tool call before advancing dependent work; completing a call doesn’t automatically make its output usable.</p><p>I kept a record of the selected workflow, tool inputs, and results so I could work out whether I’d picked the wrong workflow or a particular step had failed. Reusing a procedure reduced repeated planning, but it also made choosing and checking that procedure important.</p></div></details>
+</section>
+<section class="article-section" id="evaluation" aria-labelledby="evaluation-heading"><h2 id="evaluation-heading">Checking whether the change fixed the right thing</h2>
+<p>I used Jev to classify response failures and moved fixes into configurable procedures that I could rerun against saved cases and simulations. If Vee asked which quote the user meant, I first checked whether the pending task reached the prompt, because changing the reply’s wording wouldn’t recover context that was missing.</p>
+<details class="article-detail" id="evaluation-details"><summary><svg class="disclosure-mark" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10"/><path class="vertical-mark" d="M8 3v10"/></svg><span>How I separated a failure label from evidence of a fix</span></summary><div class="detail-body"><p>I used a failure label to narrow down what to inspect, while keeping the original conversation and retrieved context available. A label was a useful diagnosis to investigate, rather than proof that a particular procedure edit was correct.</p><figure class="code-example"><figcaption>I compared a proposed procedure with the current one on the same cases.</figcaption><pre tabindex="0" aria-label="Conceptual pseudocode"><code>label = classify_failure(saved_run)
+proposal = revise_procedure(label)
+before = evaluate(current, saved_cases)
+after = evaluate(proposal, saved_cases)
+review_changes(before, after)</code></pre></figure><p>I would keep the model settings, context, and tool-response fixtures the same when comparing the two procedures, then repeat cases where model randomness could change the result. That helps me separate the effect of the procedure edit from changes elsewhere in the run.</p><p>I reran the reported failure alongside cases that already worked, because an edit could fix one conversation and break another. Those changes affected the instructions and workflow; I wasn’t using this process to train new model weights.</p><p>I used snapshots to check a saved situation and simulations to follow the task over several turns. A reply could look sensible by itself while losing track of an unfinished request later, so I wanted evidence from both views before judging the change.</p></div></details>
+</section>
+<section class="article-section" id="other-work" aria-labelledby="other-heading"><h2 id="other-heading">Speech and views that keep updating</h2>
+<p>I also helped fine-tune a speech model on dispatcher audio, using corrected labels and noise augmentation. Alongside that, I’m building SQL-backed artifacts that refresh an existing view as its values change, so I can update the data without regenerating the whole view through an LLM.</p>
+<details class="article-detail" id="other-details"><summary><svg class="disclosure-mark" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10"/><path class="vertical-mark" d="M8 3v10"/></svg><span>What I was trying to preserve in each case</span></summary><div class="detail-body"><p>For speech, I used human-corrected labels to give the model a better training target and noise augmentation to expose it to the audio conditions it needed to handle. I still needed to evaluate whether it recognized dispatcher vocabulary under those conditions, rather than judge the data work by how much audio I had collected.</p><p>For the artifacts, I separated generating the view from refreshing its values. I could use the model to help create the presentation, then rerun the SQL behind it when the underlying data changed. That gave me a more specific update path to inspect when a value looked wrong.</p></div></details>
+</section>
+<section class="article-section" id="learning" aria-labelledby="learning-heading"><h2 id="learning-heading">What I check before changing the final answer</h2>
+<p>I now follow the context through the system: whether I stored it, whether retrieval selected it, and whether it reached the prompt. I use the same approach for workflows and procedure edits, keeping the inputs and results available so I can compare what changed instead of relying on one answer that happens to look good.</p>
+</section>
+<footer class="article-footer"><div class="footer-home"><a class="article-back pencil-link" href="/?work=vooma"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 12.1 4 12m5.5-5.3L4 12l5.5 5.4" /></svg><span>Vooma</span></a></div></footer>
+</article></main>
