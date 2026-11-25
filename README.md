@@ -43,6 +43,7 @@ They are intentionally not linked from the homepage summaries.
 
 ## Deployment
 
-GitHub Actions builds and tests the static export, then deploys `out/` to GitHub Pages when `main` is pushed.
+GitHub Actions runs lint, builds the static export, and tests it when `main` is pushed.
+Vercel handles production publishing through the repository’s existing integration.
 The custom domain is `www.azaveri.com`.
 Generated bundles in `public/portfolio/` and local design studies in `prototypes/` are excluded from Git.
