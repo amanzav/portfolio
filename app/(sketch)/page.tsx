@@ -30,7 +30,7 @@ export default function Home() {
           <section className="static-work" aria-label="Selected work">
             {EXPERIENCE_NOTES.map(item => <details key={item.id}>
               <summary><span>{item.company}</span><h2>{item.text}</h2></summary>
-              <p>{item.summary.join(" ")}</p>
+              {item.summary.map(text => <p key={text}>{text}</p>)}
             </details>)}
           </section>
         </main>

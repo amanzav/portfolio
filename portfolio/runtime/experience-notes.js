@@ -5,7 +5,9 @@ export const EXPERIENCE_NOTES = [
     text: 'Better memory for our AI.',
     description: 'Keeping context across conversations, linking related entities, and checking response quality.',
     summary: [
-      'I’m working on how Vee remembers older conversations and keeps track of unfinished tasks. I also build reusable workflows and checks for how the agent responds after a change.',
+      'Rebuilt LangGraph memory to retain context, link related entities, and preserve unfinished tasks.',
+      'Reused workflows to cut routine tasks to a third of the steps and reduce runtime by over half.',
+      'Automated configuration fixes and verified them against 500 test cases across 30 procedures.',
     ],
     notes: [
       'I rebuilt Vee’s LangGraph architecture around one ongoing conversation, with persistent user profiles, time-based compaction, and searchable history.',
@@ -21,7 +23,9 @@ export const EXPERIENCE_NOTES = [
     text: 'Better candidate search.',
     description: 'Matching candidates to jobs with neural search, plus internal tools for bug fixes and code review.',
     summary: [
-      'I worked on how recruiters search for candidates and match them to jobs. I also built a bug-reporting tool that gathers context and drafts a fix for an engineer to review.',
+      'Built a local software factory that shipped 2.2× as many tickets per cycle.',
+      'Replaced the candidate ranker with two-stage neural retrieval, increasing match acceptance from 8% to 31%.',
+      'Built natural-language search over 2M alumni profiles, replacing 300+ filters.',
     ],
     notes: [
       'I replaced a gradient-boosted candidate ranker with a two-stage neural retriever built in PyTorch and served through FastAPI.',
@@ -36,7 +40,9 @@ export const EXPERIENCE_NOTES = [
     text: 'In-car infotainment.',
     description: 'Infotainment software, debugging, and testing.',
     summary: [
-      'I worked on infotainment software across two internships. Some of that was C++ navigation and message handling; I also built Python tools for debugging firmware failures and testing changes on hardware.',
+      'Built C++ route ranking for the F-150 and Mach-E, reducing unnecessary detours by 41%.',
+      'Reworked tire-pressure interrupts, cutting alert latency from 1.4s to 612ms.',
+      'Built firmware-debugging tools and automated 300 hardware regression tests.',
     ],
     notes: [
       'In my embedded software internship, I built a C++ graph-based route ranker for the F-150 and Mustang Mach-E.',
