@@ -18,6 +18,19 @@ test('home ships readable work and contacts before the 3D runtime starts', async
   await access(new URL('portfolio-assets/aman-zaveri-resume.pdf', output));
 });
 
+test('the loading frame keeps the text-only fallback out of the entrance', async () => {
+  const html = await read('index.html');
+  assert.ok(html.includes('data-load-state="loading"'));
+  assert.match(html, /<link[^>]+rel="modulepreload"[^>]+href="\/portfolio\/home.js"/);
+  const assets = await readdir(new URL('_next/static/', output), { recursive: true });
+  const css = (await Promise.all(assets.filter(file => file.endsWith('.css'))
+    .map(file => read(`_next/static/${file}`)))).join('\n');
+  assert.match(css, /\.portfolio-shell\[data-load-state=loading\] \.static-portfolio>\*\{visibility:hidden\}/,
+    'the temporary work list must not flash while the arm loads');
+  assert.match(html, /<noscript><style>[\s\S]*?visibility: visible;[\s\S]*?<\/style><\/noscript>/,
+    'the same content stays readable when JavaScript is disabled');
+});
+
 test('only the approved arm entry is published and its assets resolve', async () => {
   const files = await readdir(new URL('portfolio/', output));
   assert.ok(files.includes('home.js') && files.includes('home.css'));

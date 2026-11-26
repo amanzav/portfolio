@@ -1,6 +1,7 @@
 .portfolio-shell { position: relative; min-height: 100svh; background: #fff; color: #303638; font-family: 'Helvetica Neue', Arial, sans-serif; }
-.portfolio-runtime { position: absolute; inset: 0; visibility: hidden; pointer-events: none; }
-.portfolio-shell[data-ready="true"] .portfolio-runtime { position: relative; visibility: visible; pointer-events: auto; }
+.portfolio-runtime { position: absolute; inset: 0; visibility: hidden; opacity: 0; pointer-events: none; transition: opacity 180ms ease-out; }
+.portfolio-shell[data-ready="true"] .portfolio-runtime { position: relative; visibility: visible; opacity: 1; pointer-events: auto; }
+.portfolio-shell[data-load-state="loading"] .static-portfolio > * { visibility: hidden; }
 .portfolio-fallback[hidden] { display: none; }
 .static-portfolio { display: grid; align-content: center; gap: 40px; width: min(1100px,100%); min-height: 100svh; margin: auto; padding: 24px 28px; }
 .static-portfolio header { text-align: center; }
@@ -23,4 +24,4 @@
   .static-work h2 { font-size: 18px; }
   .static-work { gap: 24px; }
 }
-@media (prefers-reduced-motion: reduce) { .static-tooltip { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .static-tooltip, .portfolio-runtime { transition: none; } }

@@ -197,6 +197,7 @@ export function mountPortfolio(root) {
     let optionsSettling = false;
     let phone = null;
     let phoneTextTransition = null;
+    let entrancePending = false;
     let observer;
     const entrance = createArmEntrance({ arm, drawing, options, stage, reducedMotion });
     cleanup.push(() => entrance.dispose());
@@ -1001,7 +1002,7 @@ export function mountPortfolio(root) {
     function animate(timestamp) {
       if (disposed) return;
       frameId = 0;
-      if (document.hidden) return;
+      if (document.hidden || entrancePending) { lastTimestamp = 0; return; }
       const elapsed = lastTimestamp ? Math.max(0, (timestamp - lastTimestamp) / 1000) : 0;
       lastTimestamp = timestamp;
       const dt = Math.min(elapsed || 1 / 60, .05);
@@ -1086,6 +1087,7 @@ export function mountPortfolio(root) {
       const size = isPhone ? `phone,${rect.width},${viewportHeight},${header.getBoundingClientRect().height}` : `desktop,${rect.width},${rect.height}`;
       if (size === previousSize) return;
       previousSize = size;
+      entrancePending = false;
       entrance.finish('resize');
       entrance.setMode(isPhone);
       const pendingPhoneChange = cancelPhoneTextTransition();
@@ -1196,13 +1198,18 @@ export function mountPortfolio(root) {
       }
       if (!ready) {
         if (!selected) armPose = entrance.start(homePose, Boolean(phone));
-        render(); wake();
+        entrancePending = true;
+        render();
         ready = true;
         root.dataset.ready = 'true';
         root.dispatchEvent(new Event('portfolio-ready'));
       }
     }
     document.fonts.ready.then(() => { if (!disposed) runSafely(resize); });
+    on(root, 'portfolio-visible', () => {
+      entrancePending = false;
+      wake();
+    });
     on(window, 'resize', resize);
     on(window.visualViewport, 'resize', resize);
     options.setAttribute('aria-label','Work to explore');
@@ -1220,6 +1227,7 @@ export function mountPortfolio(root) {
       else {if(busy())motion.paused=false;if(entrance.running||busy()||following||ambientRunning())wake();}
     });
     on(reducedMotion, 'change',()=>{
+      entrancePending = false;
       entrance.finish(); entrance.setMode(Boolean(phone));
       armPose = { ...idlePose };
       stopFrame(); following=false;

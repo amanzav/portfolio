@@ -14,10 +14,11 @@ const contacts = [
 export default function Home() {
   return (
     <>
+      <link rel="modulepreload" href="/portfolio/home.js" />
       <PortfolioSurface markup={markup}>
-        <main className="static-portfolio">
+        <main className="static-portfolio workspace-study">
           <header>
-            <h1>I’m <span>Aman</span>, a mechatronics student at Waterloo.</h1>
+            <h1>I’m <span className="pencil-name">Aman</span>, a mechatronics student at Waterloo.</h1>
             <p>Currently building AI systems at Vooma.</p>
             <nav aria-label="Contact links" className="static-contacts">
               {contacts.map(({ label, href, icon }) => <a key={label} href={href} aria-label={label}
